@@ -1,85 +1,172 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <div class="app-container">
+    <!-- Menu lateral -->
+    <div class="sidebar">
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <div class="logo">
+        <h3>Tecnologias para a <p>Sustentabilidade</p></h3>
+        <img src="./assets/tecsus.png">
+      </div>
 
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/"><i class="fa-solid fa-house"></i>INÍCIO</RouterLink>
+        <RouterLink to="/reports"><i class="fa-solid fa-file-contract"></i>RELATÓRIOS</RouterLink>
+        <RouterLink to="/alerts"><i class="fa-solid fa-bell"></i>ALERTAS</RouterLink>
       </nav>
     </div>
-  </header>
+
+  </div>
 
   <RouterView />
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+/* Definindo a animação para mover a imagem para a direita e reiniciar à esquerda */
+@keyframes slide-and-loop-img {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  7% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  30% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(150%);
+  }
+  46% {
+    visibility: hidden;
+  }
+  100% {
+    transform: translateX(270%);
+    opacity: 1;
+  }
+}
+  
+@keyframes slide-and-loop-text {
+  0% {
+    visibility: hidden;
+  }
+  55% {
+    visibility: visible;
+    opacity: 1;
+  }
+  95% {
+    opacity: 0;
+  }
+  100% {
+    visibility: hidden;
+  }
+}
+
+/* estilização dos elementos do single page */
+.app-container {
+  display: flex;
+  flex-direction: column;  
+  align-items: center;  
+  justify-content: flex-start;
+}
+
+.sidebar {
+  position: fixed;  
+  display: flex;
+  flex-direction: column;
+  align-items: center;  
+  justify-content: flex-start;
+  gap: 5rem;
+  top: 0;
+  left: 0;
+  width: 20%;  /* Ajuste conforme necessário */
+  height: 100vh;  /* Preenchendo toda a altura */
+  background-color: #776AE3;  /* Cor de fundo do menu */
+  color: white;
+  padding-top: 2.5%;
 }
 
 .logo {
-  display: block;
-  margin: 0 auto 2rem;
+  border: 3px solid rgba(224, 224, 225, 0.8);
+  border-radius: 20px;
+  padding: 15px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(224, 224, 225, 0.3);
+  overflow: hidden;  /* Impedindo que a imagem quebre o layout ao mover */
+  position: relative;  /* Manter a posição do container da logo */
+  height: 25%;
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+}
+
+.logo h3 {
+  visibility: hidden;
+  color: black;
+  animation: slide-and-loop-text 15s linear infinite;
+  position: absolute;
+  opacity: 0;
+  color: #776AE3;
+  text-align: center;
+  align-self: center;
+  justify-self: center;
+  font-size: 34px;
+  font-weight: bolder;
+}
+
+.logo p {
+  color: #88E570;
+}
+
+.logo img {
+  animation: slide-and-loop-img 15s linear infinite;
+  position: absolute;
 }
 
 nav {
   width: 100%;
-  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  font-size: xx-large;
   text-align: center;
-  margin-top: 2rem;
+  font-weight: 800;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+nav a.router-link-exact-active, nav a.router-link-exact-active i {
+  color: #88E570;
 }
 
 nav a.router-link-exact-active:hover {
-  background-color: transparent;
+  opacity: 0.7;
 }
 
 nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+  color: white;
+  text-decoration: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: baseline;
+  margin-left: 4.7rem;
 }
 
-nav a:first-of-type {
-  border: 0;
+nav a:hover {
+  opacity: 0.7;
 }
 
+nav a i {
+  font-size: xx-large;
+  padding-right: 1rem;
+  color: white;
+}
+
+/* Media Queries para responsividade */
 @media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
 }
 </style>
