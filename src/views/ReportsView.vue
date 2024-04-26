@@ -1,6 +1,6 @@
 <template>
     <div class="container-principal">
-        <h1>Alertas</h1>
+        <h1>Relatórios</h1>
     </div>
 </template>
 
