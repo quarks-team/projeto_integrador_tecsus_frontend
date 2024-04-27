@@ -1,27 +1,15 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import Menu from './components/Menu.vue'
 </script>
 
 <template>
   <div class="app-container">
     <!-- Menu lateral -->
-    <div class="sidebar">
-
-      <div class="logo">
-        <h3>Tecnologias para a <p>Sustentabilidade</p></h3>
-        <img src="./assets/tecsus.png">
-      </div>
-
-      <nav>
-        <RouterLink to="/"><i class="fa-solid fa-house"></i>INÍCIO</RouterLink>
-        <RouterLink to="/reports"><i class="fa-solid fa-file-contract"></i>RELATÓRIOS</RouterLink>
-        <RouterLink to="/alerts"><i class="fa-solid fa-bell"></i>ALERTAS</RouterLink>
-      </nav>
-    </div>
+    <Menu/>
 
   </div>
 
-  <RouterView />
 </template>
 
 <style scoped>
@@ -74,96 +62,7 @@ import { RouterLink, RouterView } from 'vue-router'
   justify-content: flex-start;
 }
 
-.sidebar {
-  position: fixed;  
-  display: flex;
-  flex-direction: column;
-  align-items: center;  
-  justify-content: flex-start;
-  gap: 5rem;
-  top: 0;
-  left: 0;
-  width: 20%;  /* Ajuste conforme necessário */
-  height: 100vh;  /* Preenchendo toda a altura */
-  background-color: #776AE3;  /* Cor de fundo do menu */
-  color: white;
-  padding-top: 2.5%;
-}
 
-.logo {
-  border: 3px solid rgba(224, 224, 225, 0.8);
-  border-radius: 20px;
-  padding: 15px;
-  background-color: white;
-  box-shadow: 0 0 10px rgba(224, 224, 225, 0.3);
-  overflow: hidden;  /* Impedindo que a imagem quebre o layout ao mover */
-  position: relative;  /* Manter a posição do container da logo */
-  height: 25%;
-  width: 80%;
-  display: flex;
-  flex-direction: row;
-}
-
-.logo h3 {
-  visibility: hidden;
-  color: black;
-  animation: slide-and-loop-text 15s linear infinite;
-  position: absolute;
-  opacity: 0;
-  color: #776AE3;
-  text-align: center;
-  align-self: center;
-  justify-self: center;
-  font-size: 34px;
-  font-weight: bolder;
-}
-
-.logo p {
-  color: #88E570;
-}
-
-.logo img {
-  animation: slide-and-loop-img 15s linear infinite;
-  position: absolute;
-}
-
-nav {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  font-size: xx-large;
-  text-align: center;
-  font-weight: 800;
-}
-
-nav a.router-link-exact-active, nav a.router-link-exact-active i {
-  color: #88E570;
-}
-
-nav a.router-link-exact-active:hover {
-  opacity: 0.7;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: baseline;
-  margin-left: 4.7rem;
-}
-
-nav a:hover {
-  opacity: 0.7;
-}
-
-nav a i {
-  font-size: xx-large;
-  padding-right: 1rem;
-  color: white;
-}
 
 /* Media Queries para responsividade */
 @media (min-width: 1024px) {
