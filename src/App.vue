@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import Menu from './components/Menu.vue'
 </script>
 
 <template>
@@ -18,6 +19,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/alerts"><i class="fa-solid fa-bell"></i>ALERTAS</RouterLink>
       </nav>
     </div>
+    <Menu/>
 
   </div>
 
