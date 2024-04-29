@@ -6,19 +6,7 @@ import Menu from './components/Menu.vue'
 <template>
   <div class="app-container">
     <!-- Menu lateral -->
-    <div class="sidebar">
 
-      <div class="logo">
-        <img src="./assets/slogan.png" class="slogan">
-        <img src="./assets/tecsus.png">
-      </div>
-
-      <nav>
-        <RouterLink to="/"><i class="fa-solid fa-house"></i>INÍCIO</RouterLink>
-        <RouterLink to="/reports"><i class="fa-solid fa-file-contract"></i>RELATÓRIOS</RouterLink>
-        <RouterLink to="/alerts"><i class="fa-solid fa-bell"></i>ALERTAS</RouterLink>
-      </nav>
-    </div>
     <Menu/>
 
   </div>
