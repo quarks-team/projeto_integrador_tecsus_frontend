@@ -8,7 +8,7 @@ import { RouterLink, RouterView } from 'vue-router'
     <div class="sidebar">
 
       <div class="logo">
-        <h3>Tecnologias para a <p>Sustentabilidade</p></h3>
+        <img src="./assets/slogan.png" class="slogan">
         <img src="./assets/tecsus.png">
       </div>
 
@@ -21,10 +21,16 @@ import { RouterLink, RouterView } from 'vue-router'
 
   </div>
 
-  <RouterView />
+  <transition name="fade" mode="out-in">
+    <router-view></router-view>
+  </transition>
+  
 </template>
 
 <style scoped>
+@import "./assets/base.css";
+
+
 /* Definindo a animação para mover a imagem para a direita e reiniciar à esquerda */
 @keyframes slide-and-loop-img {
   0% {
@@ -66,6 +72,26 @@ import { RouterLink, RouterView } from 'vue-router'
   }
 }
 
+@keyframes slide-and-loop-background {
+  0% {
+    background-color: white;
+  }
+  70% {
+    background-image: url('./assets/fundo-natureza.gif');
+    background-size: cover;
+  }
+  90% {
+    background-image: url('./assets/fundo-natureza.gif');
+    background-size: cover;
+  }
+  95% {
+    background-color: white;
+  }
+  100% {
+    background-color: white;
+  }
+}
+
 /* estilização dos elementos do single page */
 .app-container {
   display: flex;
@@ -83,9 +109,9 @@ import { RouterLink, RouterView } from 'vue-router'
   gap: 5rem;
   top: 0;
   left: 0;
-  width: 20%;  /* Ajuste conforme necessário */
-  height: 100vh;  /* Preenchendo toda a altura */
-  background-color: #776AE3;  /* Cor de fundo do menu */
+  width: 20%;
+  height: 100vh;  
+  background-color: #776AE3;  
   color: white;
   padding-top: 2.5%;
 }
@@ -93,38 +119,33 @@ import { RouterLink, RouterView } from 'vue-router'
 .logo {
   border: 3px solid rgba(224, 224, 225, 0.8);
   border-radius: 20px;
-  padding: 15px;
+  padding: 3.5%;
   background-color: white;
-  box-shadow: 0 0 10px rgba(224, 224, 225, 0.3);
+  box-shadow: 0 0 15% rgba(224, 224, 225, 0.3);
   overflow: hidden;  /* Impedindo que a imagem quebre o layout ao mover */
   position: relative;  /* Manter a posição do container da logo */
   height: 25%;
   width: 80%;
   display: flex;
   flex-direction: row;
+  animation: slide-and-loop-background 15s linear infinite;
 }
 
-.logo h3 {
+.logo .slogan {
   visibility: hidden;
   color: black;
   animation: slide-and-loop-text 15s linear infinite;
   position: absolute;
   opacity: 0;
-  color: #776AE3;
-  text-align: center;
-  align-self: center;
-  justify-self: center;
-  font-size: 34px;
-  font-weight: bolder;
-}
-
-.logo p {
-  color: #88E570;
+  height: 93%;
+  width: 93%;
 }
 
 .logo img {
   animation: slide-and-loop-img 15s linear infinite;
   position: absolute;
+  height: 93%;
+  width: 93%;
 }
 
 nav {
@@ -132,17 +153,30 @@ nav {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  font-size: xx-large;
+  font-size: 100%;
   text-align: center;
   font-weight: 800;
 }
 
 nav a.router-link-exact-active, nav a.router-link-exact-active i {
+  transition: all 1s;
   color: #88E570;
+  background-color: #E0E0E1;
+  padding-left: 5%;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px; 
+}
+
+nav a.router-link-exact-active:not(nav a.router-link-exact-active i) {
+  transition: all 2s;
+  border: 1px solid #88E570;
+  border-right-color: transparent;
 }
 
 nav a.router-link-exact-active:hover {
-  opacity: 0.7;
+  transition: all 1s;
+  opacity: 0.8;
+  padding-left: 4%;
 }
 
 nav a {
@@ -152,16 +186,18 @@ nav a {
   flex-direction: row;
   justify-content: flex-start;
   align-items: baseline;
-  margin-left: 4.7rem;
+  margin-left: 13%;
 }
 
 nav a:hover {
-  opacity: 0.7;
+  transition: all 1s;
+  opacity: 0.6;
+  padding-left: 3%;
 }
 
 nav a i {
-  font-size: xx-large;
-  padding-right: 1rem;
+  font-size: 100%;
+  padding-right: 5%;
   color: white;
 }
 
