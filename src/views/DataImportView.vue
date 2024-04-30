@@ -1,39 +1,33 @@
 <template>
   <transition name="fade" mode="out-in">
-    <div v-if="isVisible" class="container-principal">
-      <h1>Relatórios</h1>
+    <div v-if="isVisible" class="container-anexo">
+      <AttachFile></AttachFile>
     </div>
   </transition>
 </template>
 
 <script lang="ts">
+import AttachFile from '@/components/AttachFile.vue';
+
 export default {
   data() {
     return {
       isVisible: false
     }
   },
+
   mounted() {
     setTimeout(() => {
       this.isVisible = true
-    }, 1000)
+    }, 1000);
+  },
+
+  components: {
+    AttachFile
   }
 }
 </script>
 
 <style>
 @import '../assets/base.css';
-
-.container-principal {
-  margin-left: 4%;
-  margin-top: 3%;
-  margin-right: 4%;
-  margin-bottom: 3%;
-}
-
-.container-principal h1 {
-  color: #776ae3;
-  font-size: 6vmin;
-  font-weight: 400;
-}
 </style>

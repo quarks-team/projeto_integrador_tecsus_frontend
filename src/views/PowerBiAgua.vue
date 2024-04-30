@@ -1,32 +1,30 @@
 <template>
-    <transition name="fade" mode="out-in">
-        <div v-if="isVisible" class="container-powerbi">
-            <h1>Dashboard de Água</h1>
-            <!-- <iframe></iframe>  --> 
-        </div>
-    </transition>
+  <transition name="fade" mode="out-in">
+    <div v-if="isVisible" class="container-powerbi">
+      <h1>Dashboard de Água</h1>
+      <!-- <iframe></iframe>  -->
+    </div>
+  </transition>
 </template>
 
 <script lang="ts">
 export default {
-
   data() {
     return {
       isVisible: false
-    };
+    }
   },
 
   mounted() {
     setTimeout(() => {
-      this.isVisible = true;
-    }, 1000);
+      this.isVisible = true
+    }, 1000)
   }
-  
 }
 </script>
 
 <style>
-@import "../assets/base.css";
+@import '../assets/base.css';
 
 .container-powerbi {
   margin-left: 4%;
@@ -39,7 +37,7 @@ export default {
 }
 
 .container-powerbi h1 {
-  color: #776AE3;
+  color: #776ae3;
   font-size: 6vmin;
   font-weight: 400;
 }
