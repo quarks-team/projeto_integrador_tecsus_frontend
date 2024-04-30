@@ -6,7 +6,7 @@ import Menu from './components/Menu.vue'
 <template>
   <div class="app-container">
     <!-- Menu lateral -->
-<!--    <div class="sidebar">
+    <div class="sidebar">
 
       <div class="logo">
         <img src="./assets/slogan.png" class="slogan">
@@ -18,8 +18,8 @@ import Menu from './components/Menu.vue'
         <RouterLink to="/reports"><i class="fa-solid fa-file-contract"></i>RELATÓRIOS</RouterLink>
         <RouterLink to="/alerts"><i class="fa-solid fa-bell"></i>ALERTAS</RouterLink>
       </nav>
-    </div> -->
-    <Menu/>
+    </div> 
+    <!-- <Menu/> -->
 
   </div>
 
