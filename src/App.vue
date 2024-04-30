@@ -7,31 +7,28 @@ import Menu from './components/Menu.vue'
   <div class="app-container">
     <!-- Menu lateral -->
     <div class="sidebar">
-
       <div class="logo">
-        <img src="./assets/slogan.png" class="slogan">
-        <img src="./assets/tecsus.png">
+        <img src="./assets/slogan.png" class="slogan" />
+        <img src="./assets/tecsus.png" />
       </div>
 
       <nav>
         <RouterLink to="/"><i class="fa-solid fa-house"></i>INÍCIO</RouterLink>
         <RouterLink to="/reports"><i class="fa-solid fa-file-contract"></i>RELATÓRIOS</RouterLink>
         <RouterLink to="/alerts"><i class="fa-solid fa-bell"></i>ALERTAS</RouterLink>
+        <RouterLink to="/importar-dados"><i class="fa-solid fa-file-csv"></i>IMPORTAR</RouterLink>
       </nav>
-    </div> 
+    </div>
     <!-- <Menu/> -->
-
   </div>
 
   <transition name="fade" mode="out-in">
     <router-view></router-view>
   </transition>
-  
 </template>
 
 <style scoped>
-@import "./assets/base.css";
-
+@import './assets/base.css';
 
 /* Definindo a animação para mover a imagem para a direita e reiniciar à esquerda */
 @keyframes slide-and-loop-img {
@@ -57,7 +54,7 @@ import Menu from './components/Menu.vue'
     opacity: 1;
   }
 }
-  
+
 @keyframes slide-and-loop-text {
   0% {
     visibility: hidden;
@@ -97,23 +94,23 @@ import Menu from './components/Menu.vue'
 /* estilização dos elementos do single page */
 .app-container {
   display: flex;
-  flex-direction: column;  
-  align-items: center;  
+  flex-direction: column;
+  align-items: center;
   justify-content: flex-start;
 }
 
 .sidebar {
-  position: fixed;  
+  position: fixed;
   display: flex;
   flex-direction: column;
-  align-items: center;  
+  align-items: center;
   justify-content: flex-start;
   gap: 5rem;
   top: 0;
   left: 0;
   width: 20%;
-  height: 100vh;  
-  background-color: #776AE3;  
+  height: 100vh;
+  background-color: #776ae3;
   color: white;
   padding-top: 2.5%;
 }
@@ -124,8 +121,8 @@ import Menu from './components/Menu.vue'
   padding: 3.5%;
   background-color: white;
   box-shadow: 0 0 15% rgba(224, 224, 225, 0.3);
-  overflow: hidden;  /* Impedindo que a imagem quebre o layout ao mover */
-  position: relative;  /* Manter a posição do container da logo */
+  overflow: hidden; /* Impedindo que a imagem quebre o layout ao mover */
+  position: relative; /* Manter a posição do container da logo */
   height: 25%;
   width: 80%;
   display: flex;
@@ -160,18 +157,19 @@ nav {
   font-weight: 800;
 }
 
-nav a.router-link-exact-active, nav a.router-link-exact-active i {
+nav a.router-link-exact-active,
+nav a.router-link-exact-active i {
   transition: all 1s;
-  color: #88E570;
-  background-color: #E0E0E1;
+  color: #88e570;
+  background-color: #e0e0e1;
   padding-left: 5%;
   border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px; 
+  border-bottom-left-radius: 20px;
 }
 
 nav a.router-link-exact-active:not(nav a.router-link-exact-active i) {
   transition: all 2s;
-  border: 1px solid #88E570;
+  border: 1px solid #88e570;
   border-right-color: transparent;
 }
 
@@ -205,6 +203,5 @@ nav a i {
 
 /* Media Queries para responsividade */
 @media (min-width: 1024px) {
-
 }
 </style>

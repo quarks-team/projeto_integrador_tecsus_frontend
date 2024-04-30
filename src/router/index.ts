@@ -28,6 +28,11 @@ const router = createRouter({
       path: '/luz',
       name: 'luz',
       component: () => import('../views/PowerBiLuz.vue')
+    },
+    {
+      path: '/importar-dados',
+      name: 'importar-dados',
+      component: () => import('../views/DataImportView.vue')
     }
   ]
 })
