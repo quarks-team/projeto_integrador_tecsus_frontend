@@ -18,6 +18,16 @@ const router = createRouter({
       path: '/alerts',
       name: 'alerts',
       component: () => import('../views/AlertsView.vue')
+    },
+    {
+      path: '/agua',
+      name: 'agua',
+      component: () => import('../views/PowerBiAgua.vue')
+    },
+    {
+      path: '/luz',
+      name: 'luz',
+      component: () => import('../views/PowerBiLuz.vue')
     }
   ]
 })
