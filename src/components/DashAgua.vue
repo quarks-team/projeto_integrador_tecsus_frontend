@@ -14,7 +14,7 @@ import { RouterLink } from 'vue-router'
 export default {
   data() {
     return {
-      isVisible: false
+      isVisible: false,
     }
   },
   mounted() {

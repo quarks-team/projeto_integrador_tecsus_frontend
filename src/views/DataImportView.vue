@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import AttachFile from '@/components/AttachFile.vue';
+import AttachFile from '@/components/AttachFile.vue'
 
 export default {
   data() {
@@ -19,7 +19,7 @@ export default {
   mounted() {
     setTimeout(() => {
       this.isVisible = true
-    }, 1000);
+    }, 1000)
   },
 
   components: {

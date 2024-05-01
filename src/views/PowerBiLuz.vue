@@ -2,7 +2,7 @@
   <transition name="fade" mode="out-in">
     <div v-if="isVisible" class="container-powerbi">
       <h1>Dashboard de Luz</h1>
-      <!-- <iframe></iframe>  -->
+      <iframe :src="powerBiSrc" frameborder="0" allowfullscreen="true"></iframe>
     </div>
   </transition>
 </template>
@@ -11,7 +11,8 @@
 export default {
   data() {
     return {
-      isVisible: false
+      isVisible: false,
+      powerBiSrc: 'https://app.powerbi.com/reportEmbed?reportId=aa6a9cb1-9104-489a-9214-23cbb5bf6e5a&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f',
     }
   },
 
@@ -40,5 +41,10 @@ export default {
   color: #776ae3;
   font-size: 6vmin;
   font-weight: 400;
+}
+
+.container-powerbi iframe {
+  align-self: center;
+  justify-self: center;
 }
 </style>

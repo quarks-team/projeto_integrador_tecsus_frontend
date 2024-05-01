@@ -17,7 +17,7 @@
           <label for="fileInput" class="file-label">
             <div v-if="isDragging" class="file-label-text">Drag files here</div>
             <div v-else class="file-label-text">
-                Arraste os CSVs aqui ou <u>clique aqui</u> para fazer o download
+              Arraste os CSVs aqui ou <u>clique aqui</u> para fazer o download
             </div>
           </label>
 
@@ -64,20 +64,18 @@ export default {
   },
 
   mounted() {
-    
     if (this.$refs.file) {
-        this.$refs.file.addEventListener('change', (event) => {
-        this.files = Array.from(event.target.files);
-        });
-    };
+      this.$refs.file.addEventListener('change', (event) => {
+        this.files = Array.from(event.target.files)
+      })
+    }
 
     setTimeout(() => {
       this.isVisible = true
-    }, 1000);
+    }, 1000)
   },
 
   methods: {
-
     onChange() {
       this.files = this.$refs.file.files
 
