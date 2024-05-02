@@ -22,7 +22,7 @@ export default {
 </script>
 
 <style>
-@import '../assets/base.css';
+@import '../assets/css/base.css';
 
 .container-principal {
   margin-left: 4%;

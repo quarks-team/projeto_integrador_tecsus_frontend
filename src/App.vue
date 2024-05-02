@@ -24,13 +24,15 @@ export default {
     <Sidebar/> 
   </div>
 
-  <transition name="fade" mode="out-in">
-    <router-view></router-view>
-  </transition>
+  <router-view v-slot="{ Component }">
+    <transition name="fade" mode="out-in">
+      <component :is="Component" />
+    </transition>
+  </router-view>
 </template>
 
 <style scoped>
-@import './assets/base.css';
+@import './assets/css/base.css';
 
 /* estilização dos elementos do single page */
 .app-container {

@@ -2,7 +2,7 @@
   <transition name="fade" mode="out-in">
     <div v-if="isVisible" class="container-powerbi">
       <h1>Dashboard de Água</h1>
-      <iframe :src="powerBiSrc" frameborder="0" allowfullscreen="true"></iframe>
+      <iframe title="ModeloDashboardTecSUS" :src="powerBiSrc" frameborder="0" allowFullScreen="true"></iframe>
     </div>
   </transition>
 </template>
@@ -12,7 +12,7 @@ export default {
   data() {
     return {
       isVisible: false,
-      powerBiSrc: 'https://app.powerbi.com/groups/me/reports/aa6a9cb1-9104-489a-9214-23cbb5bf6e5a?ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f&pbi_source=linkShare&bookmarkGuid=69166d83-b5c7-4210-8793-103aeae51f77',
+      powerBiSrc: 'https://app.powerbi.com/reportEmbed?reportId=aa6a9cb1-9104-489a-9214-23cbb5bf6e5a&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f',
     }
   },
 
@@ -25,7 +25,7 @@ export default {
 </script>
 
 <style>
-@import '../assets/base.css';
+@import '../assets/css/base.css';
 
 .container-powerbi {
   margin-left: 4%;
@@ -34,7 +34,7 @@ export default {
   margin-bottom: 3%;
   display: flex;
   flex-direction: column;
-  gap: 4.5rem;
+  gap: 2rem;
 }
 
 .container-powerbi h1 {
@@ -46,5 +46,7 @@ export default {
 .container-powerbi iframe {
   align-self: center;
   justify-self: center;
+  width: 73vw;
+  height: 100vh;
 }
 </style>

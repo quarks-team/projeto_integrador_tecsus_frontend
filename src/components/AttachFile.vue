@@ -58,7 +58,7 @@ export default {
       isDragging: false,
       files: [],
       filesJSON: [],
-      excel: 'src/assets/csv.png',
+      excel: 'src/assets/icons/csv.png',
       isVisible: false
     }
   },
@@ -165,7 +165,7 @@ export default {
 </script>
 
 <style>
-@import '../assets/base.css';
+@import '../assets/css/base.css';
 
 .main {
   display: flex;
@@ -173,21 +173,14 @@ export default {
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-left: 25px;
-  margin-right: 25px;
-  margin-top: 50px;
-  margin-bottom: 50px;
-  padding-bottom: 80px;
 }
 
 .dropzone-container {
-  padding: 4rem;
+  padding: 7rem;
   background: #f7fafc;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   box-shadow: 2px 2px 20px 10px var(--silver);
-  margin-right: 40px;
-  margin-left: 40px;
 }
 
 .hidden-input {
@@ -242,7 +235,7 @@ export default {
 }
 
 .submit {
-  background-color: var(--azul-embraer);
+  background-color: aquamarine;
   color: #ffff;
   font-size: 14pt;
   border-radius: 5px;
@@ -250,7 +243,7 @@ export default {
   cursor: pointer;
   width: 100px;
   height: 40px;
-  transition: 0.1s all;
+  transition: all 1s;
   margin-top: 25px;
   box-shadow: 2px 2px 20px 10px var(--silver);
 }
@@ -266,7 +259,7 @@ button:hover {
 
 .ml-2 b {
   font-size: 20px;
-  color: var(--azul-principal);
+  color: black;
 }
 
 /* --------------- Media Queries -------------------- */

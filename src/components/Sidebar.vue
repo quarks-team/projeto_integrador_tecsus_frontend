@@ -2,8 +2,8 @@
   <!-- Menu lateral -->
   <div class="sidebar">
       <div class="logo">
-        <img src="../assets/slogan.png" class="slogan" />
-        <img src="../assets/tecsus.png" />
+        <img :src="slogan_path + slogan_number + '.gif'" class="slogan" :style="animationDelay ? 'animation-delay: 1s;' : ''" @animationiteration="changeSloganImage();" />
+        <img src="../assets/logo/tecsus.png" class="logo_img" :style="animationDelay ? 'animation-delay: 1s;' : ''" @animationiteration="changeAnimationDelay()"/>
       </div>
 
       <nav>
@@ -17,10 +17,54 @@
 
 <script lang="ts">
 import { RouterLink } from 'vue-router';
+
+export default {
+
+  data() {
+    return {
+      slogan_path: 'src/assets/slogan/slogan',
+      slogan_number: 1,
+      slogans_values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+      animationCount: 0,
+      maxCount: 1,
+      animationDelay: false,
+    }
+  },
+
+  mounted() {
+
+  },
+
+  methods: {
+
+    changeSloganImage() {
+
+      this.animationCount++;
+
+        if (this.animationCount >= this.maxCount) {
+          if ((this.slogan_number + 1) <= this.slogans_values.length) {
+            this.slogan_number ++;
+          } else {
+            this.slogan_number = 1;
+          }
+            
+        };
+
+    },
+
+    changeAnimationDelay() {
+
+      this.animationDelay = true;
+
+    },
+
+  },
+
+}
 </script>
 
 <style>
-@import '../assets/base.css';
+@import '../assets/css/base.css';
 
 /* Definindo a animação para mover a imagem para a direita e reiniciar à esquerda */
 @keyframes slide-and-loop-img {
@@ -51,7 +95,10 @@ import { RouterLink } from 'vue-router';
   0% {
     visibility: hidden;
   }
-  55% {
+  45% {
+    visibility: hidden;
+  }
+  50% {
     visibility: visible;
     opacity: 1;
   }
@@ -60,26 +107,6 @@ import { RouterLink } from 'vue-router';
   }
   100% {
     visibility: hidden;
-  }
-}
-
-@keyframes slide-and-loop-background {
-  0% {
-    background-color: white;
-  }
-  70% {
-    background-image: url('../assets/fundo-natureza.gif');
-    background-size: cover;
-  }
-  90% {
-    background-image: url('../assets/fundo-natureza.gif');
-    background-size: cover;
-  }
-  95% {
-    background-color: white;
-  }
-  100% {
-    background-color: white;
   }
 }
 
@@ -105,23 +132,24 @@ import { RouterLink } from 'vue-router';
   padding: 3.5%;
   background-color: white;
   box-shadow: 0 0 15% rgba(224, 224, 225, 0.3);
-  overflow: hidden; /* Impedindo que a imagem quebre o layout ao mover */
-  position: relative; /* Manter a posição do container da logo */
+  overflow: hidden; 
+  position: relative; 
   height: 25%;
   width: 80%;
   display: flex;
   flex-direction: row;
-  animation: slide-and-loop-background 15s linear infinite;
 }
 
 .logo .slogan {
   visibility: hidden;
-  color: black;
   animation: slide-and-loop-text 15s linear infinite;
   position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   opacity: 0;
-  height: 93%;
-  width: 93%;
 }
 
 .logo img {

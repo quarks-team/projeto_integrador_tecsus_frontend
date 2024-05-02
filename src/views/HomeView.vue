@@ -35,7 +35,7 @@ export default {
 </script>
 
 <style>
-@import '../assets/base.css';
+@import '../assets/css/base.css';
 
 .container-principal {
   margin-left: 4%;
@@ -44,7 +44,7 @@ export default {
   margin-bottom: 3%;
   display: flex;
   flex-direction: column;
-  gap: 4.5rem;
+  gap: 2rem;
 }
 
 .container-principal h1 {
