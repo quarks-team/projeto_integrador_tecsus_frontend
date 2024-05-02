@@ -21,8 +21,8 @@
             </div>
           </label>
 
-          <div class="preview-container mt-4" v-if="files.length">
-            <div v-for="file in files" :key="file.name" class="preview-card">
+          <div class="preview-container mt-4" v-if="files.length" :style="change_style ? 'grid-template-columns: 1fr; grid-gap: 2rem;' : 'grid-template-columns: 50% 50%; grid-gap: 2rem;' ">
+            <div v-for="file in files" :key="file.name" class="preview-card" @mouseover="changeStyle()" @mouseleave="resetStyle()">
               <div>
                 <img class="preview-img" :src="excel" />
                 <p>
@@ -35,7 +35,7 @@
                   class="ml-2"
                   type="button"
                   @click="remove(files.indexOf(file))"
-                  title="Remove file"
+                  title="Remover"
                 >
                   <b>×</b>
                 </button>
@@ -43,7 +43,11 @@
             </div>
           </div>
         </div>
-        <button v-if="this.files.length !== 0" type="submit" class="submit">Enviar</button>
+        <button v-if="files.length !== 0" type="submit" class="submit">
+          Enviar <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/>
+          </svg>
+        </button>
       </form>
     </div>
   </transition>
@@ -58,8 +62,10 @@ export default {
       isDragging: false,
       files: [],
       filesJSON: [],
-      excel: 'src/assets/icons/csv.png',
-      isVisible: false
+      excel: 'src/assets/icons/csv2.gif',
+      isVisible: false,
+      change_style: false,
+      reset_style: false,
     }
   },
 
@@ -157,10 +163,22 @@ export default {
         this.files = []
         this.filesJSON = []
 
-        alert('Data sent to database succesfully!')
+        alert('Dados enviados com sucesso!')
       }
-    }
-  }
+    },
+
+    changeStyle() {
+      this.reset_style = false;
+      this.change_style = true;
+    },
+
+    resetStyle() {
+      this.change_style = false;
+      this.reset_style = true;
+    },
+
+  },
+
 }
 </script>
 
@@ -177,10 +195,15 @@ export default {
 
 .dropzone-container {
   padding: 7rem;
-  background: #f7fafc;
-  border: 1px solid #e2e8f0;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(136, 229, 112, 0.5);
   border-radius: 10px;
-  box-shadow: 2px 2px 20px 10px var(--silver);
+  box-shadow: 5px 5px 40px 20px #C0C0C0;
+}
+
+.dropzone-container:hover {
+  background-color: rgba(255, 255, 255, 1);
+  border: 1px solid rgba(136, 229, 112, 1);
 }
 
 .hidden-input {
@@ -192,64 +215,98 @@ export default {
 }
 
 .file-label {
-  font-size: 20px;
   display: block;
   cursor: pointer;
 }
 
 .file-label-text {
-  color: black;
-  font-weight: var(--medium);
-  font-size: 25px;
+  color: rgba(0, 0, 128, 0.6);
+  font-weight: 400;
+  font-size: 3vmin;
 }
 
 .preview-container {
   display: grid;
   grid-template-columns: 50% 50%;
-  grid-gap: 10px;
-  margin-top: 2rem;
+  grid-gap: 2rem;
+  margin-top: 3rem;
 }
 
 .preview-card {
   display: flex;
-  border: 1px solid var(--platinum);
+  position: relative;
+  border: 1px solid rgba(0, 0, 128, 0.7);
   border-radius: 10px;
-  background-color: white;
-  padding: 5px;
-  margin-left: 5px;
-  box-shadow: 2px 2px var(--silver);
+  background-color: rgba(0, 0, 128, 0.5);
+  padding-left: 4%;
+  padding-right: 4%;
+  padding-bottom: 5%;
+  box-shadow: 3px 3px #e0e0e1;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.5rem;
 }
 
 .preview-card p {
-  font-weight: var(--light);
-  color: var(--azul-principal);
+  font-weight: 200;
+  color: rgba(225, 225, 225, 0.8);
   text-align: center;
 }
 
+.preview-card:hover {
+  background-color: rgba(0, 0, 128, 0.7);
+}
+
+.preview-card:hover p {
+  color: rgba(225, 225, 225, 1);
+}
+
 .preview-img {
-  width: 50px;
-  height: 50px;
-  border-radius: 5px;
-  border: 1px solid white;
-  background-color: white;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 50%;
+  object-fit: cover;
+  background-color: transparent;
 }
 
 .submit {
-  background-color: aquamarine;
-  color: #ffff;
-  font-size: 14pt;
-  border-radius: 5px;
+  background-color: rgba(0, 0, 128, 0.5);
+  color: rgba(225, 225, 225, 0.8);
+  font-size: 4vmin;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
-  width: 100px;
-  height: 40px;
+  width: 25vmin;
+  height: 7vmin;
   transition: all 1s;
-  margin-top: 25px;
-  box-shadow: 2px 2px 20px 10px var(--silver);
+  margin-top: 3rem;
+  box-shadow: 2px 2px 20px 10px #C0C0C0;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 53%;
 }
 
-button:hover {
-  opacity: 0.8;
+.submit svg {
+  width: 5.3vmin;
+  height: 5vmin;
+  fill: rgba(225, 225, 225, 0.8);
+  transition: all 1s;
+}
+
+.submit:hover {
+  color: rgba(225, 225, 225, 1);
+  background-color: rgba(0, 0, 128, 0.7);
+  transition: all 1s;
+}
+
+.submit:hover svg {
+  fill: rgba(225, 225, 225, 1);
+  transition: all 1s;
 }
 
 .ml-2 {
@@ -258,8 +315,16 @@ button:hover {
 }
 
 .ml-2 b {
-  font-size: 20px;
-  color: black;
+  cursor: pointer;
+  font-size: 3.5vmin;
+  position: absolute;
+  right: 5%;
+  top: 3%;
+  color: rgba(255, 0, 0, 0.6);
+}
+
+.ml-2 b:hover {
+  color: rgba(255, 0, 0, 1);
 }
 
 /* --------------- Media Queries -------------------- */
