@@ -21,8 +21,8 @@
             </div>
           </label>
 
-          <div class="preview-container mt-4" v-if="files.length" :style="change_style ? 'grid-template-columns: 1fr; grid-gap: 2rem;' : 'grid-template-columns: 50% 50%; grid-gap: 2rem;' ">
-            <div v-for="file in files" :key="file.name" class="preview-card" @mouseover="changeStyle()" @mouseleave="resetStyle()">
+          <div class="preview-container mt-4" v-if="files.length">
+            <div v-for="(file, index) in files" :key="file.name" class="preview-card">
               <div>
                 <img class="preview-img" :src="excel" />
                 <p>
@@ -34,7 +34,7 @@
                 <button
                   class="ml-2"
                   type="button"
-                  @click="remove(files.indexOf(file))"
+                  @click="remove(index)"
                   title="Remover"
                 >
                   <b>×</b>
@@ -64,18 +64,10 @@ export default {
       filesJSON: [],
       excel: 'src/assets/icons/csv2.gif',
       isVisible: false,
-      change_style: false,
-      reset_style: false,
     }
   },
 
   mounted() {
-    if (this.$refs.file) {
-      this.$refs.file.addEventListener('change', (event) => {
-        this.files = Array.from(event.target.files)
-      })
-    }
-
     setTimeout(() => {
       this.isVisible = true
     }, 1000)
@@ -83,7 +75,7 @@ export default {
 
   methods: {
     onChange() {
-      this.files = this.$refs.file.files
+      this.files = Array.from(this.$refs.file.files);
 
       for (let i = 0; i < this.files.length; i++) {
         const file = this.files[i]
@@ -101,20 +93,12 @@ export default {
           }
 
           const header = Object.keys(json[0]) // obter as chaves do primeiro objeto como o cabeçalho
-          const chassisValue = worksheet['C2'].v // obter o valor da célula C2 (segunda linha, terceira coluna)
           const newData = []
           json.forEach((row, index) => {
-            // copiar o valor de "Chassis" para todas as linhas
             const newRow = {}
             header.forEach((key) => {
               newRow[keyMap[key] || key] = row[key]
             })
-            if (index === 0) {
-              // remover a chave "Chassis " com espaço
-              delete newRow['Chassis ']
-              delete newRow['Chassis']
-            }
-            newRow['chassis'] = chassisValue
             newData.push(newRow)
           })
           this.filesJSON.push(newData)
@@ -133,14 +117,18 @@ export default {
     },
 
     drop(e) {
-      e.preventDefault()
-      this.$refs.file.files = e.dataTransfer.files
-      this.onChange()
-      this.isDragging = false
+      e.preventDefault();
+      this.files = Array.from(e.dataTransfer.files);
+      this.onChange(); 
+      this.isDragging = false;
     },
 
-    remove(i) {
-      this.files.splice(i, 1)
+    remove(index) {
+      if (Array.isArray(this.files)) {
+        this.files.splice(index, 1);
+      } else {
+        console.error('this.files is not an array:', this.files);
+      }
     },
 
     sendData() {
@@ -165,16 +153,6 @@ export default {
 
         alert('Dados enviados com sucesso!')
       }
-    },
-
-    changeStyle() {
-      this.reset_style = false;
-      this.change_style = true;
-    },
-
-    resetStyle() {
-      this.change_style = false;
-      this.reset_style = true;
     },
 
   },
