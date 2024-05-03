@@ -54,7 +54,7 @@ export default {
   border: 2px solid #88e570; 
   box-shadow: 2% 2% 50% 5% #c0c0c0;
   border-radius: 15px;
-  background-image: url('../assets/dash_card_bg/bg_agua1.webp');
+  /* background-image: url('../assets/dash_card_bg/bg_agua1.webp'); */
   background-color: rgba(0, 0, 128, 0.3); 
   background-blend-mode: multiply;
 }

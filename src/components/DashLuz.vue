@@ -55,7 +55,7 @@ export default {
   box-shadow: 2% 2% 50% 5% #c0c0c0;
   border-radius: 15px;
   position: relative;
-  background-image: url('../assets/dash_card_bg/bg_luz2.webp');
+  /* background-image: url('../assets/dash_card_bg/bg_luz2.webp'); */
   background-color: rgba(255, 255, 0, 0.6); 
   background-blend-mode: multiply;
 }
