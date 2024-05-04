@@ -1,27 +1,22 @@
 <script lang="ts">
-import { RouterView } from 'vue-router';
-import Sidebar from '@/components/Sidebar.vue';
-
+import { RouterView } from 'vue-router'
+import Sidebar from '@/components/Sidebar.vue'
 
 export default {
-
   data() {
-    return {
-
-    }
+    return {}
   },
 
   components: {
     Sidebar
-  },
-
+  }
 }
 </script>
 
 <template>
   <div class="app-container">
     <!-- Menu lateral -->
-    <Sidebar/> 
+    <Sidebar />
   </div>
 
   <router-view v-slot="{ Component }">
@@ -41,5 +36,4 @@ export default {
   align-items: center;
   justify-content: flex-start;
 }
-
 </style>

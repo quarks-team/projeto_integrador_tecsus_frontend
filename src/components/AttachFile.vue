@@ -15,7 +15,7 @@
           />
 
           <label for="fileInput" class="file-label">
-            <div v-if="isDragging" class="file-label-text">Drag files here</div>
+            <div v-if="isDragging" class="file-label-text">Arraste aqui</div>
             <div v-else class="file-label-text">
               Arraste os CSVs aqui ou <u>clique aqui</u> para fazer o download
             </div>
@@ -31,12 +31,7 @@
                 </p>
               </div>
               <div>
-                <button
-                  class="ml-2"
-                  type="button"
-                  @click="remove(index)"
-                  title="Remover"
-                >
+                <button class="ml-2" type="button" @click="remove(index)" title="Remover">
                   <b>×</b>
                 </button>
               </div>
@@ -44,13 +39,27 @@
           </div>
         </div>
         <button v-if="files.length !== 0" type="submit" class="submit">
-          Enviar <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-            <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/>
+          Enviar
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path
+              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
+            />
           </svg>
         </button>
       </form>
     </div>
   </transition>
+
+  <div v-if="mostrarAlertaOutrosErros" class="request-result">
+    <p class="title-popup">Erro ao processar o(s) CSV(s): {{ outrosErros }}</p>
+    <button class="btn-popup" @click.prevent="mostrarAlertaOutrosErros = false">OK</button>
+  </div>
+
+  <div v-if="mostrarAlertaSucesso" class="request-result">
+    <p class="title-popup">CSV(s) processado(s) com sucesso</p>
+    <button class="btn-popup" @click.prevent="mostrarAlertaSucesso = false">OK</button>
+  </div>
+
 </template>
 
 <script lang="ts">
@@ -64,6 +73,9 @@ export default {
       filesJSON: [],
       excel: 'src/assets/icons/csv2.gif',
       isVisible: false,
+      mostrarAlertaSucesso : false,
+      mostrarAlertaOutrosErros: false,
+      outrosErros: '',
     }
   },
 
@@ -75,7 +87,7 @@ export default {
 
   methods: {
     onChange() {
-      this.files = Array.from(this.$refs.file.files);
+      this.files = Array.from(this.$refs.file.files)
 
       for (let i = 0; i < this.files.length; i++) {
         const file = this.files[i]
@@ -117,42 +129,59 @@ export default {
     },
 
     drop(e) {
-      e.preventDefault();
-      this.files = Array.from(e.dataTransfer.files);
-      this.onChange(); 
-      this.isDragging = false;
+      e.preventDefault()
+      this.files = Array.from(e.dataTransfer.files)
+      this.onChange()
+      this.isDragging = false
     },
 
     remove(index) {
       if (Array.isArray(this.files)) {
-        this.files.splice(index, 1);
+        this.files.splice(index, 1)
       } else {
-        console.error('this.files is not an array:', this.files);
+        console.error('this.files is not an array:', this.files)
       }
     },
 
     sendData() {
-      if (this.files.length > 0) {
-        this.filesJSON.forEach((data) => {
-          const jsonData = JSON.stringify(data)
+        if (this.files.length > 0) {
+          
+          try {
+          
+            this.filesJSON.forEach((data) => {
+              const jsonData = JSON.stringify(data)
 
-          console.log(jsonData)
+              console.log(jsonData)
 
-          // enviar arquivos para o servidor
-          axios.post('http://localhost:8080/register/bulletin', jsonData, {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-        })
+              
+              // enviar arquivos para o servidor
+              axios.post('http://localhost:8080/?????', jsonData, {
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              
+              })
+            
+            });
 
-        // resetar o valor do input
-        this.$refs.file.value = null
-        this.files = []
-        this.filesJSON = []
+          this.mostrarAlertaSucesso = true;
 
-        alert('Dados enviados com sucesso!')
-      }
+          // resetar o valor do input
+          this.$refs.file.value = null
+          this.files = []
+          this.filesJSON = []
+
+
+        } catch (error) {
+
+          this.outrosErros = error.response.data.mensagem.toString();
+
+          this.mostrarAlertaOutrosErros = true;
+
+        }
+
+      };
+
     },
 
   },
@@ -169,19 +198,20 @@ export default {
   align-items: center;
   justify-content: center;
   text-align: center;
+  margin-bottom: 10rem;
 }
 
 .dropzone-container {
   padding: 7rem;
-  background-color: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(136, 229, 112, 0.5);
+  background-color: var(--branco-auxiliar-0-5);
+  border: 1px solid var(--verde-contraste-0-5);
   border-radius: 10px;
-  box-shadow: 5px 5px 40px 20px #C0C0C0;
+  box-shadow: 5px 5px 40px 20px var(--cinza-auxiliar);
 }
 
 .dropzone-container:hover {
-  background-color: rgba(255, 255, 255, 1);
-  border: 1px solid rgba(136, 229, 112, 1);
+  background-color: var(--branco-auxiliar);
+  border: 1px solid var(--verde-contraste);
 }
 
 .hidden-input {
@@ -198,7 +228,7 @@ export default {
 }
 
 .file-label-text {
-  color: rgba(0, 0, 128, 0.6);
+  color: var(--azul-contraste-0-6);
   font-weight: 400;
   font-size: 3vmin;
 }
@@ -213,13 +243,13 @@ export default {
 .preview-card {
   display: flex;
   position: relative;
-  border: 1px solid rgba(0, 0, 128, 0.7);
+  border: 1px solid var(--azul-contraste-0-7);
   border-radius: 10px;
-  background-color: rgba(0, 0, 128, 0.5);
+  background-color: var(--azul-contraste-0-5);
   padding-left: 4%;
   padding-right: 4%;
   padding-bottom: 5%;
-  box-shadow: 3px 3px #e0e0e1;
+  box-shadow: 3px 3px var(--platinum);
   justify-content: center;
   align-items: flex-start;
   gap: 0.5rem;
@@ -227,16 +257,16 @@ export default {
 
 .preview-card p {
   font-weight: 200;
-  color: rgba(225, 225, 225, 0.8);
+  color: var(--branco-auxiliar-0-8);
   text-align: center;
 }
 
 .preview-card:hover {
-  background-color: rgba(0, 0, 128, 0.7);
+  background-color: var(--azul-contraste-0-7);
 }
 
 .preview-card:hover p {
-  color: rgba(225, 225, 225, 1);
+  color: var(--branco-auxiliar);
 }
 
 .preview-img {
@@ -249,8 +279,8 @@ export default {
 }
 
 .submit {
-  background-color: rgba(0, 0, 128, 0.5);
-  color: rgba(225, 225, 225, 0.8);
+  background-color: var(--azul-contraste-0-5);
+  color: var(--branco-auxiliar-0-8);
   font-size: 4vmin;
   border-radius: 10px;
   border: none;
@@ -259,7 +289,7 @@ export default {
   height: 7vmin;
   transition: all 1s;
   margin-top: 3rem;
-  box-shadow: 2px 2px 20px 10px #C0C0C0;
+  box-shadow: 2px 2px 20px 10px var(--cinza-auxiliar);
   display: flex;
   flex-direction: row;
   gap: 1rem;
@@ -272,18 +302,18 @@ export default {
 .submit svg {
   width: 5.3vmin;
   height: 5vmin;
-  fill: rgba(225, 225, 225, 0.8);
+  fill: var(--branco-auxiliar-0-8);
   transition: all 1s;
 }
 
 .submit:hover {
-  color: rgba(225, 225, 225, 1);
-  background-color: rgba(0, 0, 128, 0.7);
+  color: var(--branco-auxiliar);
+  background-color: var(--azul-contraste-0-7);
   transition: all 1s;
 }
 
 .submit:hover svg {
-  fill: rgba(225, 225, 225, 1);
+  fill: var(--branco-auxiliar);
   transition: all 1s;
 }
 
@@ -298,11 +328,58 @@ export default {
   position: absolute;
   right: 5%;
   top: 3%;
-  color: rgba(255, 0, 0, 0.6);
+  color: var(--vermelho-auxiliar-0-6);
 }
 
 .ml-2 b:hover {
-  color: rgba(255, 0, 0, 1);
+  color: var(--vermelho-auxiliar);
+}
+
+.request-result {
+    position: fixed;
+    background-color: var(--roxo-secundario);
+    border-radius: 15px;
+    text-align: center;
+    width: 60%;
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-left: 5rem;
+    margin-right: 5rem;
+    box-shadow: 2px 2px 20px 5px var(--cinza-auxiliar);
+    transition: all 2s;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+}
+
+.title-popup {
+  font-size: 1.7rem;
+  color: var(--azul-contraste-0-6);
+}
+
+.btn-popup {
+  font-size: 1.5rem;
+  font-weight: 600;
+  width: 13rem;
+  height: 4rem;
+  border-radius: 15px;
+  background-color: var(--azul-aquamarine);
+  color: var(--branco-auxiliar);
+  border-color: var(--azul-light);
+  cursor: pointer;
+  opacity: 1;
+}
+
+.btn-popup {
+  opacity: 0.8;
 }
 
 /* --------------- Media Queries -------------------- */

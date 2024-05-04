@@ -1,9 +1,14 @@
 <template>
   <transition name="fade" mode="out-in">
-    <div v-if="isVisible" class="container-card-luz" :style="change_style ? 'background-color: rgba(255, 255, 0, 1); border: 4px solid #88e570;' : 'background-color: rgba(255, 255, 0, 0.3); border: 2px solid #88e570;'">
+    <div
+      v-if="isVisible"
+      class="container-card-luz"
+      title="Acessar Dash de Luz"
+      @click.prevent="dashRedirect()"
+    >
       <img src="../assets/icons/luz.png" />
-      <h2>Dashboard de contas de Luz</h2>
-      <RouterLink to="/luz" @mouseover="changeStyle()" @mouseleave="resetStyle()">ACESSE AQUI <p>☞</p></RouterLink>
+      <!-- <h2>Dashboard de contas de Luz</h2> -->
+      <!-- <RouterLink to="/luz">ACESSE AQUI <p>☞</p></RouterLink> -->
     </div>
   </transition>
 </template>
@@ -16,7 +21,7 @@ export default {
     return {
       isVisible: false,
       change_style: false,
-      reset_style: false,
+      reset_style: false
     }
   },
   mounted() {
@@ -26,19 +31,10 @@ export default {
   },
 
   methods: {
-
-    changeStyle() {
-      this.reset_style = false;
-      this.change_style = true;
-    },
-
-    resetStyle() {
-      this.change_style = false;
-      this.reset_style = true;
-    },
-
-  },
-
+    dashRedirect() {
+      this.$router.push('/luz')
+    }
+  }
 }
 </script>
 
@@ -51,18 +47,18 @@ export default {
   gap: 5rem;
   justify-content: center;
   align-items: center;
-  border: 1px solid #88e570;
-  box-shadow: 2% 2% 50% 5% #c0c0c0;
+  box-shadow: 2% 2% 50% 5% var(--cinza-auxiliar);
   border-radius: 15px;
   position: relative;
-  /* background-image: url('../assets/dash_card_bg/bg_luz2.webp'); */
-  background-color: rgba(255, 255, 0, 0.6); 
-  background-blend-mode: multiply;
+  width: min(35vw, 75vh);
+  height: min(35vw, 75vh);
+  cursor: pointer;
+  background-color: var(--laranja-auxiliar);
+  border: 2px solid transparent;
 }
 
 .container-card-luz img {
-  margin-top: 5%;
-  width: 30%;
+  width: 40%;
   height: auto;
   opacity: 1;
   border-radius: 50%;
@@ -70,13 +66,13 @@ export default {
   padding-right: 5%;
   padding-top: 5%;
   padding-bottom: 5%;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--branco-auxiliar-0-8);
 }
 
 .container-card-luz h2 {
   font-size: 1.5em;
   font-weight: 200;
-  color: white;
+  color: var(--branco-auxiliar);
   opacity: 1;
 }
 
@@ -85,7 +81,7 @@ export default {
     color 1s,
     font-size 1s;
   text-decoration: none;
-  color: rgba(25, 225, 112, 1);
+  color: var(--verde-contraste);
   font-weight: 400;
   cursor: pointer;
   font-size: 1em;
@@ -100,7 +96,7 @@ export default {
   padding-right: 5%;
   padding-top: 0.1%;
   padding-bottom: 0.1%;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: var(--branco-auxiliar-0-7);
 }
 
 .container-card-luz a p {
@@ -109,10 +105,22 @@ export default {
   margin-bottom: 2%;
 }
 
-.container-card-luz a:hover {
-  transition: all 1s;
+.container-card-luz:hover {
   font-size: 1.2em;
-  color: rgba(125, 225, 112, 1);
-  background-color: rgba(255, 255, 255, 0.5);
+  transition: all 0.1s;
+  border: 3px solid #88e570;
+}
+
+.container-card-luz:hover {
+  background-color: var(--laranja-auxiliar);
+  background-image: url('../assets/dash_card_bg/bg_luz2.webp');
+  background-blend-mode: multiply;
+  transition: background-image 3s;
+}
+
+.container-card-luz:hover img {
+  background-color: var(--branco-auxiliar-0-7);
+  border: 3px solid var(--verde-contraste);
+  transition: all 0.1s;
 }
 </style>

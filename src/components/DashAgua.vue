@@ -1,9 +1,14 @@
 <template>
   <transition name="fade" mode="out-in">
-    <div v-if="isVisible" class="container-card-agua" :style="change_style ? 'background-color: rgba(0, 0, 128, 0.5); border: 4px solid #88e570;' : 'background-color: rgba(0, 0, 128, 0.3); border: 2px solid #88e570;'">
+    <div
+      v-if="isVisible"
+      class="container-card-agua"
+      title="Acessar Dash de Água"
+      @click.prevent="dashRedirect()"
+    >
       <img src="../assets/icons/agua.png" />
-      <h2>Dashboard de contas de Água</h2>
-      <RouterLink to="/agua" @mouseover="changeStyle()" @mouseleave="resetStyle()">ACESSE AQUI <p>☞</p></RouterLink>
+      <!-- <h2>Dashboard de contas de Água</h2> -->
+      <!-- <RouterLink to="/agua">ACESSE AQUI <p>☞</p></RouterLink> -->
     </div>
   </transition>
 </template>
@@ -16,9 +21,10 @@ export default {
     return {
       isVisible: false,
       change_style: false,
-      reset_style: false,
+      reset_style: false
     }
   },
+
   mounted() {
     setTimeout(() => {
       this.isVisible = true
@@ -26,19 +32,10 @@ export default {
   },
 
   methods: {
-
-    changeStyle() {
-      this.reset_style = false;
-      this.change_style = true;
-    },
-
-    resetStyle() {
-      this.change_style = false;
-      this.reset_style = true;
-    },
-
-  },
-
+    dashRedirect() {
+      this.$router.push('/agua')
+    }
+  }
 }
 </script>
 
@@ -51,17 +48,18 @@ export default {
   gap: 5rem;
   justify-content: center;
   align-items: center;
-  border: 2px solid #88e570; 
-  box-shadow: 2% 2% 50% 5% #c0c0c0;
+  border: 2px solid var(--verde-contraste);
+  box-shadow: 2% 2% 50% 5% var(--cinza-auxiliar);
   border-radius: 15px;
-  /* background-image: url('../assets/dash_card_bg/bg_agua1.webp'); */
-  background-color: rgba(0, 0, 128, 0.3); 
-  background-blend-mode: multiply;
+  width: min(35vw, 75vh);
+  height: min(35vw, 75vh);
+  cursor: pointer;
+  background-color: var(--azul-contraste-0-6);
+  border: 2px solid transparent;
 }
 
 .container-card-agua img {
-  margin-top: 5%;
-  width: 30%;
+  width: 40%;
   height: auto;
   opacity: 1;
   border-radius: 50%;
@@ -69,13 +67,13 @@ export default {
   padding-right: 5%;
   padding-top: 5%;
   padding-bottom: 5%;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: var(--branco-auxiliar-0-8);
 }
 
 .container-card-agua h2 {
   font-size: 1.5em;
   font-weight: 200;
-  color: white;
+  color: var(--branco-auxiliar);
 }
 
 .container-card-agua a {
@@ -83,7 +81,7 @@ export default {
     color 1s,
     font-size 1s;
   text-decoration: none;
-  color: rgba(25, 225, 112, 1);
+  color: var(--verde-contraste);
   font-weight: 400;
   cursor: pointer;
   font-size: 1em;
@@ -97,7 +95,7 @@ export default {
   padding-right: 5%;
   padding-top: 0.1%;
   padding-bottom: 0.1%;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: var(--branco-auxiliar-0-7);
 }
 
 .container-card-agua a p {
@@ -106,10 +104,22 @@ export default {
   margin-bottom: 2%;
 }
 
-.container-card-agua a:hover {
-  transition: all 1s;
+.container-card-agua:hover {
+  transition: all 0.1s;
   font-size: 1.2em;
-  color: rgba(125, 225, 112, 1);
-  background-color: rgba(255, 255, 255, 0.5);
+  border: 3px solid #88e570;
+}
+
+.container-card-agua:hover {
+  background-color: var(--azul-contraste-0-6);
+  background-image: url('../assets/dash_card_bg/bg_agua1.webp');
+  background-blend-mode: multiply;
+  transition: background-image 3s;
+}
+
+.container-card-agua:hover img {
+  background-color: var(--branco-auxiliar-0-6);
+  border: 3px solid var(--verde-contraste);
+  transition: all 0.1s;
 }
 </style>

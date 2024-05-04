@@ -12,6 +12,9 @@
       </div>
       <AttachFile class="anexar"></AttachFile>
     </div>
+    <div v-else class="entre-paginas">
+      <i class="fa-solid fa-file-csv"></i>
+    </div>
   </transition>
 </template>
 
@@ -43,12 +46,12 @@ export default {
 /* Animação para o background do ícone de csv principal */
 @keyframes fadeInBackground {
   0% {
-    background-color: rgba(0, 0, 128, 0); /* Inicia transparente */
+    background-color: var(--azul-contraste-0); /* Inicia transparente */
     border: 2px solid transparent; /* Bordas inicialmente transparentes e finas */
   }
   100% {
-    background-color: rgba(0, 0, 128, 0.6); /* Cor final após a animação */
-    border: 3px solid #88e570; /* Bordas finais visíveis e coloridas */
+    background-color: var(--azul-contraste-0-6); /* Cor final após a animação */
+    border: 3px solid var(--verde-contraste); /* Bordas finais visíveis e coloridas */
   }
 }
 
@@ -83,7 +86,7 @@ export default {
 }
 
 .titulo-descricao p {
-  color: rgba(127, 166, 238, 1);
+  color: var(--azul-light);
   font-size: 3vmin;
   font-weight: 200;
   font-style: italic;
@@ -102,7 +105,7 @@ export default {
   justify-content: center;
   box-sizing: border-box;
   z-index: -1;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px var(--azul-contraste-0-1);
 }
 
 /* Configuração do pseudo-elemento ::before para criar o efeito de delay e transição */
@@ -114,7 +117,7 @@ export default {
   right: 0;
   bottom: 0;
   border-radius: 50%;
-  background-color: rgba(0, 0, 128, 0); /* Inicialmente transparente */
+  background-color: var(--azul-contraste-0); /* Inicialmente transparente */
   animation: fadeInBackground 2s ease forwards;
   box-sizing: border-box; /* Garante que a borda seja incluída na dimensão total */
 }
@@ -135,7 +138,20 @@ export default {
 .container-anexo .anexar {
   justify-self: center;
   align-self: center;
-  margin-bottom: 10rem;
+}
+
+.entre-paginas {
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.entre-paginas i {
+  position: relative;
+  font-size: 8rem;
+  z-index: -1;
+  color: var(--roxo-principal);
 }
 
 @media (max-width: 600px) {

@@ -3,6 +3,9 @@
     <div v-if="isVisible" class="container-principal">
       <h1>Relatórios</h1>
     </div>
+    <div v-else class="entre-paginas">
+      <i class="fa-solid fa-file-contract"></i>
+    </div>
   </transition>
 </template>
 
@@ -32,8 +35,22 @@ export default {
 }
 
 .container-principal h1 {
-  color: #776ae3;
+  color: var(--roxo-principal);
   font-size: 6vmin;
   font-weight: 400;
+}
+
+.entre-paginas {
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.entre-paginas i {
+  position: relative;
+  font-size: 8rem;
+  z-index: -1;
+  color: var(--roxo-principal);
 }
 </style>
