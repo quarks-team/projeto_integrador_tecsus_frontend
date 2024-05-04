@@ -151,6 +151,8 @@ export default {
   position: absolute;
   height: 93%;
   width: 93%;
+  top: 2%;
+  right: 4%;
 }
 
 .links {
