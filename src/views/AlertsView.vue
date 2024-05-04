@@ -32,7 +32,7 @@ export default {
 }
 
 .container-principal h1 {
-  color: #776ae3;
+  color: var(--roxo-principal);
   font-size: 6vmin;
   font-weight: 400;
 }

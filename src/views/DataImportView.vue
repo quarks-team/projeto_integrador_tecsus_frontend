@@ -4,7 +4,7 @@
       <div class="container-header-anexo">
         <div class="titulo-descricao">
           <h1>Importar Dados</h1>
-          <p>Importe seus dados para que o processo de ETL seja realizado!</p>
+          <p><b>Importe seus dados para que o processo de ETL seja realizado!</b></p>
         </div>
         <div class="img-csv">
           <img src="../assets/icons/csv3.gif" />
@@ -77,13 +77,13 @@ export default {
 }
 
 .titulo-descricao h1 {
-  color: #776ae3;
+  color: var(--roxo-principal);
   font-size: 6vmin;
   font-weight: 400;
 }
 
 .titulo-descricao p {
-  color: rgba(136, 229, 112, 1);
+  color: rgba(127, 166, 238, 1);
   font-size: 3vmin;
   font-weight: 200;
   font-style: italic;

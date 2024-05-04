@@ -2,7 +2,7 @@
   <!-- Menu lateral -->
   <div class="sidebar">
       <div class="logo">
-        <img :src="slogan_path + slogan_number + '.gif'" class="slogan" :style="animationDelay ? 'animation-delay: 1s;' : ''" @animationiteration="changeSloganImage();" />
+        <!-- <img :src="slogan_path + slogan_number + '.gif'" class="slogan" :style="animationDelay ? 'animation-delay: 1s;' : ''" @animationiteration="changeSloganImage();" /> -->
         <img src="../assets/logo/tecsus.png" class="logo_img" :style="animationDelay ? 'animation-delay: 1s;' : ''" @animationiteration="changeAnimationDelay()"/>
       </div>
 
@@ -67,7 +67,7 @@ export default {
 @import '../assets/css/base.css';
 
 /* Definindo a animação para mover a imagem para a direita e reiniciar à esquerda */
-@keyframes slide-and-loop-img {
+/* @keyframes slide-and-loop-img {
   0% {
     transform: translateX(0);
     opacity: 0;
@@ -89,9 +89,9 @@ export default {
     transform: translateX(270%);
     opacity: 1;
   }
-}
+} */
 
-@keyframes slide-and-loop-text {
+/* @keyframes slide-and-loop-text {
   0% {
     visibility: hidden;
   }
@@ -108,7 +108,7 @@ export default {
   100% {
     visibility: hidden;
   }
-}
+} */
 
 .sidebar {
   position: fixed;
@@ -121,9 +121,10 @@ export default {
   left: 0;
   width: 20%;
   height: 100vh;
-  background-color: #776ae3;
+  background-color: var(--roxo-principal); 
   color: white;
   padding-top: 2.5%;
+  
 }
 
 .logo {
@@ -153,7 +154,7 @@ export default {
 }
 
 .logo img {
-  animation: slide-and-loop-img 15s linear infinite;
+  /* animation: slide-and-loop-img 15s linear infinite; */
   position: absolute;
   height: 93%;
   width: 93%;
@@ -172,7 +173,7 @@ nav {
 nav a.router-link-exact-active,
 nav a.router-link-exact-active i {
   transition: all 1s;
-  color: #88e570;
+  color: var(--roxo-principal);
   background-color: #e0e0e1;
   padding-left: 5%;
   border-top-left-radius: 20px;

@@ -1,5 +1,22 @@
 /* importar a fonte */
-@import url('https://fonts.googleapis.com/css2?family=Arbutus+Slab&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Bebas+Neue&display=swap');
+
+/* Paleta de cores */
+:root {
+  --roxo-principal: rgba(131, 90, 241, 1);
+  --roxo-secundario: rgba(119, 106, 227, 1);
+  
+  --azul-suave: rgba(127, 166, 238, 1);
+  --azul-light: rgba(111, 231, 219, 1);
+  --azul-contraste: rgba(0, 0, 128, 1);
+  
+  --verde-contraste: rgba(136, 229, 112, 1);
+  --verde-claro: rgba(184, 247, 212, 1);
+
+  --amarelo-auxiliar: rgba(251, 255, 103, 1);
+  --laranja-auxiliar: rgba(255, 180, 74, 1);
+}
+
 
 *,
 *::before,
@@ -9,7 +26,7 @@
 }
 
 body {
-  font-family: "Arbutus Slab", serif;
+  font-family: "Arimo", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
