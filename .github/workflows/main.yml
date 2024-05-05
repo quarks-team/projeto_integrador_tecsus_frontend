@@ -57,12 +57,31 @@ jobs:
       - name: Run tests
         run: npm run test
 
+  # Job para realizar o auto-merge caso o PR ou push passe pela build e pelos testes
+  auto-merge:
+    needs: build-and-test-with-cache
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 
+      - name: Automerge
+        uses: pascalgn/automerge-action@v0.14.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_LABELS: ""  
+          MERGE_METHOD: "squash"  
+          MERGE_COMMIT_MESSAGE: "pull-request-description"
+          MERGE_RETRIES: "6"  
+          MERGE_RETRY_SLEEP: "10000"  
 
   # Pushs diretamente na branch 'main' só ocorrem em nosso processo através das actions de automação dessa cadeia de CI. Seja para commitar um release, um deploy, um metadado, ou até um issue.
   # Logo, toda nova feature é desenvoldida em branches separadas e vão para a 'main' quando já estão finalizadas através de Pull Request.
   # Dessa forma, PR's geram deploys e releases, enquanto que push direto na branch não participa do produto, mas sim ao processo de desenvolvimento com Devops. 
   # Não havendo benefício ao cliente, essa parte automatizada será evitada diante das circunstâncias citadas.
   push-changes-of-version:
+    needs: [build-and-test-with-cache, auto-merge]
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && github.base_ref == 'main'
     steps:
@@ -89,7 +108,7 @@ jobs:
   # acionando a condição de gerar um novo deploy no Github Pages da versão mais atualizada do projeto, 
   # considerando que cada PR é uma feature nova.
   deploy:
-    needs: build-and-test-with-cache
+    needs: [build-and-test-with-cache, auto-merge, push-changes-of-version]
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && github.base_ref == 'main'
     steps:
