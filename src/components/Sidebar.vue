@@ -1,0 +1,211 @@
+<template>
+  <!-- Menu lateral -->
+  <div class="sidebar">
+    <div class="logo">
+      <!-- <img :src="slogan_path + slogan_number + '.gif'" class="slogan" :style="animationDelay ? 'animation-delay: 1s;' : ''" @animationiteration="changeSloganImage();" /> -->
+      <img
+        src="../assets/logo/tecsus.png"
+        class="logo_img"
+        :style="animationDelay ? 'animation-delay: 1s;' : ''"
+        @animationiteration="changeAnimationDelay()"
+      />
+    </div>
+
+    <nav class="links">
+      <RouterLink to="/"><i class="fa-solid fa-house"></i>INÍCIO</RouterLink>
+      <RouterLink to="/reports"><i class="fa-solid fa-file-contract"></i>RELATÓRIOS</RouterLink>
+      <RouterLink to="/alerts"><i class="fa-solid fa-bell"></i>ALERTAS</RouterLink>
+      <RouterLink to="/importar-dados"><i class="fa-solid fa-file-csv"></i>IMPORTAR</RouterLink>
+    </nav>
+  </div>
+</template>
+
+<script lang="ts">
+import { RouterLink } from 'vue-router'
+
+export default {
+  data() {
+    return {
+      slogan_path: 'src/assets/slogan/slogan',
+      slogan_number: 1,
+      slogans_values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+      animationCount: 0,
+      maxCount: 1,
+      animationDelay: false
+    }
+  },
+
+  mounted() {},
+
+  methods: {
+    changeSloganImage() {
+      this.animationCount++
+
+      if (this.animationCount >= this.maxCount) {
+        if (this.slogan_number + 1 <= this.slogans_values.length) {
+          this.slogan_number++
+        } else {
+          this.slogan_number = 1
+        }
+      }
+    },
+
+    changeAnimationDelay() {
+      this.animationDelay = true
+    }
+  }
+}
+</script>
+
+<style>
+@import '../assets/css/base.css';
+
+/* Definindo a animação para mover a imagem para a direita e reiniciar à esquerda */
+/* @keyframes slide-and-loop-img {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  7% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  30% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(150%);
+  }
+  46% {
+    visibility: hidden;
+  }
+  100% {
+    transform: translateX(270%);
+    opacity: 1;
+  }
+} */
+
+/* @keyframes slide-and-loop-text {
+  0% {
+    visibility: hidden;
+  }
+  45% {
+    visibility: hidden;
+  }
+  50% {
+    visibility: visible;
+    opacity: 1;
+  }
+  95% {
+    opacity: 0;
+  }
+  100% {
+    visibility: hidden;
+  }
+} */
+
+.sidebar {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5rem;
+  top: 0;
+  left: 0;
+  width: calc(100vw - 80vw);
+  height: 100vh;
+  background-color: var(--roxo-principal);
+  color: var(--branco-auxiliar);
+  padding-top: 2.5%;
+}
+
+.logo {
+  border: 3px solid var(--platinum-0-8);
+  border-radius: 20px;
+  padding: 3.5%;
+  background-color: white;
+  box-shadow: 0 0 15% var(--platinum-0-3);
+  overflow: hidden;
+  position: relative;
+  height: 20%;
+  width: 60%;
+  display: flex;
+  flex-direction: row;
+}
+
+.logo .slogan {
+  visibility: hidden;
+  animation: slide-and-loop-text 15s linear infinite;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+}
+
+.logo img {
+  /* animation: slide-and-loop-img 15s linear infinite; */
+  position: absolute;
+  height: 93%;
+  width: 93%;
+  top: 2%;
+  right: 4%;
+}
+
+.links {
+  width: calc(20vw - 1.4vw);
+  display: flex;
+  flex-direction: column;
+  gap: calc(100vh - 96.5vh);
+  font-size: min(calc(100vh - 90vh), calc(20vw - 18.5vw));
+  text-align: center;
+  font-weight: 800;
+  margin-left: calc(20vw - 18.5vw);
+}
+
+.links a.router-link-exact-active,
+.links a.router-link-exact-active i {
+  transition: all 1s;
+  color: var(--roxo-principal);
+  background-color: var(--platinum);
+  padding-left: 5%;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.links a.router-link-exact-active:not(nav a.router-link-exact-active i) {
+  transition: all 2s;
+  border: 1px solid var(--verde-contraste);
+  border-right-color: transparent;
+}
+
+.links a.router-link-exact-active:hover {
+  transition: all 1s;
+  padding-left: 4%;
+}
+
+.links a {
+  color: var(--branco-auxiliar);
+  text-decoration: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: baseline;
+  margin-left: 13%;
+}
+
+.links a:hover:not(nav a.router-link-exact-active:hover) {
+  transition: all 1s;
+  opacity: 0.6;
+  padding-left: 3%;
+}
+
+.links a i {
+  font-size: 100%;
+  padding-right: 5%;
+  color: var(--branco-auxiliar);
+}
+</style>
