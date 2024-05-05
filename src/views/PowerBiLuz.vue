@@ -8,7 +8,7 @@
           <router-link to="/agua" title="Dash Água"><img src="../assets/icons/agua.png"></router-link>
         </nav>
       </div>
-      <iframe title="Dash Luz" :src="powerBiSrc" frameborder="0" allowFullScreen="true"></iframe>
+      <iframe title="ModeloDashboardTecSUS" width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=aa6a9cb1-9104-489a-9214-23cbb5bf6e5a&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f" frameborder="0" allowFullScreen="true"></iframe>
     </div>
     <div v-else class="entre-paginas">
       <img src="../assets/icons/luz.png">
