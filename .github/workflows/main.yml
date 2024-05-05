@@ -1,4 +1,4 @@
-name: CI Pipeline - Build, Testes antes de realizar um merge em um PULL REQUEST para a branch Main, com Deploy Automático em seguida.
+name: CI Pipeline - Build, Testes antes de realizar um merge em um PULL REQUEST para a branch Main, com Deploy e Release Automático em seguida.
 
 # Declaração de variáveis de ambiente da pipeline que não possuem dados sensíveis
 env:
