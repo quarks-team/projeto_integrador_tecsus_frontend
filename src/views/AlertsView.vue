@@ -13,24 +13,19 @@
 export default {
   data() {
     return {
-      isVisible: false,
+      isVisible: false
     }
   },
-  
+
   mounted() {
     setTimeout(() => {
       this.isVisible = true
     }, 1000)
   },
 
-  methods: {
+  methods: {},
 
-  },
-
-  components: {
-    
-  },
-
+  components: {}
 }
 </script>
 

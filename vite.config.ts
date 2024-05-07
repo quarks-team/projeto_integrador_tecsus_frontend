@@ -1,18 +1,18 @@
 import { fileURLToPath, URL } from 'node:url'
-
-import { defineConfig } from 'vite'
+import commonjs from '@rollup/plugin-commonjs'
 import vue from '@vitejs/plugin-vue'
-import VueDevTools from 'vite-plugin-vue-devtools'
+import VitePluginVueDevTools from 'vite-plugin-vue-devtools'
 
-// https://vitejs.dev/config/
-export default defineConfig({
+/** @type {import('vite').UserConfig} */
+export default {
   plugins: [
     vue(),
-    VueDevTools(),
+    VitePluginVueDevTools(),
+    commonjs() // Plugin Rollup para converter CommonJS em ESM
   ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   }
-})
+}

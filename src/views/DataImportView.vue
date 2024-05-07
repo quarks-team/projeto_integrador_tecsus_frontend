@@ -96,8 +96,8 @@ export default {
 .img-csv {
   position: relative;
   display: flex;
-  width: 25%; 
-  padding: 12%; 
+  width: 25%;
+  padding: 12%;
   right: 5%;
   overflow: hidden;
   border-radius: 50%;
@@ -157,7 +157,7 @@ export default {
 @media (max-width: 600px) {
   .img-csv {
     width: 30%;
-    height: 30%; 
+    height: 30%;
   }
 }
 </style>
