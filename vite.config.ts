@@ -5,11 +5,7 @@ import VitePluginVueDevTools from 'vite-plugin-vue-devtools'
 
 /** @type {import('vite').UserConfig} */
 export default {
-  plugins: [
-    vue(),
-    VitePluginVueDevTools(),
-    commonjs() // Plugin Rollup para converter CommonJS em ESM
-  ],
+  plugins: [vue(), VitePluginVueDevTools(), commonjs()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
