@@ -25,7 +25,7 @@ const router = createRouter({
       name: 'alerts',
       component: () => import('../views/AlertsView.vue'),
       meta: {
-        emDesenvolvimento: true,
+        emDesenvolvimento: false,
       }
     },
     {
