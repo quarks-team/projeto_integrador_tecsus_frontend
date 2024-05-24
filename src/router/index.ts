@@ -17,7 +17,7 @@ const router = createRouter({
       name: 'reports',
       component: () => import('../views/ReportsView.vue'),
       meta: {
-        emDesenvolvimento: true,
+        emDesenvolvimento: false,
       }
     },
     {
@@ -49,7 +49,7 @@ const router = createRouter({
       name: 'importar-dados',
       component: () => import('../views/DataImportView.vue'),
       meta: {
-        emDesenvolvimento: true,
+        emDesenvolvimento: false,
       }
     },
     {
