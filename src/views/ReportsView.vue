@@ -1,12 +1,13 @@
 <template>
-  <transition name="fade" mode="out-in">
+
     <div v-if="isVisible" class="container-principal">
       <h1>Relatórios</h1>
     </div>
     <div v-else class="entre-paginas">
-      <i class="fa-solid fa-file-contract"></i>
+   
+      <iframe title="ModeloDashboardTecSUS_Agua" src="https://app.powerbi.com/view?r=eyJrIjoiYTg3NDM5MDktOWM4NC00ZTgwLTg3NGItNzBhNTRhYWE0YTQxIiwidCI6ImNmNzJlMmJkLTdhMmItNDc4My1iZGViLTM5ZDU3YjA3Zjc2ZiIsImMiOjR9" frameborder="0" allowFullScreen="true"></iframe>
     </div>
-  </transition>
+
 </template>
 
 <script lang="ts">

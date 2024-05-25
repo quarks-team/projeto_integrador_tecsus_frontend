@@ -17,7 +17,7 @@ const router = createRouter({
       name: 'reports',
       component: () => import('../views/ReportsView.vue'),
       meta: {
-        emDesenvolvimento: true,
+        emDesenvolvimento: false,
       }
     },
     {
