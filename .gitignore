@@ -7,17 +7,19 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
+
 .DS_Store
 dist
 dist-ssr
 coverage
 *.local
-
 /cypress/videos/
 /cypress/screenshots/
 
 # Editor directories and files
+node_modules
+public
+.vscode
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -28,3 +30,4 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+node_modules/.bin/acorn.cmd

@@ -1,6 +1,4 @@
 <template>
-
-
  <div class='container'>
   <h1 class="title">Alertas de Consumo</h1>
   <div class="selects">
@@ -34,7 +32,6 @@
       <option value="">1</option>
       <option value="">1</option>
     </select>
-  
 
   </div>
   
@@ -96,6 +93,7 @@
   </table>
  </div>
 </template>
+
 <style>
 @import '../assets/css/base.css';
 

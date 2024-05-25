@@ -9,7 +9,7 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       meta: {
-        emDesenvolvimento: false,
+        emDesenvolvimento: false
       }
     },
     {
@@ -17,7 +17,7 @@ const router = createRouter({
       name: 'reports',
       component: () => import('../views/ReportsView.vue'),
       meta: {
-        emDesenvolvimento: true,
+        emDesenvolvimento: true
       }
     },
     {
@@ -33,7 +33,7 @@ const router = createRouter({
       name: 'agua',
       component: () => import('../views/PowerBiAgua.vue'),
       meta: {
-        emDesenvolvimento: false,
+        emDesenvolvimento: false
       }
     },
     {
@@ -41,7 +41,7 @@ const router = createRouter({
       name: 'luz',
       component: () => import('../views/PowerBiLuz.vue'),
       meta: {
-        emDesenvolvimento: false,
+        emDesenvolvimento: false
       }
     },
     {
@@ -49,7 +49,7 @@ const router = createRouter({
       name: 'importar-dados',
       component: () => import('../views/DataImportView.vue'),
       meta: {
-        emDesenvolvimento: true,
+        emDesenvolvimento: true
       }
     },
     {
@@ -57,21 +57,19 @@ const router = createRouter({
       name: 'entrega-futura',
       component: () => import('../views/EmDesenvolvimentoView.vue'),
       meta: {
-        emDesenvolvimento: false,
+        emDesenvolvimento: false
       }
-    },
+    }
   ]
 })
-
 
 router.beforeEach((to, from, next) => {
   if (to.meta.emDesenvolvimento) {
     // Verifica se a rota está em desenvolvimento ou não. Se estiver, o acesso ao route é negado e o usuário é direcionado a outra página
-    next('/em-desenvolvimento');
+    next('/em-desenvolvimento')
   } else {
-    next(); // Se não estiver em desenvolvimento, permite a navegação
+    next() // Se não estiver em desenvolvimento, permite a navegação
   }
-});
-
+})
 
 export default router
