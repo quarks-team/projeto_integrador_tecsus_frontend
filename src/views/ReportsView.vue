@@ -3,7 +3,7 @@
     <div v-if="isVisible" class="container-principal">
       <h1>Relatórios</h1>
       <div class="container-powerbi">
-      <iframe title="relatorios_tecsus" class="report" src="https://app.powerbi.com/view?r=eyJrIjoiMThlNGNlOGMtN2Y3NS00Y2EzLWJhNjgtZDk3MDlhYThmNTgyIiwidCI6ImNmNzJlMmJkLTdhMmItNDc4My1iZGViLTM5ZDU3YjA3Zjc2ZiIsImMiOjR9" frameborder="0" allowFullScreen="true"></iframe>
+      <iframe title="relatorios_tecsus" class="report" src="https://app.powerbi.com/view?r=eyJrIjoiMjg1YThkYzktMmM3OS00ZmRkLThiNjgtNzg3NTRjYzA5OGMzIiwidCI6ImNmNzJlMmJkLTdhMmItNDc4My1iZGViLTM5ZDU3YjA3Zjc2ZiIsImMiOjR9" frameborder="0" allowFullScreen="true"></iframe>
     </div>
     </div>
 
