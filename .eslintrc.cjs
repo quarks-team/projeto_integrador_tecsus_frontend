@@ -42,32 +42,21 @@ module.exports = {
     }
   ],
 
-  ignorePatterns: ['*.min.js', '.gitignore'],
+  ignorePatterns: ['.gitignore'],
 
   rules: {
-    'no-undef': 'off',
-    'vue/no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': 'off',
-    'no-unused-vars': 'off',
-    'prefer-rest-params': 'off',
-    'prefer-const': 'off',
-    '@typescript-eslint/no-this-alias': 'off',
-    'no-setter-return': 'off',
-    'no-empty': 'off',
-    'no-useless-escape': 'off',
-    'vue/multi-word-component-names': 'off',
-    'no-prototype-builtins': 'off',
-    'prefer-spread': 'off',
-    'prettier/prettier': [
-      'error',
-      {
-        singleQuote: true,
-        semi: false,
-        useTabs: false,
-        tabWidth: 2,
-        trailingComma: 'none',
-        printWidth: 120
-      }
-    ]
+    'no-undef': 'on',
+    'vue/no-unused-vars': 'on',
+    '@typescript-eslint/no-unused-vars': 'on',
+    'no-unused-vars': 'on',
+    'prefer-rest-params': 'on',
+    'prefer-const': 'on',
+    '@typescript-eslint/no-this-alias': 'on',
+    'no-setter-return': 'on',
+    'no-empty': 'on',
+    'no-useless-escape': 'on',
+    'vue/multi-word-component-names': 'on',
+    'no-prototype-builtins': 'on',
+    'prefer-spread': 'on'
   }
 }
