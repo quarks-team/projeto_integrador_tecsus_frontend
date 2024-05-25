@@ -22,7 +22,7 @@ export default {
   data() {
     return {
       isVisible: false,
-      powerBiSrc: 'https://app.powerbi.com/reportEmbed?reportId=aa6a9cb1-9104-489a-9214-23cbb5bf6e5a&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f',
+      powerBiSrc: 'https://app.powerbi.com/view?r=eyJrIjoiMTZiNTNiZDItOTIxOS00MGNmLTk0NTgtYzViYWU1ODkwNTFlIiwidCI6ImNmNzJlMmJkLTdhMmItNDc4My1iZGViLTM5ZDU3YjA3Zjc2ZiIsImMiOjR9',
     }
   },
 

@@ -2,10 +2,9 @@
 
     <div v-if="isVisible" class="container-principal">
       <h1>Relatórios</h1>
+      <div class="container-powerbi">
+      <iframe title="relatorios_tecsus" class="report" src="https://app.powerbi.com/view?r=eyJrIjoiMThlNGNlOGMtN2Y3NS00Y2EzLWJhNjgtZDk3MDlhYThmNTgyIiwidCI6ImNmNzJlMmJkLTdhMmItNDc4My1iZGViLTM5ZDU3YjA3Zjc2ZiIsImMiOjR9" frameborder="0" allowFullScreen="true"></iframe>
     </div>
-    <div v-else class="entre-paginas">
-   
-      <iframe title="ModeloDashboardTecSUS_Agua" src="https://app.powerbi.com/view?r=eyJrIjoiYTg3NDM5MDktOWM4NC00ZTgwLTg3NGItNzBhNTRhYWE0YTQxIiwidCI6ImNmNzJlMmJkLTdhMmItNDc4My1iZGViLTM5ZDU3YjA3Zjc2ZiIsImMiOjR9" frameborder="0" allowFullScreen="true"></iframe>
     </div>
 
 </template>
@@ -27,6 +26,14 @@ export default {
 
 <style>
 @import '../assets/css/base.css';
+
+
+.container-powerbi iframe {
+  align-self: center;
+  justify-self: center;
+  width: 73vw;
+  height: 100vh;
+}
 
 .container-principal {
   margin-left: 4%;
