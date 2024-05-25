@@ -1,7 +1,7 @@
 <template>
   <transition name="fade" mode="out-in">
     <div v-if="isVisible" class="container-principal">
-      <h1>Dashboards</h1>
+      <h1>Selecione um Dashboard:</h1>
       <div class="container-dash">
         <DashAgua />
         <DashLuz />

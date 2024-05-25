@@ -7,7 +7,7 @@
       @click.prevent="dashRedirect()"
     >
       <img src="../assets/icons/luz.png" />
-      <!-- <h2>Dashboard de contas de Luz</h2> -->
+      <h2>Energia</h2>
       <!-- <RouterLink to="/luz">ACESSE AQUI <p>☞</p></RouterLink> -->
     </div>
   </transition>

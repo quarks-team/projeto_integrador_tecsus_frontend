@@ -129,7 +129,7 @@ export default {
   overflow: hidden;
   position: relative;
   height: 20%;
-  width: 60%;
+  width: 50%;
   display: flex;
   flex-direction: row;
 }
