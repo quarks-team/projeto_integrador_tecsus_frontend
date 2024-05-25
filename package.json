@@ -19,6 +19,9 @@
   "dependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
     "axios": "^1.6.8",
+    "file-saver": "^2.0.5",
+    "jspdf": "^2.5.1",
+    "nvm": "^0.0.4",
     "pinia": "^2.1.7",
     "typescript-eslint": "^7.8.0",
     "vue": "^3.4.24",

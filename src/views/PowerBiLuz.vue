@@ -4,13 +4,11 @@
       <div class="container-header-luz">
         <h1>Dashboard de Luz</h1>
         <nav class="top-bar-luz">
-          <router-link to="/" title="Início"><i class="fa-solid fa-house"></i></router-link>
-          <router-link to="/agua" title="Dash Água"
-            ><img src="../assets/icons/agua.png"
-          /></router-link>
+
+          <router-link to="/agua" title="Dash Água"><img src="../assets/icons/agua.png"></router-link>
         </nav>
       </div>
-      <iframe title="Dash Luz" :src="powerBiSrc" frameborder="0" allowFullScreen="true"></iframe>
+      <iframe title="ModeloDashboardTecSUS" :src=powerBiSrc frameborder="0" allowFullScreen="true"></iframe>
     </div>
     <div v-else class="entre-paginas">
       <img src="../assets/icons/luz.png" />
@@ -99,18 +97,17 @@ export default {
   flex-direction: row;
   align-items: center;
   gap: 5rem;
-  border-radius: 15px;
   background-color: var(--laranja-auxiliar-0-8);
-  padding-left: 3rem;
+  padding-left: 2rem;
   padding-right: 2rem;
   padding-top: 1rem;
   padding-bottom: 0.3rem;
   position: relative;
-  right: 4rem;
+  right: 14.3rem;
 }
 
 .top-bar-luz a i {
-  justify-self: flex-start;
+  justify-self: center;
   color: var(--roxo-principal-0-7);
   font-size: 3rem;
   cursor: pointer;
