@@ -16,41 +16,31 @@ const router = createRouter({
       path: '/reports',
       name: 'reports',
       component: () => import('../views/ReportsView.vue'),
-      meta: {
-
-      }
+      meta: {}
     },
     {
       path: '/alerts',
       name: 'alerts',
       component: () => import('../views/AlertsView.vue'),
-      meta: {
-
-      }
+      meta: {}
     },
     {
       path: '/agua',
       name: 'agua',
       component: () => import('../views/PowerBiAgua.vue'),
-      meta: {
-
-      }
+      meta: {}
     },
     {
       path: '/luz',
       name: 'luz',
       component: () => import('../views/PowerBiLuz.vue'),
-      meta: {
-
-      }
+      meta: {}
     },
     {
       path: '/importar-dados',
       name: 'importar-dados',
       component: () => import('../views/DataImportView.vue'),
-      meta: {
- 
-      }
+      meta: {}
     }
   ]
 })
