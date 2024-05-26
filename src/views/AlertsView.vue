@@ -1,111 +1,22 @@
 <template>
+  <main>
   <transition name="fade" mode="out-in">
     <div class="container" v-if="isVisible">
-      <h1 class="title">Alertas de Consumo</h1>
-      <div class="selects">
-        <select name="" id="" class="select-forn">
-          <option value="value" selected>Selecionar Contrato</option>
-          <option value="">1</option>
-          <option value="">1</option>
-          <option value="">1</option>
-        </select>
-        <select name="" id="" class="select-forn">
-          <option value="value" selected>Tipo de Fornecimento</option>
-          <option value="">1</option>
-          <option value="">1</option>
-          <option value="">1</option>
-        </select>
-        <select name="" id="" class="select-forn">
-          <option value="value" selected>Data de Referência</option>
-          <option value="">1</option>
-          <option value="">1</option>
-          <option value="">1</option>
-        </select>
-        <select name="" id="" class="select-forn">
-          <option value="value" selected>Unidade</option>
-          <option value="">1</option>
-          <option value="">1</option>
-          <option value="">1</option>
-        </select>
-        <select name="" id="" class="select-forn">
-          <option value="value" selected>Planta</option>
-          <option value="">1</option>
-          <option value="">1</option>
-          <option value="">1</option>
-        </select>
-      </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Contrato</th>
-            <th>Tipo de Fornecimento</th>
-            <th>Data de Referência</th>
-            <th>Demanda Contratada</th>
-            <th>% Fora da Meta</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td>4</td>
-            <td class="fora-meta">4</td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td>4</td>
-            <td class="fora-meta">4</td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td>3</td>
-            <td class="fora-meta">4</td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td>4</td>
-            <td class="fora-meta">4</td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td>4</td>
-            <td class="fora-meta">4</td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td>4</td>
-            <td class="fora-meta">4</td>
-          </tr>
-        </tbody>
-      </table>
+    <h1 class="title">Alertas de Consumo</h1>
+    <h1 class="title">Energia</h1>
+      <div class="container-powerbi">
+        
+        <iframe src="https://app.powerbi.com/reportEmbed?reportId=d09a1c20-0c91-4b7d-a175-2e421a02cca8&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f" frameborder="0"></iframe>
+      </div>
+      <h1 class="title">Água</h1>
+      <div class="container-powerbi">
+        <iframe src="https://app.powerbi.com/reportEmbed?reportId=79b27b7f-5a12-49ad-a2da-16a53fe0f40a&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f" frameborder="0"></iframe>
+      </div>
     </div>
 
- <div class='container'>
-  <h1 class="title">Alertas de Consumo</h1>
-
-  <div class="container-powerbi">
-
-    <h1 class="title">Energia</h1>
-
-    <iframe src="https://app.powerbi.com/reportEmbed?reportId=d09a1c20-0c91-4b7d-a175-2e421a02cca8&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f" frameborder="0"></iframe>
-<h1 class="title">Água</h1>
-<iframe src="https://app.powerbi.com/reportEmbed?reportId=79b27b7f-5a12-49ad-a2da-16a53fe0f40a&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f" frameborder="0"></iframe>
-  </div>
-
-</div>
 </transition>
+</main>
 </template>
 
 <script lang="ts">
@@ -127,7 +38,7 @@ export default {
 
 <style>
 @import '../assets/css/base.css';
-.container-powerbi {
+.container-powerbi iframe{
   margin-left: 4%;
   margin-top: 3%;
   margin-right: 4%;
@@ -135,6 +46,8 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  height: 100vh;
+  width: 90%;
 }
 
 .container {
