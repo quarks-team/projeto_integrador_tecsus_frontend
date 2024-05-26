@@ -9,67 +9,40 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       meta: {
-        emDesenvolvimento: false
+
       }
     },
     {
       path: '/reports',
       name: 'reports',
       component: () => import('../views/ReportsView.vue'),
-      meta: {
-        emDesenvolvimento: true
-      }
+      meta: {}
     },
     {
       path: '/alerts',
       name: 'alerts',
       component: () => import('../views/AlertsView.vue'),
-      meta: {
-        emDesenvolvimento: false,
-      }
+      meta: {}
     },
     {
       path: '/agua',
       name: 'agua',
       component: () => import('../views/PowerBiAgua.vue'),
-      meta: {
-        emDesenvolvimento: false
-      }
+      meta: {}
     },
     {
       path: '/luz',
       name: 'luz',
       component: () => import('../views/PowerBiLuz.vue'),
-      meta: {
-        emDesenvolvimento: false
-      }
+      meta: {}
     },
     {
       path: '/importar-dados',
       name: 'importar-dados',
       component: () => import('../views/DataImportView.vue'),
-      meta: {
-        emDesenvolvimento: true
-      }
-    },
-    {
-      path: '/em-desenvolvimento',
-      name: 'entrega-futura',
-      component: () => import('../views/EmDesenvolvimentoView.vue'),
-      meta: {
-        emDesenvolvimento: false
-      }
+      meta: {}
     }
   ]
-})
-
-router.beforeEach((to, from, next) => {
-  if (to.meta.emDesenvolvimento) {
-    // Verifica se a rota está em desenvolvimento ou não. Se estiver, o acesso ao route é negado e o usuário é direcionado a outra página
-    next('/em-desenvolvimento')
-  } else {
-    next() // Se não estiver em desenvolvimento, permite a navegação
-  }
 })
 
 export default router

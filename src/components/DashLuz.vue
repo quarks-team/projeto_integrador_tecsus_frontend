@@ -1,11 +1,6 @@
 <template>
   <transition name="fade" mode="out-in">
-    <div
-      v-if="isVisible"
-      class="container-card-luz"
-      title="Acessar Dash de Luz"
-      @click.prevent="dashRedirect()"
-    >
+    <div v-if="isVisible" class="container-card-luz" title="Acessar Dash de Luz" @click.prevent="dashRedirect()">
       <img src="../assets/icons/luz.png" />
       <h2>Energia</h2>
       <!-- <RouterLink to="/luz">ACESSE AQUI <p>☞</p></RouterLink> -->
