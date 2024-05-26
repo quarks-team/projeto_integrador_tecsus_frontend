@@ -56,10 +56,9 @@
   </div>
 
   <div v-if="mostrarAlertaSucesso" class="request-result">
-    <p class="title-popup">CSV(s) processado(s) com sucesso</p>
+    <p class="title-popup">{{ respostaSucesso }}</p>
     <button class="btn-popup" @click.prevent="mostrarAlertaSucesso = false">OK</button>
   </div>
-
 </template>
 
 <script lang="ts">
@@ -73,9 +72,10 @@ export default {
       filesJSON: [],
       excel: 'src/assets/icons/csv2.gif',
       isVisible: false,
-      mostrarAlertaSucesso : false,
+      mostrarAlertaSucesso: false,
       mostrarAlertaOutrosErros: false,
       outrosErros: '',
+      respostaSucesso: ''
     }
   },
 
@@ -143,49 +143,56 @@ export default {
       }
     },
 
-    sendData() {
+    async sendData() {
+      try {
         if (this.files.length > 0) {
-          
-          try {
-          
-            this.filesJSON.forEach((data) => {
-              const jsonData = JSON.stringify(data)
+          const formData = new FormData()
+          for (const file of this.files) {
+            formData.append('files', file)
+          }
 
-              console.log(jsonData)
+          // Conectar ao SSE para receber mensagens do servidor
+          const eventSource = new EventSource('http://localhost:3000/billing/upload/sse')
 
-              
-              // enviar arquivos para o servidor
-              axios.post('http://localhost:8080/?????', jsonData, {
-                headers: {
-                  'Content-Type': 'application/json'
-                }
-              
-              })
-            
-            });
+          eventSource.onmessage = (event) => {
+            const data = JSON.parse(event.data)
+            this.mostrarAlertaOutrosErros = false
+            this.mostrarAlertaSucesso = true
+            this.respostaSucesso = data.message
+          }
 
-          this.mostrarAlertaSucesso = true;
+          eventSource.onerror = (error) => {
+            console.error('Erro no SSE:', error)
+            this.outrosErros = error.message
+            this.mostrarAlertaSucesso = false
+            this.mostrarAlertaOutrosErros = true
+            eventSource.close()
+          }
 
-          // resetar o valor do input
+          // Enviar arquivos para o servidor
+          const response = await axios.post('http://localhost:3000/billing/upload', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+
+          this.mostrarAlertaOutrosErros = false
+          this.mostrarAlertaSucesso = true
+          this.respostaSucesso = response.data.message
+
+          // Resetar o valor do input
           this.$refs.file.value = null
           this.files = []
           this.filesJSON = []
-
-
-        } catch (error) {
-
-          this.outrosErros = error.response.data.mensagem.toString();
-
-          this.mostrarAlertaOutrosErros = true;
-
         }
-
-      };
-
-    },
-
-  },
-
+      } catch (error) {
+        console.error('Erro ao fazer upload:', error)
+        this.outrosErros = error.message
+        this.mostrarAlertaSucesso = false
+        this.mostrarAlertaOutrosErros = true
+      }
+    }
+  }
 }
 </script>
 
@@ -336,28 +343,28 @@ export default {
 }
 
 .request-result {
-    position: fixed;
-    background-color: var(--roxo-secundario);
-    border-radius: 15px;
-    text-align: center;
-    width: 60%;
-    padding-top: 2.5rem;
-    padding-bottom: 2.5rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin-left: 5rem;
-    margin-right: 5rem;
-    box-shadow: 2px 2px 20px 5px var(--cinza-auxiliar);
-    transition: all 2s;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 3rem;
+  position: fixed;
+  background-color: var(--roxo-secundario);
+  border-radius: 15px;
+  text-align: center;
+  width: 60%;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-left: 5rem;
+  margin-right: 5rem;
+  box-shadow: 2px 2px 20px 5px var(--cinza-auxiliar);
+  transition: all 2s;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
 }
 
 .title-popup {
