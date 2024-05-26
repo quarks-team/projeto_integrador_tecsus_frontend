@@ -56,7 +56,7 @@
   </div>
 
   <div v-if="mostrarAlertaSucesso" class="request-result">
-    <p class="title-popup">CSV(s) processado(s) com sucesso</p>
+    <p class="title-popup">{{ respostaSucesso }}</p>
     <button class="btn-popup" @click.prevent="mostrarAlertaSucesso = false">OK</button>
   </div>
 </template>
@@ -74,7 +74,8 @@ export default {
       isVisible: false,
       mostrarAlertaSucesso: false,
       mostrarAlertaOutrosErros: false,
-      outrosErros: ''
+      outrosErros: '',
+      respostaSucesso: ''
     }
   },
 
@@ -142,33 +143,53 @@ export default {
       }
     },
 
-    sendData() {
-      if (this.files.length > 0) {
-        try {
-          this.filesJSON.forEach((data) => {
-            const jsonData = JSON.stringify(data)
+    async sendData() {
+      try {
+        if (this.files.length > 0) {
+          const formData = new FormData()
+          for (const file of this.files) {
+            formData.append('files', file)
+          }
 
-            console.log(jsonData)
+          // Conectar ao SSE para receber mensagens do servidor
+          const eventSource = new EventSource('http://localhost:3000/billing/upload/sse')
 
-            // enviar arquivos para o servidor
-            axios.post('http://localhost:8080/?????', jsonData, {
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            })
+          eventSource.onmessage = (event) => {
+            const data = JSON.parse(event.data)
+            this.mostrarAlertaOutrosErros = false
+            this.mostrarAlertaSucesso = true
+            this.respostaSucesso = data.message
+          }
+
+          eventSource.onerror = (error) => {
+            console.error('Erro no SSE:', error)
+            this.outrosErros = error.message
+            this.mostrarAlertaSucesso = false
+            this.mostrarAlertaOutrosErros = true
+            eventSource.close()
+          }
+
+          // Enviar arquivos para o servidor
+          const response = await axios.post('http://localhost:3000/billing/upload', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
           })
 
+          this.mostrarAlertaOutrosErros = false
           this.mostrarAlertaSucesso = true
+          this.respostaSucesso = response.data.message
 
-          // resetar o valor do input
+          // Resetar o valor do input
           this.$refs.file.value = null
           this.files = []
           this.filesJSON = []
-        } catch (error) {
-          this.outrosErros = error.response.data.mensagem.toString()
-
-          this.mostrarAlertaOutrosErros = true
         }
+      } catch (error) {
+        console.error('Erro ao fazer upload:', error)
+        this.outrosErros = error.message
+        this.mostrarAlertaSucesso = false
+        this.mostrarAlertaOutrosErros = true
       }
     }
   }

@@ -1,7 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`should render without errors with default props 1`] = `
-"<transition-stub name="fade" mode="out-in" appear="false" persisted="false" css="true">
-  <div class="entre-paginas"><i class="fa-solid fa-bell"></i></div>
-</transition-stub>"
-`;

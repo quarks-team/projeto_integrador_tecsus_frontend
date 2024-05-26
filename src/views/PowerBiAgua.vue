@@ -4,12 +4,10 @@
       <div class="container-header-agua">
         <h1>Dashboard de Água</h1>
         <nav class="top-bar-agua">
-
-          <router-link to="/luz" title="Dash Luz"><img src="../assets/icons/luz.png"></router-link>
+          <router-link to="/luz" title="Dash Luz"><img src="../assets/icons/luz.png" /></router-link>
         </nav>
       </div>
-      <iframe title="ModeloDashboardTecSUS_Agua" :src=powerBiSrc frameborder="0" allowFullScreen="true"></iframe>
-
+      <iframe title="ModeloDashboardTecSUS_Agua" :src="powerBiSrc" frameborder="0" allowFullScreen="true"></iframe>
     </div>
     <div v-else class="entre-paginas">
       <img src="../assets/icons/agua.png" />
