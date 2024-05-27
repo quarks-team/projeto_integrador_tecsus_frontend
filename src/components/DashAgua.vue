@@ -1,6 +1,11 @@
 <template>
   <transition name="fade" mode="out-in">
-    <div v-if="isVisible" class="container-card-agua" title="Acessar Dash de Água" @click.prevent="dashRedirect()">
+    <div
+      v-if="isVisible"
+      class="container-card-agua"
+      title="Acessar Dash de Água"
+      @click.prevent="dashRedirect()"
+    >
       <img src="../assets/icons/agua.png" />
       <h2>Água</h2>
       <!-- <RouterLink to="/agua">ACESSE AQUI <p>☞</p></RouterLink> -->

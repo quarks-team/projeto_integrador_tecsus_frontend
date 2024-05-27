@@ -1,12 +1,16 @@
 <template>
-
-    <div v-if="isVisible" class="container-principal">
-      <h1>Relatórios</h1>
-      <div class="container-powerbi">
-      <iframe title="relatorios_tecsus" class="report" src="https://app.powerbi.com/reportEmbed?reportId=a4efb530-57fb-4dbb-8f05-1948da1cf95e&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f" frameborder="0" allowFullScreen="true"></iframe>
+  <div v-if="isVisible" class="container-principal">
+    <h1>Relatórios</h1>
+    <div class="container-powerbi">
+      <iframe
+        title="relatorios_tecsus"
+        class="report"
+        src="https://app.powerbi.com/reportEmbed?reportId=a4efb530-57fb-4dbb-8f05-1948da1cf95e&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f"
+        frameborder="0"
+        allowFullScreen="true"
+      ></iframe>
     </div>
-    </div>
-
+  </div>
 </template>
 
 <script lang="ts">
@@ -26,7 +30,6 @@ export default {
 
 <style>
 @import '../assets/css/base.css';
-
 
 .container-powerbi iframe {
   align-self: center;

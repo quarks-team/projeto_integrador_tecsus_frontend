@@ -1,34 +1,13 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/components/*": ["./src/components/*"],
-      "@/views/*": ["./src/views/*"],
-      "@/utils/*": ["./src/utils/*"]
-    },
-    "module": "ESNext",
-    "target": "es2020",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+    "target": "ES2020",
+    "module": "commonjs",
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "types": ["@types/jest", "@types/node"]
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "moduleResolution": "node"
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.vue",
-    "tests/**/*.ts"
-  ],
-  "exclude": [
-    "./node_modules"
-  ],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" },
-    { "path": "./tsconfig.vitest.json" }
-  ]
+  "include": ["./*.ts"]
 }
