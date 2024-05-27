@@ -1,22 +1,25 @@
 <template>
   <main>
-  <transition name="fade" mode="out-in">
-    <div class="container" v-if="isVisible">
-
-    <h1 class="title">Alertas de Consumo</h1>
-    <h1 class="title">Energia</h1>
-      <div class="container-powerbi">
-        
-        <iframe src="https://app.powerbi.com/reportEmbed?reportId=d09a1c20-0c91-4b7d-a175-2e421a02cca8&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f" frameborder="0"></iframe>
+    <transition name="fade" mode="out-in">
+      <div class="container" v-if="isVisible">
+        <h1 class="title">Alertas de Consumo</h1>
+        <h1 class="title">Energia</h1>
+        <div class="container-powerbi">
+          <iframe
+            src="https://app.powerbi.com/reportEmbed?reportId=d09a1c20-0c91-4b7d-a175-2e421a02cca8&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f"
+            frameborder="0"
+          ></iframe>
+        </div>
+        <h1 class="title">Água</h1>
+        <div class="container-powerbi">
+          <iframe
+            src="https://app.powerbi.com/reportEmbed?reportId=79b27b7f-5a12-49ad-a2da-16a53fe0f40a&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f"
+            frameborder="0"
+          ></iframe>
+        </div>
       </div>
-      <h1 class="title">Água</h1>
-      <div class="container-powerbi">
-        <iframe src="https://app.powerbi.com/reportEmbed?reportId=79b27b7f-5a12-49ad-a2da-16a53fe0f40a&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f" frameborder="0"></iframe>
-      </div>
-    </div>
-
-</transition>
-</main>
+    </transition>
+  </main>
 </template>
 
 <script lang="ts">
@@ -35,10 +38,9 @@ export default {
 }
 </script>
 
-
 <style>
 @import '../assets/css/base.css';
-.container-powerbi iframe{
+.container-powerbi iframe {
   margin-left: 4%;
   margin-top: 3%;
   margin-right: 4%;
