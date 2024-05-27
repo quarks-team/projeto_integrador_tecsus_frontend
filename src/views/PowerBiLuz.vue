@@ -4,10 +4,17 @@
       <div class="container-header-luz">
         <h1>Dashboard de Luz</h1>
         <nav class="top-bar-luz">
-          <router-link to="/agua" title="Dash Água"><img src="../assets/icons/agua.png" /></router-link>
+          <router-link to="/agua" title="Dash Água"
+            ><img src="../assets/icons/agua.png"
+          /></router-link>
         </nav>
       </div>
-      <iframe title="ModeloDashboardTecSUS" :src="powerBiSrc" frameborder="0" allowFullScreen="true"></iframe>
+      <iframe
+        title="ModeloDashboardTecSUS"
+        :src="powerBiSrc"
+        frameborder="0"
+        allowFullScreen="true"
+      ></iframe>
     </div>
     <div v-else class="entre-paginas">
       <img src="../assets/icons/luz.png" />
@@ -22,7 +29,8 @@ export default {
   data() {
     return {
       isVisible: false,
-      powerBiSrc: 'https://app.powerbi.com/reportEmbed?reportId=5dbf99c1-26d4-4383-882c-982457021b36&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f',
+      powerBiSrc:
+        'https://app.powerbi.com/reportEmbed?reportId=5dbf99c1-26d4-4383-882c-982457021b36&autoAuth=true&ctid=cf72e2bd-7a2b-4783-bdeb-39d57b07f76f'
     }
   },
 
