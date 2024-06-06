@@ -8,7 +8,6 @@
     >
       <img src="../assets/icons/agua.png" />
       <h2>Água</h2>
-      <!-- <RouterLink to="/agua">ACESSE AQUI <p>☞</p></RouterLink> -->
     </div>
   </transition>
 </template>
@@ -34,6 +33,7 @@ export default {
   methods: {
     dashRedirect() {
       this.$router.push('/agua')
+      this.$emit('navigate', 'water-dashboard')
     }
   }
 }

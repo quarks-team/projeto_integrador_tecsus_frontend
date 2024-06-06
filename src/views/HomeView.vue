@@ -14,8 +14,8 @@
 </template>
 
 <script lang="ts">
-import DashAgua from '@/components/DashAgua.vue'
-import DashLuz from '@/components/DashLuz.vue'
+import DashAgua from '../components/DashAgua.vue'
+import DashLuz from '../components/DashLuz.vue'
 
 export default {
   data() {
