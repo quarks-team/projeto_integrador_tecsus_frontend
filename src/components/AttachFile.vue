@@ -59,6 +59,16 @@
     <p class="title-popup">{{ respostaSucesso }}</p>
     <button class="btn-popup" @click.prevent="mostrarAlertaSucesso = false">OK</button>
   </div>
+
+  <div v-if="mostrarPrompt" class="request-result">
+    <p class="title-popup">{{ promptMessage }}</p>
+    <button class="btn-popup" @click.prevent="mostrarPrompt = false">OK</button>
+  </div>
+
+  <div v-if="progresso > 0">
+    <p>Progresso: {{ progresso }}%</p>
+    <progress :value="progresso" max="100" class="progress-bar"></progress>
+  </div>
 </template>
 
 <script lang="ts">
@@ -75,7 +85,10 @@ export default {
       mostrarAlertaSucesso: false,
       mostrarAlertaOutrosErros: false,
       outrosErros: '',
-      respostaSucesso: ''
+      respostaSucesso: '',
+      mostrarPrompt: false,
+      promptMessage: '',
+      progresso: 0
     }
   },
 
@@ -145,58 +158,75 @@ export default {
 
     async sendData() {
       try {
+     
         if (this.files.length > 0) {
-          const formData = new FormData()
+          const formData = new FormData();
           for (const file of this.files) {
-            formData.append('files', file)
+            formData.append('files', file);
           }
 
           // Conectar ao SSE para receber mensagens do servidor
-          const eventSource = new EventSource('http://localhost:3000/billing/upload/sse')
+          const eventSource = new EventSource('http://localhost:3000/billing/upload/sse');
 
-          eventSource.onmessage = (event) => {
-            const data = JSON.parse(event.data)
-            this.mostrarAlertaOutrosErros = false
-            this.mostrarAlertaSucesso = true
-            this.respostaSucesso = data.message
-          }
+          eventSource.addEventListener('user-log', (event) => {
+            const data = JSON.parse(event.data);
+            this.mostrarAlertaOutrosErros = false;
+            this.mostrarAlertaSucesso = true;
+            this.respostaSucesso = data.message;
+          });
 
-          eventSource.onerror = (error) => {
-            console.error('Erro no SSE:', error)
-            this.outrosErros = error.message
-            this.mostrarAlertaSucesso = false
-            this.mostrarAlertaOutrosErros = true
-            eventSource.close()
-          }
+          eventSource.addEventListener('technical-log', (event) => {
+            const data = JSON.parse(event.data);
+            console.log('Technical log:', data.message);
+            this.mostrarAlertaOutrosErros = false;
+            this.mostrarPrompt = true;
+            this.promptMessage = data.message;
+          });
+
+          eventSource.addEventListener('progress', (event) => {
+            const data = JSON.parse(event.data);
+            this.progresso = data.percent;
+          });
+
+          eventSource.onerror = (error: any) => {
+            console.error('Erro no SSE:', error);
+            this.outrosErros = error.message;
+            this.mostrarAlertaSucesso = false;
+            this.mostrarAlertaOutrosErros = true;
+            eventSource.close();
+          };
 
           // Enviar arquivos para o servidor
           const response = await axios.post('http://localhost:3000/billing/upload', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
-          })
+          });
 
-          this.mostrarAlertaOutrosErros = false
-          this.mostrarAlertaSucesso = true
-          this.respostaSucesso = response.data.message
+          this.mostrarAlertaOutrosErros = false;
+          this.mostrarAlertaSucesso = true;
+          this.respostaSucesso = response.data.message;
+
+          // Fechar a conexão SSE quando o upload for concluído
+          eventSource.close();
 
           // Resetar o valor do input
-          this.$refs.file.value = null
-          this.files = []
-          this.filesJSON = []
+          this.$refs.file.value = null;
+          this.files = [];
+          this.filesJSON = [];
         }
       } catch (error) {
-        console.error('Erro ao fazer upload:', error)
-        this.outrosErros = error.message
-        this.mostrarAlertaSucesso = false
-        this.mostrarAlertaOutrosErros = true
+        console.error('Erro ao fazer upload: ', error);
+        this.outrosErros = error.message;
+        this.mostrarAlertaSucesso = false;
+        this.mostrarAlertaOutrosErros = true;
       }
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 @import '../assets/css/base.css';
 
 .main {
@@ -387,6 +417,28 @@ export default {
 
 .btn-popup {
   opacity: 0.8;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  appearance: none;
+}
+
+.progress-bar::-webkit-progress-bar {
+  background-color: #f3f3f3;
+  border-radius: 5px;
+  box-shadow: inset 0px 0px 5px #ccc;
+}
+
+.progress-bar::-webkit-progress-value {
+  background-color: #4caf50;
+  border-radius: 5px;
+}
+
+.progress-bar::-moz-progress-bar {
+  background-color: #4caf50;
+  border-radius: 5px;
 }
 
 /* --------------- Media Queries -------------------- */
