@@ -2,7 +2,6 @@
   <!-- Menu lateral -->
   <div class="sidebar">
     <div class="logo">
-      <!-- <img :src="slogan_path + slogan_number + '.gif'" class="slogan" :style="animationDelay ? 'animation-delay: 1s;' : ''" @animationiteration="changeSloganImage();" /> -->
       <img
         src="../assets/logo/tecsus.png"
         class="logo_img"
@@ -26,30 +25,11 @@ import { RouterLink } from 'vue-router'
 export default {
   data() {
     return {
-      slogan_path: 'src/assets/slogan/slogan',
-      slogan_number: 1,
-      slogans_values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-      animationCount: 0,
-      maxCount: 1,
       animationDelay: false
     }
   },
 
-  mounted() {},
-
   methods: {
-    changeSloganImage() {
-      this.animationCount++
-
-      if (this.animationCount >= this.maxCount) {
-        if (this.slogan_number + 1 <= this.slogans_values.length) {
-          this.slogan_number++
-        } else {
-          this.slogan_number = 1
-        }
-      }
-    },
-
     changeAnimationDelay() {
       this.animationDelay = true
     }

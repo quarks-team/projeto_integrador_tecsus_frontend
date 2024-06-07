@@ -8,7 +8,6 @@
     >
       <img src="../assets/icons/luz.png" />
       <h2>Energia</h2>
-      <!-- <RouterLink to="/luz">ACESSE AQUI <p>☞</p></RouterLink> -->
     </div>
   </transition>
 </template>
@@ -33,6 +32,7 @@ export default {
   methods: {
     dashRedirect() {
       this.$router.push('/luz')
+      this.$emit('navigate', 'light-dashboard')
     }
   }
 }

@@ -14,6 +14,7 @@
     "format tests": "prettier --write tests/"
   },
   "dependencies": {
+    "@testing-library/jest-dom": "^6.4.5",
     "axios": "^1.7.2",
     "file-saver": "^2.0.5",
     "glob": "^10.4.1",

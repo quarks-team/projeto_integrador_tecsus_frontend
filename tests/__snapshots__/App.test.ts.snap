@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`App.vue > should render without errors with default props 1`] = `
+"<div data-v-7a7a37b1="" class="app-container">
+  <!-- Menu lateral -->
+  <!-- Menu lateral -->
+  <div data-v-7a7a37b1="" class="sidebar">
+    <div class="logo"><img src="/src/assets/logo/tecsus.png" class="logo_img" style=""></div>
+    <nav class="links">
+      <router-link-stub to="/" replace="false" custom="false" ariacurrentvalue="page"></router-link-stub>
+      <router-link-stub to="/reports" replace="false" custom="false" ariacurrentvalue="page"></router-link-stub>
+      <router-link-stub to="/alerts" replace="false" custom="false" ariacurrentvalue="page"></router-link-stub>
+      <router-link-stub to="/importar-dados" replace="false" custom="false" ariacurrentvalue="page"></router-link-stub>
+    </nav>
+  </div>
+  <!--v-if-->
+  <!-- <NumberNotifications></NumberNotifications> --><span data-v-7a7a37b1="" id="notification-icone"><a data-v-7a7a37b1=""><b data-v-7a7a37b1="" class="number-notifications"></b><i data-v-7a7a37b1="" class="fa-solid fa-bell"></i></a></span>
+</div>
+<router-view-stub data-v-7a7a37b1=""></router-view-stub>"
+`;

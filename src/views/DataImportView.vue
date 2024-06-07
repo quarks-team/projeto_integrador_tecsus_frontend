@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import AttachFile from '@/components/AttachFile.vue'
+import AttachFile from '../components/AttachFile.vue'
 
 export default {
   data() {
