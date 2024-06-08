@@ -89,8 +89,9 @@ jobs:
 
       - name: Verify update-version.js existence
         run: |
-          if [ ! -f ./update-version.js ]; then
+          if [ ! -f update-version.js ]; then
             echo "update-version.js not found!"
+            ls -al
             exit 1
           fi
           
