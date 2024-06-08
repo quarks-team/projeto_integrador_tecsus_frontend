@@ -97,7 +97,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
 
-      - name: Verify update-version.js existence
+      - name: Verify update-version.cjs existence
         run: |
           if [ ! -f update-version.cjs ]; then
             echo "update-version.cjs not found!"
@@ -107,6 +107,14 @@ jobs:
           
       - name: Update package.json and package-lock.json
         run: node update-version.cjs ${{ steps.tag_version.outputs.new_tag }}
+
+      
+      - name: Show updated files
+        run: |
+          echo "Contents of package.json:"
+          cat package.json
+          echo "Contents of package-lock.json:"
+          cat package-lock.json
         
       - name: Commit updated version files
         run: |
@@ -114,4 +122,4 @@ jobs:
               git config --local user.name "GitHub Action"
               git add package.json package-lock.json
               git commit -m "Update version to ${{ steps.tag_version.outputs.new_tag }}"
-              git push
+              git push origin main
