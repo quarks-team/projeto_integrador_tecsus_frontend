@@ -110,37 +110,49 @@ jobs:
               echo "new_commits=true" >> $GITHUB_ENV
             fi
           fi
-          
+
       - name: Bump version and push tag
         id: tag_version
-        uses: anothrNick/github-tag-action@1.26.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch
+        if: env.new_commits == 'true'
+        run: |
+          git config --global --add safe.directory /github/workspace
+          DEFAULT_BUMP="patch"
+          NEW_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          if [ -z "$NEW_TAG" ]; then
+            NEW_TAG="0.0.1"
+          else
+            NEW_TAG=$(echo $NEW_TAG | awk -F. -v OFS=. '{$NF += 1 ; print}')
+          fi
+          echo "new_tag=$NEW_TAG" >> $GITHUB_ENV
+          echo "::set-output name=new_tag::$NEW_TAG"
 
       - name: Check new tag output
+        if: env.new_commits == 'true'
         run: echo "New tag is ${{ steps.tag_version.outputs.new_tag }}"
 
       - name: Verify update-version.cjs existence
+        if: env.new_commits == 'true'
         run: |
           if [ ! -f update-version.cjs ]; then
             echo "update-version.cjs not found!"
             ls -al
             exit 1
           fi
-          
+
       - name: Update package.json and package-lock.json
+        if: env.new_commits == 'true'
         run: node update-version.cjs ${{ steps.tag_version.outputs.new_tag }}
 
-      
       - name: Show updated files
+        if: env.new_commits == 'true'
         run: |
           echo "Contents of package.json:"
           cat package.json
           echo "Contents of package-lock.json:"
           cat package-lock.json
-        
+
       - name: Commit updated version files
+        if: env.new_commits == 'true'
         run: |
               git config --local user.email "action@github.com"
               git config --local user.name "GitHub Action"
