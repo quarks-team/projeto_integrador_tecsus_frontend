@@ -89,13 +89,13 @@ jobs:
 
       - name: Verify update-version.js existence
         run: |
-          if [ ! -f update-version.js ]; then
+          if [ ! -f ./update-version.js ]; then
             echo "update-version.js not found!"
             exit 1
           fi
           
       - name: Update package.json and package-lock.json
-        run: node update-version.js ${{ steps.tag_version.outputs.new_tag }}
+        run: node ./update-version.js ${{ steps.tag_version.outputs.new_tag }}
         
       - name: Commit updated version files
         run: |
