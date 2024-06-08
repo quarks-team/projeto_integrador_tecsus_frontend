@@ -1,17 +1,27 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require('fs');
 
-// Função para atualizar a versão no JSON
-function updateVersion(filePath, newVersion) {
-  const jsonPath = path.resolve(__dirname, filePath)
-  const jsonData = require(jsonPath)
-  jsonData.version = newVersion
-  fs.writeFileSync(jsonPath, JSON.stringify(jsonData, null, 2) + '\n')
+// Captura a nova versão a partir do argumento de linha de comando
+const newVersion = process.argv[2];
+
+if (!newVersion) {
+  console.error('Nova versão não fornecida!');
+  process.exit(1);
 }
 
-// Pegar a nova versão do argumento de linha de comando
-const newVersion = process.argv[2]
+// Caminho para os arquivos package.json e package-lock.json
+const packageJsonPath = './package.json';
+const packageLockJsonPath = './package-lock.json';
 
-// Atualiza 'package.json' e 'package-lock.json'
-updateVersion('./package.json', newVersion)
-updateVersion('./package-lock.json', newVersion)
+// Função para atualizar a versão no arquivo JSON fornecido
+const updateVersion = (filePath) => {
+  const fileContent = fs.readFileSync(filePath, 'utf-8');
+  const jsonContent = JSON.parse(fileContent);
+  jsonContent.version = newVersion;
+  fs.writeFileSync(filePath, JSON.stringify(jsonContent, null, 2));
+};
+
+// Atualiza a versão nos arquivos package.json e package-lock.json
+updateVersion(packageJsonPath);
+updateVersion(packageLockJsonPath);
+
+console.log(`Versão atualizada para ${newVersion} em package.json e package-lock.json`);
