@@ -85,13 +85,31 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Set up /gihutb/workspace as a safe directory
+      - name: Set up /github/workspace as a safe directory
         run: git config --global --add safe.directory /github/workspace
 
       - name: Check out to the main branch
         run: |
           git fetch origin
           git checkout main
+
+      - name: Check for new commits
+        id: check_commits
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0)
+          if [ -z "$LAST_TAG" ]; then
+            echo "No previous tags found."
+            echo "new_commits=true" >> $GITHUB_ENV
+          else
+            NEW_COMMITS=$(git log $LAST_TAG..HEAD --oneline)
+            if [ -z "$NEW_COMMITS" ]; then
+              echo "No new commits since the last tag."
+              echo "new_commits=false" >> $GITHUB_ENV
+            else
+              echo "New commits found."
+              echo "new_commits=true" >> $GITHUB_ENV
+            fi
+          fi
           
       - name: Bump version and push tag
         id: tag_version
