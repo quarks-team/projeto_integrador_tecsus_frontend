@@ -43,7 +43,7 @@ jobs:
        - name: Checkout Repository
          uses: actions/checkout@v2
          with:
-          fetch-depth: 0
+          fetch-depth: 1
 
        - name: Setup Node Environment
          uses: actions/setup-node@v2
@@ -79,6 +79,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
     
       - name: Bump version and push tag
         id: tag_version
@@ -96,7 +101,7 @@ jobs:
           fi
           
       - name: Update package.json and package-lock.json
-        run: node ./update-version.js ${{ steps.tag_version.outputs.new_tag }}
+        run: node update-version.js ${{ steps.tag_version.outputs.new_tag }}
         
       - name: Commit updated version files
         run: |
