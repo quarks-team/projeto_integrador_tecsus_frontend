@@ -85,6 +85,9 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Set up /gihutb/workspace as a safe directory
+        run: git config --global --add safe.directory /github/workspace
+
       - name: Check out to the main branch
         run: |
           git fetch origin
