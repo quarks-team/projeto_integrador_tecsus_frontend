@@ -87,6 +87,7 @@ jobs:
 
       - name: Check out to the main branch
         run: |
+          git fetch origin
           git checkout main
           
       - name: Bump version and push tag
