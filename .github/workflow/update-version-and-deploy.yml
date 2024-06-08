@@ -22,12 +22,8 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
-# Instrução inicial: em que momentos o workflow deve ser rodado, no caso são em PR e pushs realizados diretamente na branch 'main'
-on:
-  pull_request:
-    branches: [ main ]
-  push:
-    branches: [ main ]
+# Instrução inicial: sem instruções iniciais, essa action será rodada apenas no momento em que a equipe de desenvolvimento chegar em um consenso da geração 
+# ou não de uma nova versão do software através de um deploy.
 
 
 # Descrição de jobs de build, testes e uso de cache para otimizar o processamento da pipeline
