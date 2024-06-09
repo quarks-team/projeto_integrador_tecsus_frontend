@@ -64,9 +64,9 @@ jobs:
           distribution: 'temurin'
 
       - name: Install SonarQube Scanner
-        run: npm run install-sonar-scanner
+        run: npm install -g sonar-scanner@4.7.0.2747
 
-      - name: Execute sonnar-scanner at the project and save in SonarCloud
+      - name: Execute sonar-scanner at the project and save in SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
