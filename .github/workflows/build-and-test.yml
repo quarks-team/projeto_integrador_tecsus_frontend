@@ -57,13 +57,26 @@ jobs:
       - name: Run coverage
         run: npm run coverage
 
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'temurin'
+
+      - name: Install SonarQube Scanner
+        run: npm run install-sonar-scanner
+
       - name: Execute sonnar-scanner at the project and save in SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          npm install -g sonar-scanner
-          sonar-scanner
-
+          sonar-scanner \
+            -Dsonar.projectKey=quarks-team_projeto_integrador_tecsus_frontend \
+            -Dsonar.organization=quarks-team1 \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov-report/lcov.info
+   
   push-changes-of-version:
     needs: [build-and-test-with-cache]
     runs-on: ubuntu-latest
