@@ -2,7 +2,7 @@ name: CI Pipeline - Waiting Approval then Deploy
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+  REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
 
 on:
   workflow_dispatch:
@@ -44,5 +44,5 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
           publish_dir: ./dist
