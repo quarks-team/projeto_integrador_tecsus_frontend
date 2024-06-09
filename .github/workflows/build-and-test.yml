@@ -177,7 +177,7 @@ jobs:
         if: env.new_commits == 'true'
         uses: actions/github-script@v5
         with:
-          github-token: ${{ secrets.PAT_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const ref = context.ref;
             const owner = context.repo.owner;
@@ -189,17 +189,20 @@ jobs:
                 repo,
                 ref,
               });
+              console.log(`Check Runs Response: ${JSON.stringify(checkRunsResponse, null, 2)}`);
               const statusChecks = checkRunsResponse.data.check_runs.filter(
                 (check) => check.name === 'build-and-test-with-cache'
               );
               if (statusChecks.length > 0) {
                 const statusCheck = statusChecks[0];
                 if (statusCheck.conclusion === 'success') {
+                  console.log('Status check passed');
                   return;
                 } else if (statusCheck.conclusion !== null) {
                   throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
                 }
               }
+              console.log('Status check not found, retrying...');
               await new Promise(r => setTimeout(r, 10000)); // wait for 10 seconds before retry
             }
             throw new Error('Required status check "build-and-test-with-cache" not found or not completed successfully.');
