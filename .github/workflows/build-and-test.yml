@@ -1,8 +1,8 @@
 name: CI Pipeline - Build and Test
 
 env:
-  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
 
 on:
   pull_request:
@@ -170,14 +170,14 @@ jobs:
         run: |
           git config --local user.email "felipesobral_@hotmail.com"
           git config --local user.name "SoSoJigsaw"
-          git add -f package.json package-lock.json
+          git add package.json package-lock.json
           git commit -m "Update version to ${{ steps.tag_version.outputs.new_tag }}"
 
       - name: Wait for status check of build-and-test-with-cache (branch rule)
         if: env.new_commits == 'true'
         uses: actions/github-script@v5
         with:
-          github-token: ${{ secrets.PAT_TOKEN }}
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
             const ref = context.ref;
             const owner = context.repo.owner;
@@ -210,6 +210,4 @@ jobs:
       - name: Push changes
         if: env.new_commits == 'true'
         run: |
-          git config --local user.email "felipesobral_@hotmail.com"
-          git config --local user.name "SoSoJigsaw"
-          git push https://${{ secrets.PAT_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main  
+          git push https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main
