@@ -14,7 +14,9 @@ export default mergeConfig(
       root: fileURLToPath(new URL('./', import.meta.url)),
       include: ['./**/*.{test,spec}.{js,ts,jsx,tsx}'],
     coverage: {
-      reporter: ['text', 'json', 'html']
+      provider: 'istanbul',
+      reporter: ['text', 'lcov'],
+      reportsDirectory: './coverage',
     }
   }
 

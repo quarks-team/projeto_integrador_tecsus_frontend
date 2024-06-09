@@ -32,3 +32,12 @@ public
 *.tsbuildinfo
 node_modules/.bin/acorn.cmd
 tests/__snapshots__
+*.snap
+/tests/__snapshots__
+tests/__snapshots__/Sidebar.test.ts.snap
+tests/__snapshots__/ReportsView.test.ts.snap
+tests/__snapshots__/PowerBiLuz.test.ts.snap
+tests/__snapshots__/PowerBiAgua.test.ts.snap
+tests/__snapshots__/HomeView.test.ts.snap
+tests/__snapshots__/App.test.ts.snap
+tests/__snapshots__/AlertsView.test.ts.snap
