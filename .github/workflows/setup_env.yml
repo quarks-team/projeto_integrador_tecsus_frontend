@@ -55,7 +55,7 @@ jobs:
           if [ -f .env ]; then
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
             git config --global user.name "github-actions[bot]"
-            git add .env
+            git add -f .env
             git commit -m "Add .env file"
             git push origin HEAD:$(git rev-parse --abbrev-ref HEAD)
           fi
