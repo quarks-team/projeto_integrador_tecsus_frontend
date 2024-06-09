@@ -107,6 +107,7 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov-report/lcov.info
 
       - name: Upload build artifacts
+        if: ${{ success() }}
         uses: actions/upload-artifact@v3
         with:
           name: build
