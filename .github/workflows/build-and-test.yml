@@ -179,15 +179,14 @@ jobs:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
             async function checkStatus() {
-              const { context, github } = require('@actions/github');
-              const ref = context.ref;
-              const owner = context.repo.owner;
-              const repo = context.repo.repo;
+              const ref = process.env.GITHUB_REF;
+              const owner = process.env.GITHUB_REPOSITORY_OWNER;
+              const repo = process.env.GITHUB_REPOSITORY.split('/')[1];
 
               console.log('Checking status of build-and-test-with-cache job...');
               for (let attempt = 0; attempt < 10; attempt++) {
                 console.log(`Attempt ${attempt + 1} to check the status...`);
-                const checkRunsResponse = await github.rest.repos.getCombinedStatusForRef({
+                const checkRunsResponse = await github.request('GET /repos/{owner}/{repo}/commits/{ref}/status', {
                   owner,
                   repo,
                   ref,
