@@ -178,7 +178,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { context, github } = require('@actions/github');
             const ref = context.ref;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
