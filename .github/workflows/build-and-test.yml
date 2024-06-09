@@ -125,14 +125,13 @@ jobs:
         run: |
           git push https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main --force
 
-  store-status-check:
-    needs: [build-and-test-with-cache]
-    runs-on: ubuntu-latest
-    steps:
       - name: Store Status Check
         id: store_status_check
-        run: |
-          echo "true" > status_check.txt
-        env:
-          STATUS_CHECK: ${{ steps.build-and-test-with-cache.outcome }}
+        run: echo "true" > status_check.txt
         if: ${{ always() }}
+
+      - name: Upload Status Check File
+        uses: actions/upload-artifact@v2
+        with:
+          name: status-check
+          path: status_check.txt
