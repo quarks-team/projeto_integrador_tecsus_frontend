@@ -178,32 +178,42 @@ jobs:
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
-            const ref = context.ref;
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
+            async function checkStatus() {
+              const { context, github } = require('@actions/github');
+              const ref = context.ref;
+              const owner = context.repo.owner;
+              const repo = context.repo.repo;
 
-            const checkRunsResponse = await github.rest.repos.getCombinedStatusForRef({
-              owner,
-              repo,
-              ref,
-            });
+              console.log('Checking status of build-and-test-with-cache job...');
+              for (let attempt = 0; attempt < 10; attempt++) {
+                console.log(`Attempt ${attempt + 1} to check the status...`);
+                const checkRunsResponse = await github.rest.repos.getCombinedStatusForRef({
+                  owner,
+                  repo,
+                  ref,
+                });
 
-            const statusChecks = checkRunsResponse.data.statuses.filter(
-              (check) => check.context === 'build-and-test-with-cache'
-            );
+                const statusChecks = checkRunsResponse.data.statuses.filter(
+                  (check) => check.context === 'build-and-test-with-cache'
+                );
 
-            if (statusChecks.length === 0) {
-              throw new Error('Required status check "build-and-test-with-cache" not found.');
+                if (statusChecks.length > 0) {
+                  const statusCheck = statusChecks[0];
+                  if (statusCheck.state === 'success') {
+                    console.log('Status check passed successfully.');
+                    process.env.STATUS_CHECK_PASSED = 'true';
+                    return;
+                  } else {
+                    console.log(`Status check state: ${statusCheck.state}`);
+                  }
+                } else {
+                  console.log('Status check not found.');
+                }
+                await new Promise((resolve) => setTimeout(resolve, 10000)); // Wait for 10 seconds before the next attempt
+              }
+              throw new Error('Required status check "build-and-test-with-cache" not found or did not pass.');
             }
-
-            const statusCheck = statusChecks[0];
-
-            if (statusCheck.state !== 'success') {
-              throw new Error(`Status check "build-and-test-with-cache" has not passed. State: ${statusCheck.state}`);
-            }
-
-            console.log('Status check passed successfully.');
-            process.env.STATUS_CHECK_PASSED = 'true';
+            await checkStatus();
 
       - name: Push changes
         if: env.new_commits == 'true' && env.STATUS_CHECK_PASSED == 'true'
