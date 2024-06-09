@@ -11,10 +11,12 @@ on:
     branches: [ main ]
 
 jobs:
+
   build-and-test-with-cache:
     runs-on: ubuntu-latest
 
     steps:
+    
       - name: Set up cache variables
         id: cache-vars
         run: |
@@ -49,13 +51,10 @@ jobs:
       - name: Run build
         run: npm run build
 
-      - name: Run unit tests
-        run: npm run test
+      - name: Run unit tests and coverage tool
+        run: npm run test --coverage
 
-      # - name: Coverage
-      #   run: 
-        
-      - name: Run sonar-scanner to SonarCloud
+      - name: Execute sonar-scanner in the project and save to SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
