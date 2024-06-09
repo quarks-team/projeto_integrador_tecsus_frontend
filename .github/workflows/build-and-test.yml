@@ -57,19 +57,39 @@ jobs:
       - name: Run coverage
         run: npm run coverage
 
-      - name: Execute sonnar-scanner at the project and save in SonarCloud
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'temurin'
+
+      - name: Install SonarQube Scanner
+        run: npm install -g sonar-scanner
+
+      - name: Execute Sonar Scanner and save results to SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          npm install -g sonar-scanner
-          sonar-scanner
+          sonar-scanner \
+            -Dsonar.projectKey=projeto_integrador_tecsus_frontend \
+            -Dsonar.organization=quarks-devops \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+
+      - name: Upload build artifacts
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: ./dist
 
   push-changes-of-version:
     needs: [build-and-test-with-cache]
     runs-on: ubuntu-latest
 
     steps:
-    
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
@@ -106,7 +126,6 @@ jobs:
         if: env.new_commits == 'true'
         run: |
           git config --global --add safe.directory /github/workspace
-          DEFAULT_BUMP="patch"
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
           if [ "$LAST_TAG" = "0.0.0" ]; then
             NEW_TAG="0.0.1"
@@ -160,26 +179,21 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { context, github } = require('@actions/github');
             const ref = context.ref;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-
             const checkRunsResponse = await github.rest.checks.listForRef({
               owner,
               repo,
               ref,
             });
-
             const statusChecks = checkRunsResponse.data.check_runs.filter(
               (check) => check.name === 'build-and-test-with-cache'
             );
-
             if (statusChecks.length === 0) {
               throw new Error('Required status check "build-and-test-with-cache" not found.');
-
+            }
             const statusCheck = statusChecks[0];
-
             if (statusCheck.conclusion !== 'success') {
               throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
             }
