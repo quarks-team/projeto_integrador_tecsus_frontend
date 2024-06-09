@@ -1,0 +1,62 @@
+name: Setup Environment Variables
+
+on:
+  push:
+    branches:
+      - '**'
+  repository_dispatch:
+    types:
+      - setup-env
+
+jobs:
+
+  setup-env:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up cache variables
+        id: cache-vars
+        run: |
+          echo "OS_VM=${{ runner.os }}-node-" >> $GITHUB_ENV
+          echo "KEY_CACHE=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json', '**/vitest.config.ts', '**/vite.config.ts', '**/tsconfig.vitest.json', '**/tsconfig.node.json', '**/tsconfig.json', '**/tsconfig.app.json', '**/env.d.ts', '**/.eslintrc.cjs', '**/src/main.ts', '**/jest.config.js', '**/src/router/index.ts') }}" >> $GITHUB_ENV
+          echo "RESTORE_KEYS=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node Environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ env.KEY_CACHE }}
+          restore-keys: |
+            ${{ env.RESTORE_KEYS }}
+            ${{ env.OS_VM }}
+          upload-chunk-size: 262144
+
+      - name: Create .env file if it does not exist
+        id: setup-env
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          chmod +x setup_env.sh
+          ./setup_env.sh $SONAR_TOKEN
+
+      - name: Commit .env file
+        run: |
+          if [ -f .env ]; then
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git config --global user.name "github-actions[bot]"
+            git add -f .env
+            git commit -m "Add .env file"
+            git push origin HEAD:$(git rev-parse --abbrev-ref HEAD)
+          fi
+        if: success() && steps.setup-env.outputs.env_created == 'true'
