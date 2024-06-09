@@ -176,7 +176,7 @@ jobs:
         if: env.new_commits == 'true'
         uses: actions/github-script@v5
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
             const ref = context.ref;
             const owner = context.repo.owner;
@@ -208,4 +208,4 @@ jobs:
       - name: Push changes
         if: env.new_commits == 'true' && env.STATUS_CHECK_PASSED == 'true'
         run: |
-          git push https://***@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main --force
+          git push https://SoSoJigsaw:${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main --force
