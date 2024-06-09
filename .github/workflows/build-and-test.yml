@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    
       - name: Set up cache variables
         id: cache-vars
         run: |
@@ -51,6 +52,11 @@ jobs:
 
       - name: Run unit tests
         run: npm run test
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
 
       - name: Run SonarCloud Scan
         env:
