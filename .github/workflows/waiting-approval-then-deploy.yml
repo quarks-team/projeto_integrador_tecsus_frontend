@@ -26,9 +26,8 @@ jobs:
       - name: Wait for status check of build-and-test-with-cache (branch rule)
         uses: actions/github-script@v5
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
-            const { context, github } = require('@actions/github');
             const ref = 'refs/heads/main';
             const owner = context.repo.owner;
             const repo = context.repo.repo;
@@ -57,12 +56,14 @@ jobs:
             process.env.STATUS_CHECK_PASSED = 'true';
 
       - name: Setup Node Environment
+        if: env.STATUS_CHECK_PASSED == 'true'
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
           cache: 'npm'
 
       - name: Restore build cache
+        if: env.STATUS_CHECK_PASSED == 'true'
         uses: actions/cache@v3
         with:
           path: |
@@ -74,7 +75,8 @@ jobs:
             ${{ env.OS_VM }}
 
       - name: Deploy to GitHub Pages
+        if: env.STATUS_CHECK_PASSED == 'true'
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
           publish_dir: ./dist
