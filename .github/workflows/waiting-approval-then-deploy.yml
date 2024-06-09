@@ -3,28 +3,23 @@ name: Deploy - Waiting Approval then Deploy
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
 on:
   workflow_dispatch:
     inputs:
       approve:
-        type: choice
         description: 'Do you approve the deployment?'
+        required: true
+        type: choice
         options:
           - yes
           - no
-        default: 'no'  
-        required: true
+        default: 'no'
 
 jobs:
-
-  deploy:
-  
-    if: github.event.inputs.approve == 'yes'
+  deploy-on-github-pages:
     runs-on: ubuntu-latest
-    
-    steps:
 
+    steps:
       - name: Check approval
         id: approval
         if: ${{ github.event.inputs.approve == 'yes' }}
@@ -38,7 +33,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Download Status Check File
         uses: actions/download-artifact@v2
@@ -60,57 +55,8 @@ jobs:
           done
           echo "Required status check 'build-and-test-with-cache' has not passed."
           exit 1
-          
-      - name: Wait for CI pipeline completion
-        id: check-status
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          script: |
-            async function checkStatus() {
-              const ref = process.env.GITHUB_REF;
-              const owner = process.env.GITHUB_REPOSITORY_OWNER;
-              const repo = process.env.GITHUB_REPOSITORY.split('/')[1];
-
-              const requiredChecks = [
-                'build-and-test-with-cache',
-                'push-changes-of-version'
-              ];
-
-              console.log('Checking status of required jobs...');
-              for (let attempt = 0; attempt < 10; attempt++) {
-                console.log(`Attempt ${attempt + 1} to check the status...`);
-                const checkRunsResponse = await github.request('GET /repos/{owner}/{repo}/commits/{ref}/status', {
-                  owner,
-                  repo,
-                  ref,
-                });
-
-                const statuses = checkRunsResponse.data.statuses;
-                let allChecksPassed = true;
-
-                for (const check of requiredChecks) {
-                  const statusCheck = statuses.find(status => status.context === check);
-                  if (!statusCheck || statusCheck.state !== 'success') {
-                    allChecksPassed = false;
-                    console.log(`Status check for ${check} not passed yet.`);
-                    break;
-                  }
-                }
-
-                if (allChecksPassed) {
-                  console.log('All required status checks passed successfully.');
-                  process.env.STATUS_CHECK_PASSED = 'true';
-                  return;
-                }
-                await new Promise((resolve) => setTimeout(resolve, 10000)); // Wait for 10 seconds before the next attempt
-              }
-              throw new Error('Required status checks not found or did not pass.');
-            }
-            await checkStatus();
 
       - name: Setup Node Environment
-        if: env.STATUS_CHECK_PASSED == 'true'
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
@@ -127,9 +73,8 @@ jobs:
         run: npm run build
 
       - name: Deploy to GitHub Pages
-        if: env.STATUS_CHECK_PASSED == 'true'
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
 
