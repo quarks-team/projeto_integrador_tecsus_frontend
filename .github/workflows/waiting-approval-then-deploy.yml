@@ -2,7 +2,6 @@ name: CI Pipeline - Waiting Approval then Deploy
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
 
 on:
   workflow_dispatch:
@@ -10,36 +9,74 @@ on:
       approve:
         description: 'Do you approve the deployment?'
         required: true
-        default: 'yes'
-
-  pull_request:
-    branches:
-      - main
+        type: choice
+        options:
+          - yes
+          - no
+        default: 'no'
 
 jobs:
-
-  deploy-from-PR:
-    if: github.event.inputs.approve == 'yes'
+  deploy-on-github-pages:
     runs-on: ubuntu-latest
 
     steps:
-    
+      - name: Check approval
+        id: approval
+        if: ${{ github.event.inputs.approve == 'yes' }}
+        run: echo "Approved for deployment."
+        continue-on-error: true
+
+      - name: Fail if not approved
+        if: ${{ github.event.inputs.approve != 'yes' }}
+        run: exit 1
+
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
 
-      - name: Download build artifact
-        uses: actions/download-artifact@v3
+      - name: Download Status Check File
+        uses: actions/download-artifact@v2
         with:
-          name: build
-          path: ./dist
+          name: status-check
+          path: ./status
+
+      - name: Wait for Status Check
+        id: check_status
+        run: |
+          for i in {1..10}; do
+            if [ "$(cat ./status/status_check.txt)" = "true" ]; then
+              echo "Required status check 'build-and-test-with-cache' has passed."
+              exit 0
+            else
+              echo "Waiting for status check 'build-and-test-with-cache' to pass. Attempt $i of 10."
+              sleep 10
+            fi
+          done
+          echo "Required status check 'build-and-test-with-cache' has not passed."
+          exit 1
 
       - name: Setup Node Environment
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
           cache: 'npm'
+
+      - name: Restore build cache
+        if: ${{ steps.check_status.outputs.success }}
+        uses: actions/cache@v3
+        with:
+          path: dist
+          key: build-cache
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
