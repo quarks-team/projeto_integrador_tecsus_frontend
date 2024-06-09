@@ -1,7 +1,7 @@
 name: CI Pipeline - Build and Test
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 on:
@@ -212,4 +212,4 @@ jobs:
         run: |
           git config --local user.email "felipesobral_@hotmail.com"
           git config --local user.name "SoSoJigsaw"
-          git push origin main
+          git push https://${{ secrets.PAT_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main  
