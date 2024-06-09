@@ -51,10 +51,13 @@ jobs:
       - name: Run build
         run: npm run build
 
-      - name: Run unit tests and coverage tool
-        run: npm run test --coverage
+      - name: Run unit tests
+        run: npm run test
 
-      - name: Execute sonar-scanner in the project and save to SonarCloud
+      - name: Run coverage
+        run: npm run coverage
+
+      - name: Execute sonnar-scanner at the project and save in SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
