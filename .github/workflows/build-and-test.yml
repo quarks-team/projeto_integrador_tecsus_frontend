@@ -179,27 +179,21 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { context, github } = require('@actions/github');
             const ref = context.ref;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-
             const checkRunsResponse = await github.rest.checks.listForRef({
               owner,
               repo,
               ref,
             });
-
             const statusChecks = checkRunsResponse.data.check_runs.filter(
               (check) => check.name === 'build-and-test-with-cache'
             );
-
             if (statusChecks.length === 0) {
               throw new Error('Required status check "build-and-test-with-cache" not found.');
             }
-
             const statusCheck = statusChecks[0];
-
             if (statusCheck.conclusion !== 'success') {
               throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
             }
