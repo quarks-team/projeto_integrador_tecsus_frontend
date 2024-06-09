@@ -91,9 +91,8 @@ jobs:
               echo "New commits found."
               echo "new_commits=true" >> $GITHUB_ENV
             fi
-          fi
 
-      - name: Bump version and push tag
+      - name: Bump version and set env
         id: tag_version
         if: env.new_commits == 'true'
         run: |
@@ -111,7 +110,6 @@ jobs:
             NEW_TAG="$MAJOR.$MINOR.$PATCH"
           fi
           echo "new_tag=$NEW_TAG" >> $GITHUB_ENV
-          echo "::set-output name=new_tag::$NEW_TAG"
 
       - name: Commit updated version files
         if: env.new_commits == 'true'
@@ -119,7 +117,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add package.json package-lock.json
-          git commit -m "Update version to ${{ steps.tag_version.outputs.new_tag }}"
+          git commit -m "Update version to $NEW_TAG"
 
       - name: Push changes
         if: env.new_commits == 'true'
@@ -132,7 +130,7 @@ jobs:
         if: ${{ always() }}
 
       - name: Upload Status Check File
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: status-check
           path: status_check.txt
