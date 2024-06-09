@@ -64,18 +64,18 @@ jobs:
           distribution: 'temurin'
 
       - name: Install SonarQube Scanner
-        run: npm run install-sonar-scanner
+        run: npm install -g sonar-scanner
 
-      - name: Execute sonnar-scanner at the project and save in SonarCloud
+      - name: Execute Sonar Scanner and save results to SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           sonar-scanner \
-            -Dsonar.projectKey=quarks-team_projeto_integrador_tecsus_frontend \
-            -Dsonar.organization=quarks-team1 \
+            -Dsonar.projectKey=projeto_integrador_tecsus_frontend \
+            -Dsonar.organization=quarks-devops \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov-report/lcov.info
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
 
       - name: Upload build artifacts
         if: ${{ success() }}
@@ -83,14 +83,13 @@ jobs:
         with:
           name: build
           path: ./dist
-   
+
   push-changes-of-version:
     needs: [build-and-test-with-cache]
-    if: ${{ success() }}
     runs-on: ubuntu-latest
 
     steps:
-    
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
@@ -127,7 +126,6 @@ jobs:
         if: env.new_commits == 'true'
         run: |
           git config --global --add safe.directory /github/workspace
-          DEFAULT_BUMP="patch"
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
           if [ "$LAST_TAG" = "0.0.0" ]; then
             NEW_TAG="0.0.1"
@@ -198,6 +196,7 @@ jobs:
 
             if (statusChecks.length === 0) {
               throw new Error('Required status check "build-and-test-with-cache" not found.');
+            }
 
             const statusCheck = statusChecks[0];
 
