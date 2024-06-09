@@ -12,7 +12,7 @@
     "type-check": "vue-tsc --build --force",
     "format": "prettier --write src/",
     "format tests": "prettier --write tests/",
-    "install-sonar-scanner": "npm install -g sonar-scanner@4.6.2.2472"
+    "install-sonar-scanner": "npm install -g sonar-scanner@latest"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^6.4.5",
