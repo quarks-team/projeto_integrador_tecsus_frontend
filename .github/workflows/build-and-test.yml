@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    
       - name: Set up cache variables
         id: cache-vars
         run: |
@@ -182,21 +181,27 @@ jobs:
             const ref = context.ref;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const checkRunsResponse = await github.rest.checks.listForRef({
-              owner,
-              repo,
-              ref,
-            });
-            const statusChecks = checkRunsResponse.data.check_runs.filter(
-              (check) => check.name === 'build-and-test-with-cache'
-            );
-            if (statusChecks.length === 0) {
-              throw new Error('Required status check "build-and-test-with-cache" not found.');
+            let checkRunsResponse;
+            for (let i = 0; i < 10; i++) {
+              checkRunsResponse = await github.rest.checks.listForRef({
+                owner,
+                repo,
+                ref,
+              });
+              const statusChecks = checkRunsResponse.data.check_runs.filter(
+                (check) => check.name === 'build-and-test-with-cache'
+              );
+              if (statusChecks.length > 0) {
+                const statusCheck = statusChecks[0];
+                if (statusCheck.conclusion === 'success') {
+                  return;
+                } else if (statusCheck.conclusion !== null) {
+                  throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
+                }
+              }
+              await new Promise(r => setTimeout(r, 10000)); // wait for 10 seconds before retry
             }
-            const statusCheck = statusChecks[0];
-            if (statusCheck.conclusion !== 'success') {
-              throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
-            }
+            throw new Error('Required status check "build-and-test-with-cache" not found or not completed successfully.');
 
       - name: Push changes
         if: env.new_commits == 'true'
