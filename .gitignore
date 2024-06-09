@@ -41,3 +41,7 @@ tests/__snapshots__/PowerBiAgua.test.ts.snap
 tests/__snapshots__/HomeView.test.ts.snap
 tests/__snapshots__/App.test.ts.snap
 tests/__snapshots__/AlertsView.test.ts.snap
+
+# Environment Variable
+.env
+/.scannerwork
