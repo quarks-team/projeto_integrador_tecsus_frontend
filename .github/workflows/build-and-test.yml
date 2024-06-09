@@ -1,87 +1,66 @@
 name: CI Pipeline - Build and Test
 
-
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # `${{ runner.os }}-node-` Retorna o sistema operacional do runner (máquina virtual) que está executando o job.
-
-  # `${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json', '**/vitest.config.ts', '**/vite.config.ts', '**/tsconfig.vitest.json', '**/tsconfig.node.json', '**/tsconfig.json', '**/tsconfig.app.json', '**/env.d.ts', '**/.eslintrc.cjs', '**/src/main.ts', '**/src/router/index.ts') }}` 
-  # Retorna o cálculo do hash SHA-256 dos arquivos críticos do projeto (está sendo usado para gerar chaves de cache definindo como parâmetro arquivos que dão as definições e 
-  # as dependências do projeto, para que elas sejam constantemente atualizadas corrretamente e que o build seja rápido, pois está sendo dado como informação arquivos 
-  # que contém principalmente as informações sobre as dependências do projeto que podem influenciar a criação ou não do cache).
-
-  # `${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}` 
-  # Retorna o cálculo do hash SHA-256 dos arquivos especificados (nesse caso, só pastas com informações de dependências, que são aquelas que há um desejo 
-  # de fazer a recuperação das keys de cache com o parâmetro 'restore-keys', fazendo com que o GitHub Actions encontre um cache correspondente se a chave 
-  # principal não tiver um hit exato. Útil para evitar rebuilds completos quando mudanças menores são feitas, melhorando o desempenho da pipeline em geral.
-
-
-# Instrução inicial: em que momentos o workflow deve ser rodado, no caso são em PR e pushs realizados diretamente na branch 'main'
 on:
   pull_request:
     branches: [ main ]
   push:
     branches: [ main ]
 
-# Descrição de jobs de build, testes e uso de cache para otimizar o processamento da pipeline
 jobs:
-  
   build-and-test-with-cache:
-  
     runs-on: ubuntu-latest
-    
     steps:
+    
+      - name: Set up cache variables
+        id: cache-vars
+        run: |
+          echo "OS_VM=${{ runner.os }}-node-" >> $GITHUB_ENV
+          echo "KEY_CACHE=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json', '**/vitest.config.ts', '**/vite.config.ts', '**/tsconfig.vitest.json', '**/tsconfig.node.json', '**/tsconfig.json', '**/tsconfig.app.json', '**/env.d.ts', '**/.eslintrc.cjs', '**/src/main.ts', '**/jest.config.js', '**/src/router/index.ts') }}" >> $GITHUB_ENV
+          echo "RESTORE_KEYS=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}" >> $GITHUB_ENV
 
-       - name: Set up cache variables
-         id: cache-vars
-         run: |
-           echo "OS_VM=${{ runner.os }}-node-" >> $GITHUB_ENV
-           echo "KEY_CACHE=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json', '**/vitest.config.ts', '**/vite.config.ts', '**/tsconfig.vitest.json', '**/tsconfig.node.json', '**/tsconfig.json', '**/tsconfig.app.json', '**/env.d.ts', '**/.eslintrc.cjs', '**/src/main.ts', '**/jest.config.js', '**/src/router/index.ts') }}" >> $GITHUB_ENV
-           echo "RESTORE_KEYS=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}" >> $GITHUB_ENV
-
-       - name: Checkout Repository
-         uses: actions/checkout@v2
-         with:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
           fetch-depth: 1
 
-       - name: Setup Node Environment
-         uses: actions/setup-node@v2
-         with:
+      - name: Setup Node Environment
+        uses: actions/setup-node@v3
+        with:
           node-version: '20.x'
           cache: 'npm'
-       
-       - name: Cache node modules
-         uses: actions/cache@v4.0.2
-         with:
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
           path: node_modules
           key: ${{ env.KEY_CACHE }}
           restore-keys: |
             ${{ env.RESTORE_KEYS }}
             ${{ env.OS_VM }}
-          upload-chunk-size: 262144  # em bytes (250 MB), tamanho de chunk ideal para processamento paralelo ou assíncrono, podendo aumentar o desempenho da pipeline
-      
-       - name: Install dependencies
-         run: npm install
-      
-       - name: Run build
-         run: npm run build
-      
-       - name: Run unit tests
-         run: npm run test
+          upload-chunk-size: 262144
 
-  # Caso a realização da build e dos testes não falharem, essa action realizará a atualização
-  # da versão do software no código-fonte, dentro dos arquivos package.json e package-lock.json 
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+
+      - name: Run build
+        run: npm run build
+
+      - name: Run unit tests
+        run: npm run test
+
   push-changes-of-version:
-  
     needs: [build-and-test-with-cache]
-  
     runs-on: ubuntu-latest
-    
     steps:
-
+    
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 1
 
@@ -117,11 +96,16 @@ jobs:
         run: |
           git config --global --add safe.directory /github/workspace
           DEFAULT_BUMP="patch"
-          NEW_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
-          if [ -z "$NEW_TAG" ]; then
+          LAST_TAG=$(git describe --tags --abbrev=0)
+          if [ -z "$LAST_TAG" ]; then
             NEW_TAG="0.0.1"
           else
-            NEW_TAG=$(echo $NEW_TAG | awk -F. -v OFS=. '{$NF += 1 ; print}')
+            IFS='.' read -r -a TAG_PARTS <<< "$LAST_TAG"
+            MAJOR=${TAG_PARTS[0]}
+            MINOR=${TAG_PARTS[1]}
+            PATCH=${TAG_PARTS[2]}
+            PATCH=$((PATCH + 1))
+            NEW_TAG="$MAJOR.$MINOR.$PATCH"
           fi
           echo "new_tag=$NEW_TAG" >> $GITHUB_ENV
           echo "::set-output name=new_tag::$NEW_TAG"
@@ -154,18 +138,18 @@ jobs:
       - name: Commit updated version files
         if: env.new_commits == 'true'
         run: |
-              git config --local user.email "action@github.com"
-              git config --local user.name "GitHub Action"
-              git add package.json package-lock.json
-              git commit -m "Update version to ${{ steps.tag_version.outputs.new_tag }}"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add package.json package-lock.json
+          git commit -m "Update version to ${{ steps.tag_version.outputs.new_tag }}"
 
-      - name: Wait for status check from build-and-test-with-cache (rule)
+      - name: Wait for status check of build-and-test-with-cache (branch rule)
         if: env.new_commits == 'true'
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const context = github.context;
+            const { context, github } = require('@actions/github');
             const ref = context.ref;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
@@ -193,4 +177,4 @@ jobs:
       - name: Push changes
         if: env.new_commits == 'true'
         run: |
-              git push origin main
+          git push origin main
