@@ -32,3 +32,4 @@ public
 *.tsbuildinfo
 node_modules/.bin/acorn.cmd
 tests/__snapshots__
+*.snap
