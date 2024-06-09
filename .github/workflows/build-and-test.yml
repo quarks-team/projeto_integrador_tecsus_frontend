@@ -210,4 +210,4 @@ jobs:
       - name: Push changes
         if: env.new_commits == 'true'
         run: |
-          git push origin main
+          git push https://${{ secrets.PAT_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main
