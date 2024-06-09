@@ -1,4 +1,4 @@
-name: CI Pipeline - Waiting Approval then Deploy
+name: Deploy - Waiting Approval then Deploy
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
