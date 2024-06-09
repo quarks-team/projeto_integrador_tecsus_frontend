@@ -33,3 +33,4 @@ public
 node_modules/.bin/acorn.cmd
 tests/__snapshots__
 *.snap
+/tests/__snapshots__
