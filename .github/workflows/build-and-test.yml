@@ -1,6 +1,7 @@
 name: CI Pipeline - Build and Test
 
 env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
 
@@ -11,12 +12,10 @@ on:
     branches: [ main ]
 
 jobs:
-
   build-and-test-with-cache:
     runs-on: ubuntu-latest
 
     steps:
-    
       - name: Set up cache variables
         id: cache-vars
         run: |
@@ -89,7 +88,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
@@ -126,6 +124,7 @@ jobs:
         if: env.new_commits == 'true'
         run: |
           git config --global --add safe.directory /github/workspace
+          DEFAULT_BUMP="patch"
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
           if [ "$LAST_TAG" = "0.0.0" ]; then
             NEW_TAG="0.0.1"
@@ -168,8 +167,8 @@ jobs:
       - name: Commit updated version files
         if: env.new_commits == 'true'
         run: |
-          git config --local user.email "felipesobral_@hotmail.com"
-          git config --local user.name "SoSoJigsaw"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git add package.json package-lock.json
           git commit -m "Update version to ${{ steps.tag_version.outputs.new_tag }}"
 
@@ -177,37 +176,37 @@ jobs:
         if: env.new_commits == 'true'
         uses: actions/github-script@v5
         with:
-          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const ref = context.ref;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            let checkRunsResponse;
-            for (let i = 0; i < 10; i++) {
-              checkRunsResponse = await github.rest.checks.listForRef({
-                owner,
-                repo,
-                ref,
-              });
-              console.log(`Check Runs Response: ${JSON.stringify(checkRunsResponse, null, 2)}`);
-              const statusChecks = checkRunsResponse.data.check_runs.filter(
-                (check) => check.name === 'build-and-test-with-cache'
-              );
-              if (statusChecks.length > 0) {
-                const statusCheck = statusChecks[0];
-                if (statusCheck.conclusion === 'success') {
-                  console.log('Status check passed');
-                  return;
-                } else if (statusCheck.conclusion !== null) {
-                  throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
-                }
-              }
-              console.log('Status check not found, retrying...');
-              await new Promise(r => setTimeout(r, 10000)); // wait for 10 seconds before retry
+
+            const checkRunsResponse = await github.rest.checks.listForRef({
+              owner,
+              repo,
+              ref,
+            });
+
+            const statusChecks = checkRunsResponse.data.check_runs.filter(
+              (check) => check.name === 'build-and-test-with-cache'
+            );
+
+            if (statusChecks.length === 0) {
+              throw new Error('Required status check "build-and-test-with-cache" not found.');
             }
-            throw new Error('Required status check "build-and-test-with-cache" not found or not completed successfully.');
+
+            const statusCheck = statusChecks[0];
+
+            if (statusCheck.conclusion !== 'success') {
+              throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
+            }
+
+            // Set a successful status for the following steps
+            console.log('Status check passed successfully.');
+            process.env.STATUS_CHECK_PASSED = 'true';
 
       - name: Push changes
-        if: env.new_commits == 'true'
+        if: env.new_commits == 'true' && env.STATUS_CHECK_PASSED == 'true'
         run: |
           git push https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main --force
