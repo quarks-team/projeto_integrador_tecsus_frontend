@@ -3,20 +3,25 @@ name: CI Pipeline - Build and Test
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  STATUS_CHECK_FILE: status_check.txt
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-
   build-and-test-with-cache:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set up cache variables
+        id: cache-vars
+        run: |
+          echo "OS_VM=${{ runner.os }}-node-" >> $GITHUB_ENV
+          echo "KEY_CACHE=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json', '**/vitest.config.ts', '**/vite.config.ts', '**/tsconfig.vitest.json', '**/tsconfig.node.json', '**/tsconfig.json', '**/tsconfig.app.json', '**/env.d.ts', '**/.eslintrc.cjs', '**/src/main.ts', '**/jest.config.js', '**/src/router/index.ts') }}" >> $GITHUB_ENV
+          echo "RESTORE_KEYS=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}" >> $GITHUB_ENV
+
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
@@ -27,13 +32,6 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-
-      - name: Set up cache variables
-        id: cache-vars
-        run: |
-          echo "OS_VM=${{ runner.os }}-node-" >> $GITHUB_ENV
-          echo "KEY_CACHE=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json', '**/vitest.config.ts', '**/vite.config.ts', '**/tsconfig.vitest.json', '**/tsconfig.node.json', '**/tsconfig.json', '**/tsconfig.app.json', '**/env.d.ts', '**/.eslintrc.cjs', '**/src/main.ts', '**/jest.config.js', '**/src/router/index.ts') }}" >> $GITHUB_ENV
-          echo "RESTORE_KEYS=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}" >> $GITHUB_ENV
 
       - name: Cache node modules
         uses: actions/cache@v3
@@ -64,48 +62,18 @@ jobs:
           distribution: 'temurin'
 
       - name: Install SonarQube Scanner
-        run: npm install -g sonar-scanner
+        run: npm run install-sonar-scanner
 
-      - name: Execute Sonar Scanner
+      - name: Execute sonar-scanner at the project and save in SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           sonar-scanner \
-            -Dsonar.projectKey=projeto_integrador_tecsus_frontend \
-            -Dsonar.organization=quarks-devops \
+            -Dsonar.projectKey=quarks-team_projeto_integrador_tecsus_frontend \
+            -Dsonar.organization=quarks-team1 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
-
-      - name: Save status check result
-        run: echo "true" > ${{ env.STATUS_CHECK_FILE }}
-
-      - name: Upload build artifacts
-        if: success()
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts
-          path: |
-            dist
-            node_modules
-
-  push-changes-of-version:
-    needs: build-and-test-with-cache
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-
-      - name: Set up /github/workspace as a safe directory
-        run: git config --global --add safe.directory /github/workspace
-
-      - name: Check out to the main branch
-        run: |
-          git fetch origin
-          git checkout main
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov-report/lcov.info
 
       - name: Check for new commits
         id: check_commits
@@ -123,7 +91,6 @@ jobs:
               echo "New commits found."
               echo "new_commits=true" >> $GITHUB_ENV
             fi
-          fi
 
       - name: Bump version and push tag
         id: tag_version
@@ -145,76 +112,27 @@ jobs:
           echo "new_tag=$NEW_TAG" >> $GITHUB_ENV
           echo "::set-output name=new_tag::$NEW_TAG"
 
-      - name: Check new tag output
-        if: env.new_commits == 'true'
-        run: echo "New tag is ${{ steps.tag_version.outputs.new_tag }}"
-
-      - name: Verify update-version.cjs existence
-        if: env.new_commits == 'true'
-        run: |
-          if [ ! -f update-version.cjs ]; then
-            echo "update-version.cjs not found!"
-            ls -al
-            exit 1
-          fi
-
-      - name: Update package.json and package-lock.json
-        if: env.new_commits == 'true'
-        run: node update-version.cjs ${{ steps.tag_version.outputs.new_tag }}
-
-      - name: Show updated files
-        if: env.new_commits == 'true'
-        run: |
-          echo "Contents of package.json:"
-          cat package.json
-          echo "Contents of package-lock.json:"
-          cat package-lock.json
-
       - name: Commit updated version files
         if: env.new_commits == 'true'
         run: |
-          git config --local user.email "felipesobral_@hotmail.com"
-          git config --local user.name "SoSoJigsaw"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git add package.json package-lock.json
           git commit -m "Update version to ${{ steps.tag_version.outputs.new_tag }}"
 
-      - name: Wait for status check of build-and-test-with-cache
-        if: env.new_commits == 'true'
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          script: |
-            const { context, github } = require('@actions/github');
-            const ref = context.ref;
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-
-            const requiredChecks = ['build-and-test-with-cache'];
-            let allChecksPassed = false;
-
-            for (let attempt = 0; attempt < 10; attempt++) {
-              const checkRunsResponse = await github.rest.checks.listForRef({
-                owner,
-                repo,
-                ref,
-              });
-
-              const statuses = checkRunsResponse.data.check_runs;
-              allChecksPassed = requiredChecks.every(check =>
-                statuses.find(status => status.name === check && status.conclusion === 'success')
-              );
-
-              if (allChecksPassed) break;
-
-              await new Promise(resolve => setTimeout(resolve, 10000)); // wait for 10 seconds
-            }
-
-            if (!allChecksPassed) {
-              throw new Error('Required status check "build-and-test-with-cache" not passed.');
-            }
-
       - name: Push changes
         if: env.new_commits == 'true'
-        run: git push origin main --force
+        run: |
+          git push https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main --force
+
+  store-status-check:
+    needs: [build-and-test-with-cache]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Store Status Check
+        id: store_status_check
+        run: |
+          echo "true" > status_check.txt
         env:
-          REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+          STATUS_CHECK: ${{ steps.build-and-test-with-cache.outcome }}
+        if: ${{ always() }}
