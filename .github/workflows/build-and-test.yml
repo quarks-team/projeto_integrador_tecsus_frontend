@@ -64,9 +64,9 @@ jobs:
           distribution: 'temurin'
 
       - name: Install SonarQube Scanner
-        run: npm install -g sonar-scanner@4.7.0.2747
+        run: npm run install-sonar-scanner
 
-      - name: Execute sonar-scanner at the project and save in SonarCloud
+      - name: Execute sonnar-scanner at the project and save in SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -76,9 +76,17 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov-report/lcov.info
+
+      - name: Upload build artifacts
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: ./dist
    
   push-changes-of-version:
     needs: [build-and-test-with-cache]
+    if: ${{ success() }}
     runs-on: ubuntu-latest
 
     steps:
