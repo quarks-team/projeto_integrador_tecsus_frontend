@@ -1,7 +1,7 @@
-name: CI Pipeline - Waiting Approval then Deploy
+name: Deploy - Waiting Approval then Deploy
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
 
 on:
@@ -12,28 +12,49 @@ on:
         required: true
         default: 'yes'
 
-  pull_request:
-    branches:
-      - main
-
 jobs:
-
-  deploy-from-PR:
+  deploy:
     if: github.event.inputs.approve == 'yes'
     runs-on: ubuntu-latest
 
     steps:
-    
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
 
-      - name: Download build artifact
-        uses: actions/download-artifact@v3
+      - name: Wait for status check of build-and-test-with-cache (branch rule)
+        uses: actions/github-script@v5
         with:
-          name: build
-          path: ./dist
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { context, github } = require('@actions/github');
+            const ref = 'refs/heads/main';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const checkRunsResponse = await github.rest.repos.getCombinedStatusForRef({
+              owner,
+              repo,
+              ref,
+            });
+
+            const statusChecks = checkRunsResponse.data.statuses.filter(
+              (check) => check.context === 'build-and-test-with-cache'
+            );
+
+            if (statusChecks.length === 0) {
+              throw new Error('Required status check "build-and-test-with-cache" not found.');
+            }
+
+            const statusCheck = statusChecks[0];
+
+            if (statusCheck.state !== 'success') {
+              throw new Error(`Status check "build-and-test-with-cache" has not passed. State: ${statusCheck.state}`);
+            }
+
+            console.log('Status check passed successfully.');
+            process.env.STATUS_CHECK_PASSED = 'true';
 
       - name: Setup Node Environment
         uses: actions/setup-node@v3
@@ -41,8 +62,19 @@ jobs:
           node-version: '20.x'
           cache: 'npm'
 
+      - name: Restore build cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            dist
+          key: ${{ env.KEY_CACHE }}
+          restore-keys: |
+            ${{ env.RESTORE_KEYS }}
+            ${{ env.OS_VM }}
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
