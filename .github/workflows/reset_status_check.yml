@@ -1,0 +1,15 @@
+name: Reset Status Check File
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline - Build and Test", "Deploy - Waiting Approval then Deploy"]
+    types:
+      - completed
+
+jobs:
+  reset-status:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Reset status check file
+        run: echo "false" > status_check.txt

@@ -1,8 +1,8 @@
 name: Deploy - Waiting Approval then Deploy
 
 env:
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
 on:
   workflow_dispatch:
@@ -13,19 +13,54 @@ on:
         options:
           - yes
           - no
+        default: 'no'  
         required: true
-        default: 'no'
 
 jobs:
+
   deploy:
+  
     if: github.event.inputs.approve == 'yes'
     runs-on: ubuntu-latest
+    
     steps:
+
+      - name: Check approval
+        id: approval
+        if: ${{ github.event.inputs.approve == 'yes' }}
+        run: echo "Approved for deployment."
+        continue-on-error: true
+
+      - name: Fail if not approved
+        if: ${{ github.event.inputs.approve != 'yes' }}
+        run: exit 1
+
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
+      - name: Download Status Check File
+        uses: actions/download-artifact@v2
+        with:
+          name: status-check
+          path: ./status
+
+      - name: Wait for Status Check
+        id: check_status
+        run: |
+          for i in {1..10}; do
+            if [ "$(cat ./status/status_check.txt)" = "true" ]; then
+              echo "Required status check 'build-and-test-with-cache' has passed."
+              exit 0
+            else
+              echo "Waiting for status check 'build-and-test-with-cache' to pass. Attempt $i of 10."
+              sleep 10
+            fi
+          done
+          echo "Required status check 'build-and-test-with-cache' has not passed."
+          exit 1
+          
       - name: Wait for CI pipeline completion
         id: check-status
         uses: actions/github-script@v5
@@ -82,16 +117,14 @@ jobs:
           cache: 'npm'
 
       - name: Restore build cache
-        if: env.STATUS_CHECK_PASSED == 'true'
+        if: ${{ steps.check_status.outputs.success }}
         uses: actions/cache@v3
         with:
-          path: |
-            node_modules
-            dist
-          key: ${{ env.KEY_CACHE }}
-          restore-keys: |
-            ${{ env.RESTORE_KEYS }}
-            ${{ env.OS_VM }}
+          path: dist
+          key: build-cache
+
+      - name: Build
+        run: npm run build
 
       - name: Deploy to GitHub Pages
         if: env.STATUS_CHECK_PASSED == 'true'
