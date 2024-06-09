@@ -26,46 +26,51 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Wait for status check of build-and-test-with-cache
+      - name: Wait for CI pipeline completion
         id: check-status
         uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
             async function checkStatus() {
-              const { context, github } = require('@actions/github');
-              const ref = context.ref;
-              const owner = context.repo.owner;
-              const repo = context.repo.repo;
+              const ref = process.env.GITHUB_REF;
+              const owner = process.env.GITHUB_REPOSITORY_OWNER;
+              const repo = process.env.GITHUB_REPOSITORY.split('/')[1];
 
-              console.log('Checking status of build-and-test-with-cache job...');
+              const requiredChecks = [
+                'build-and-test-with-cache',
+                'push-changes-of-version'
+              ];
+
+              console.log('Checking status of required jobs...');
               for (let attempt = 0; attempt < 10; attempt++) {
                 console.log(`Attempt ${attempt + 1} to check the status...`);
-                const checkRunsResponse = await github.rest.repos.getCombinedStatusForRef({
+                const checkRunsResponse = await github.request('GET /repos/{owner}/{repo}/commits/{ref}/status', {
                   owner,
                   repo,
                   ref,
                 });
 
-                const statusChecks = checkRunsResponse.data.statuses.filter(
-                  (check) => check.context === 'build-and-test-with-cache'
-                );
+                const statuses = checkRunsResponse.data.statuses;
+                let allChecksPassed = true;
 
-                if (statusChecks.length > 0) {
-                  const statusCheck = statusChecks[0];
-                  if (statusCheck.state === 'success') {
-                    console.log('Status check passed successfully.');
-                    process.env.STATUS_CHECK_PASSED = 'true';
-                    return;
-                  } else {
-                    console.log(`Status check state: ${statusCheck.state}`);
+                for (const check of requiredChecks) {
+                  const statusCheck = statuses.find(status => status.context === check);
+                  if (!statusCheck || statusCheck.state !== 'success') {
+                    allChecksPassed = false;
+                    console.log(`Status check for ${check} not passed yet.`);
+                    break;
                   }
-                } else {
-                  console.log('Status check not found.');
+                }
+
+                if (allChecksPassed) {
+                  console.log('All required status checks passed successfully.');
+                  process.env.STATUS_CHECK_PASSED = 'true';
+                  return;
                 }
                 await new Promise((resolve) => setTimeout(resolve, 10000)); // Wait for 10 seconds before the next attempt
               }
-              throw new Error('Required status check "build-and-test-with-cache" not found or did not pass.');
+              throw new Error('Required status checks not found or did not pass.');
             }
             await checkStatus();
 
