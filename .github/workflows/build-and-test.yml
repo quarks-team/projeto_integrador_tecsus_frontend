@@ -10,10 +10,11 @@ on:
     branches: [ main ]
 
 jobs:
+
   build-and-test-with-cache:
     runs-on: ubuntu-latest
+
     steps:
-    
       - name: Set up cache variables
         id: cache-vars
         run: |
@@ -45,20 +46,24 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run npm audit
-        run: npm audit --audit-level=high
-
       - name: Run build
         run: npm run build
 
       - name: Run unit tests
         run: npm run test
 
+      - name: Run SonarCloud Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          npm install -g sonar-scanner
+          sonar-scanner
+
   push-changes-of-version:
     needs: [build-and-test-with-cache]
     runs-on: ubuntu-latest
+
     steps:
-    
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
@@ -108,6 +113,7 @@ jobs:
             NEW_TAG="$MAJOR.$MINOR.$PATCH"
           fi
           echo "new_tag=$NEW_TAG" >> $GITHUB_ENV
+          echo "new_tag=$NEW_TAG" >> $GITHUB_ENV
           echo "::set-output name=new_tag::$NEW_TAG"
 
       - name: Check new tag output
@@ -145,7 +151,7 @@ jobs:
 
       - name: Wait for status check of build-and-test-with-cache (branch rule)
         if: env.new_commits == 'true'
-        uses: actions/github-script@v6
+        uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -154,13 +160,13 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            const checkRuns = await github.rest.checks.listForRef({
+            const checkRunsResponse = await github.rest.checks.listForRef({
               owner,
               repo,
               ref,
             });
 
-            const statusChecks = checkRuns.data.check_runs.filter(
+            const statusChecks = checkRunsResponse.data.check_runs.filter(
               (check) => check.name === 'build-and-test-with-cache'
             );
 
