@@ -177,7 +177,7 @@ jobs:
         if: env.new_commits == 'true'
         uses: actions/github-script@v5
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PAT_TOKEN }}
           script: |
             const ref = context.ref;
             const owner = context.repo.owner;
