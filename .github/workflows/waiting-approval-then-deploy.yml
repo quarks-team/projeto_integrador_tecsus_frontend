@@ -1,4 +1,4 @@
-name: CI Pipeline - Deploy Automático
+name: CI Pipeline - Waiting Approval then Deploy
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
