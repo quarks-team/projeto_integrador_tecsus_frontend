@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    
       - name: Set up cache variables
         id: cache-vars
         run: |
@@ -53,13 +52,10 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-
-      - name: Run SonarCloud Scan
+      # - name: Coverage
+      #   run: 
+        
+      - name: Run sonar-scanner to SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -88,8 +84,8 @@ jobs:
       - name: Check for new commits
         id: check_commits
         run: |
-          LAST_TAG=$(git describe --tags --abbrev=0)
-          if [ -z "$LAST_TAG" ]; then
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+          if [ "$LAST_TAG" = "0.0.0" ]; then
             echo "No previous tags found."
             echo "new_commits=true" >> $GITHUB_ENV
           else
@@ -109,8 +105,8 @@ jobs:
         run: |
           git config --global --add safe.directory /github/workspace
           DEFAULT_BUMP="patch"
-          LAST_TAG=$(git describe --tags --abbrev=0)
-          if [ -z "$LAST_TAG" ]; then
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+          if [ "$LAST_TAG" = "0.0.0" ]; then
             NEW_TAG="0.0.1"
           else
             IFS='.' read -r -a TAG_PARTS <<< "$LAST_TAG"
