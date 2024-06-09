@@ -3,6 +3,7 @@ name: CI Pipeline - Build and Test
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
 
 on:
   pull_request:
@@ -73,7 +74,32 @@ jobs:
             -Dsonar.organization=quarks-team1 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov-report/lcov.info
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+
+      - name: Upload build artifacts
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: ./dist
+
+  push-changes-of-version:
+    needs: [build-and-test-with-cache]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Set up /github/workspace as a safe directory
+        run: git config --global --add safe.directory /github/workspace
+
+      - name: Check out to the main branch
+        run: |
+          git fetch origin
+          git checkout main
 
       - name: Check for new commits
         id: check_commits
@@ -120,8 +146,50 @@ jobs:
           git add package.json package-lock.json
           git commit -m "Update version to ${{ steps.tag_version.outputs.new_tag }}"
 
-      - name: Push changes
+      - name: Wait for status check of build-and-test-with-cache (branch rule)
         if: env.new_commits == 'true'
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          script: |
+            async function checkStatus() {
+              const ref = process.env.GITHUB_REF;
+              const owner = process.env.GITHUB_REPOSITORY_OWNER;
+              const repo = process.env.GITHUB_REPOSITORY.split('/')[1];
+
+              console.log('Checking status of build-and-test-with-cache job...');
+              for (let attempt = 0; attempt < 10; attempt++) {
+                console.log(`Attempt ${attempt + 1} to check the status...`);
+                const checkRunsResponse = await github.request('GET /repos/{owner}/{repo}/commits/{ref}/status', {
+                  owner,
+                  repo,
+                  ref,
+                });
+
+                const statusChecks = checkRunsResponse.data.statuses.filter(
+                  (check) => check.context === 'build-and-test-with-cache'
+                );
+
+                if (statusChecks.length > 0) {
+                  const statusCheck = statusChecks[0];
+                  if (statusCheck.state === 'success') {
+                    console.log('Status check passed successfully.');
+                    process.env.STATUS_CHECK_PASSED = 'true';
+                    return;
+                  } else {
+                    console.log(`Status check state: ${statusCheck.state}`);
+                  }
+                } else {
+                  console.log('Status check not found.');
+                }
+                await new Promise((resolve) => setTimeout(resolve, 10000)); // Wait for 10 seconds before the next attempt
+              }
+              throw new Error('Required status check "build-and-test-with-cache" not found or did not pass.');
+            }
+            await checkStatus();
+
+      - name: Push changes
+        if: env.new_commits == 'true' && env.STATUS_CHECK_PASSED == 'true'
         run: |
           git push https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main --force
 
@@ -135,3 +203,4 @@ jobs:
         with:
           name: status-check
           path: status_check.txt
+
