@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    
       - name: Set up cache variables
         id: cache-vars
         run: |
@@ -88,7 +89,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
+    
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
@@ -176,7 +177,7 @@ jobs:
         if: env.new_commits == 'true'
         uses: actions/github-script@v5
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PAT_TOKEN }}
           script: |
             const ref = context.ref;
             const owner = context.repo.owner;
