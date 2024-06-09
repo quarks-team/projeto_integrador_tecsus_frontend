@@ -168,9 +168,9 @@ jobs:
       - name: Commit updated version files
         if: env.new_commits == 'true'
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add package.json package-lock.json
+          git config --local user.email "felipesobral_@hotmail.com"
+          git config --local user.name "SoSoJigsaw"
+          git add -f package.json package-lock.json
           git commit -m "Update version to ${{ steps.tag_version.outputs.new_tag }}"
 
       - name: Wait for status check of build-and-test-with-cache (branch rule)
