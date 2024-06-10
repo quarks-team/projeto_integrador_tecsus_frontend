@@ -155,39 +155,45 @@ jobs:
           git config pull.ff only
           git pull origin main
 
-      - name: Wait for status check
-        id: check_status
+      - name: Wait for status check of build-and-test-with-cache (branch rule)
+        if: env.new_commits == 'true'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          script: |
+            const ref = 'heads/main';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const checkRuns = await github.rest.checks.listForRef({
+              owner,
+              repo,
+              ref,
+            });
+
+            const statusChecks = checkRuns.data.check_runs.filter(
+              (check) => check.name === 'build-and-test-with-cache'
+            );
+
+            if (statusChecks.length === 0) {
+              throw new Error('Required status check "build-and-test-with-cache" not found.');
+            }
+
+            const statusCheck = statusChecks[0];
+
+            if (statusCheck.conclusion !== 'success') {
+              throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
+            }
+
+      - name: Ensure we are on main branch
+        if: env.new_commits == 'true'
         run: |
-          echo "Checking status checks for the tree/main branch..."
-          OWNER=${{ github.repository_owner }}
-          REPO=${{ github.event.repository.name }}
-          SUCCESS=false
-          for i in {1..10}; do
-            echo "Attempt $i: Checking status..."
-            CHECK_RUNS=$(curl -s -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
-              "https://api.github.com/repos/$OWNER/$REPO/commits/main/status")
-            echo "CHECK_RUNS: $CHECK_RUNS"
-            STATUS=$(echo "$CHECK_RUNS" | jq -r '.statuses[] | select(.context == "build-and-test-with-cache") | .state')
-            if [ "$STATUS" = "success" ]; then
-              SUCCESS=true
-              break
-            else
-              echo "Current status: $STATUS"
-              echo "Status check not yet successful. Waiting..."
-              sleep 10
-            fi
-          done
-          if [ "$SUCCESS" = false ]; then
-            echo "Required status check 'build-and-test-with-cache' not found or not successful."
-            exit 1
-          fi
-          echo "Status check successful."
+          git checkout main
 
       - name: Push changes
-        if: env.new_commits == 'true' && steps.check_status.outputs.SUCCESS == 'true'
+        if: env.new_commits == 'true'
         run: |
-          echo "Pushing changes to main branch..."
-          git push https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main
+          git push origin main
 
       - name: Store Status Check
         id: store_status_check
