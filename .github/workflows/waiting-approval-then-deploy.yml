@@ -2,59 +2,66 @@ name: Deploy - Waiting Approval then Deploy
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
 
 on:
   workflow_dispatch:
     inputs:
       approve:
         description: 'Do you approve the deployment?'
-        required: true
-        type: choice
         options:
-          - yes
-          - no
+          - 'yes'
+          - 'no'
+        required: true
         default: 'no'
 
 jobs:
-  deploy-on-github-pages:
+  wait-for-status-check:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check approval
-        id: approval
-        if: ${{ github.event.inputs.approve == 'yes' }}
-        run: echo "Approved for deployment."
-        continue-on-error: true
-
-      - name: Fail if not approved
-        if: ${{ github.event.inputs.approve != 'yes' }}
-        run: exit 1
-
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
-      - name: Download Status Check File
-        uses: actions/download-artifact@v3
-        with:
-          name: status-check
-          path: ./status
-
-      - name: Wait for Status Check
+      - name: Wait for status check
         id: check_status
         run: |
+          echo "Checking status checks for the last commit..."
+          REF=$(git rev-parse HEAD)
+          OWNER=${{ github.repository_owner }}
+          REPO=${{ github.event.repository.name }}
+          SUCCESS=false
           for i in {1..10}; do
-            if [ "$(cat ./status/status_check.txt)" = "true" ]; then
-              echo "Required status check 'build-and-test-with-cache' has passed."
-              exit 0
+            echo "Attempt $i: Checking status..."
+            CHECK_RUNS=$(curl -s -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
+              "https://api.github.com/repos/$OWNER/$REPO/commits/$REF/status")
+            echo "CHECK_RUNS: $CHECK_RUNS"
+            STATUS=$(echo "$CHECK_RUNS" | jq -r '.statuses[] | select(.context == "build-and-test-with-cache") | .state')
+            if [ "$STATUS" = "success" ]; then
+              SUCCESS=true
+              break
             else
-              echo "Waiting for status check 'build-and-test-with-cache' to pass. Attempt $i of 10."
+              echo "Current status: $STATUS"
+              echo "Status check not yet successful. Waiting..."
               sleep 10
             fi
           done
-          echo "Required status check 'build-and-test-with-cache' has not passed."
-          exit 1
+          if [ "$SUCCESS" = false ]; then
+            echo "Required status check 'build-and-test-with-cache' not found or not successful."
+            exit 1
+          fi
+          echo "Status check successful."
+
+  deploy-on-github-pages:
+    runs-on: ubuntu-latest
+    needs: [wait-for-status-check]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Setup Node Environment
         uses: actions/setup-node@v3
@@ -63,18 +70,19 @@ jobs:
           cache: 'npm'
 
       - name: Restore build cache
-        if: ${{ steps.check_status.outputs.status == 'true' }}
         uses: actions/cache@v3
         with:
-          path: dist
-          key: build-cache
+          path: node_modules
+          key: ${{ env.KEY_CACHE }}
+          restore-keys: |
+            ${{ env.RESTORE_KEYS }}
+            ${{ env.OS_VM }}
+          upload-chunk-size: 262144
 
       - name: Build
-        if: ${{ steps.check_status.outputs.status == 'true' }}
         run: npm run build
 
       - name: Deploy to GitHub Pages
-        if: ${{ steps.check_status.outputs.status == 'true' }}
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

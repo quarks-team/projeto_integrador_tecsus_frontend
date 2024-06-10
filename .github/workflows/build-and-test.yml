@@ -3,6 +3,7 @@ name: CI Pipeline - Build and Test
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
 
 on:
   pull_request:
@@ -18,14 +19,16 @@ jobs:
       - name: Set up cache variables
         id: cache-vars
         run: |
+          echo "Setting up cache variables..."
           echo "OS_VM=${{ runner.os }}-node-" >> $GITHUB_ENV
-          echo "KEY_CACHE=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json', '**/vitest.config.ts', '**/vite.config.ts', '**/tsconfig.vitest.json', '**/tsconfig.node.json', '**/tsconfig.json', '**/tsconfig.app.json', '**/env.d.ts', '**/.eslintrc.cjs', '**/src/main.ts', '**/jest.config.js', '**/src/router/index.ts') }}" >> $GITHUB_ENV
+          echo "KEY_CACHE=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json', '**/vitest.config.ts', '**/vite.config.ts', '**/tsconfig.vitest.json', '**/tsconfig.node.json', '**/tsconfig.json', '**/tsconfig.app.json', '**/env.d.ts', '**/src/main.ts', '**/src/router/index.ts', '**/update-version.cjs') }}" >> $GITHUB_ENV
           echo "RESTORE_KEYS=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}" >> $GITHUB_ENV
+          echo "Cache variables set."
 
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Setup Node Environment
         uses: actions/setup-node@v3
@@ -75,6 +78,16 @@ jobs:
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
 
+  update-code-version:
+    runs-on: ubuntu-latest
+    needs: [build-and-test-with-cache]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Check for new commits
         id: check_commits
         run: |
@@ -114,10 +127,17 @@ jobs:
           fi
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
 
-      - name: Update package.json and package-lock.json
+      - name: Verify update-version.cjs existence
         if: env.new_commits == 'true'
         run: |
-          node update-version.cjs ${{ env.NEW_TAG }}
+          if [ ! -f update-version.cjs ]; then
+            echo "update-version.cjs not found!"
+            exit 1
+          fi
+
+      - name: Update package.json and package-lock.json
+        if: env.new_commits == 'true'
+        run: node update-version.cjs ${{ env.NEW_TAG }}
 
       - name: Commit updated version files
         if: env.new_commits == 'true'
@@ -135,8 +155,39 @@ jobs:
           git config pull.ff only
           git pull origin main
 
+      - name: Wait for status check
+        id: check_status
+        run: |
+          echo "Checking status checks for the last commit..."
+          REF=$(git rev-parse HEAD)
+          OWNER=${{ github.repository_owner }}
+          REPO=${{ github.event.repository.name }}
+          echo "Commit ref: $REF"
+          echo "Repository: $OWNER/$REPO"
+          SUCCESS=false
+          for i in {1..10}; do
+            echo "Attempt $i: Checking status..."
+            CHECK_RUNS=$(curl -s -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
+              "https://api.github.com/repos/$OWNER/$REPO/commits/$REF/status")
+            echo "CHECK_RUNS: $CHECK_RUNS"
+            STATUS=$(echo "$CHECK_RUNS" | jq -r '.statuses[] | select(.context == "build-and-test-with-cache") | .state')
+            if [ "$STATUS" = "success" ]; then
+              SUCCESS=true
+              break
+            else
+              echo "Current status: $STATUS"
+              echo "Status check not yet successful. Waiting..."
+              sleep 10
+            fi
+          done
+          if [ "$SUCCESS" = false ]; then
+            echo "Required status check 'build-and-test-with-cache' not found or not successful."
+            exit 1
+          fi
+          echo "Status check successful."
+
       - name: Push changes
-        if: env.new_commits == 'true'
+        if: env.new_commits == 'true' && steps.check_status.outputs.SUCCESS == 'true'
         run: |
           echo "Pushing changes to main branch..."
           git push https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main
