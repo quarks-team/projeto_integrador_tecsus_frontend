@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Download Status Check File
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: status-check
           path: ./status
@@ -30,7 +30,7 @@ jobs:
             echo "reset_status=false" > status_check.txt
 
       - name: Upload Status Check File
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: status-check
           path: status_check.txt
