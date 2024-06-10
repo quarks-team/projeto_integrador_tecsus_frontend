@@ -121,10 +121,17 @@ jobs:
             fi
             echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
   
-        - name: Update package.json and package-lock.json
+        - name: Verify update-version.cjs existence
           if: env.new_commits == 'true'
           run: |
-            node update-version.cjs ${{ env.NEW_TAG }}
+            if [ ! -f update-version.cjs ]; then
+              echo "update-version.cjs not found!"
+              exit 1
+            fi
+
+        - name: Update package.json and package-lock.json
+          if: env.new_commits == 'true'
+          run: node update-version.cjs ${{ env.NEW_TAG }}
   
         - name: Commit updated version files
           if: env.new_commits == 'true'
