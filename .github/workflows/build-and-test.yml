@@ -112,6 +112,11 @@ jobs:
           fi
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
 
+      - name: Update package.json and package-lock.json
+        if: env.new_commits == 'true'
+        run: |
+          node update-version.cjs ${{ env.NEW_TAG }}
+
       - name: Commit updated version files
         if: env.new_commits == 'true'
         run: |
