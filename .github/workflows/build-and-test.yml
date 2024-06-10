@@ -3,6 +3,7 @@ name: CI Pipeline - Build and Test
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
 
 on:
   pull_request:
@@ -161,15 +162,18 @@ jobs:
           REF=$(git rev-parse HEAD)
           OWNER=${{ github.repository_owner }}
           REPO=${{ github.event.repository.name }}
+          echo "Commit ref: $REF"
+          echo "Repository: $OWNER/$REPO"
           SUCCESS=false
           for i in {1..10}; do
             echo "Attempt $i: Checking status..."
-            STATUS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            STATUS=$(curl -s -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
               "https://api.github.com/repos/$OWNER/$REPO/commits/$REF/status" | jq -r '.state')
             if [ "$STATUS" = "success" ]; then
               SUCCESS=true
               break
             else
+              echo "Current status: $STATUS"
               echo "Status check not yet successful. Waiting..."
               sleep 10
             fi
