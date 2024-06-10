@@ -18,39 +18,41 @@ on:
 jobs:
   wait-for-status-check:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Wait for status check
-        id: check_status
-        run: |
-          echo "Checking status checks for the main branch..."
-          OWNER=${{ github.repository_owner }}
-          REPO=${{ github.event.repository.name }}
-          SUCCESS=false
-          for i in {1..10}; do
-            echo "Attempt $i: Checking status..."
-            CHECK_RUNS=$(curl -s -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
-              "https://api.github.com/repos/$OWNER/$REPO/commits/main/status")
-            echo "CHECK_RUNS: $CHECK_RUNS"
-            STATUS=$(echo "$CHECK_RUNS" | jq -r '.state')
-            if [ "$STATUS" = "success" ]; then
-              SUCCESS=true
-              break
-            else
-              echo "Current status: $STATUS"
-              echo "Status check not yet successful. Waiting..."
-              sleep 10
-            fi
-          done
-          if [ "$SUCCESS" = false ]; then
-            echo "Required status check 'build-and-test-with-cache' not found or not successful."
-            exit 1
-          fi
-          echo "Status check successful."
+      - name: Wait for status check of build-and-test-with-cache (branch rule)
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          script: |
+            const ref = 'heads/main';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const checkRuns = await github.rest.checks.listForRef({
+              owner,
+              repo,
+              ref,
+            });
+
+            const statusChecks = checkRuns.data.check_runs.filter(
+              (check) => check.name === 'build-and-test-with-cache'
+            );
+
+            if (statusChecks.length === 0) {
+              throw new Error('Required status check "build-and-test-with-cache" not found.');
+            }
+
+            const statusCheck = statusChecks[0];
+
+            if (statusCheck.conclusion !== 'success') {
+              throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
+            }
 
   deploy-on-github-pages:
     runs-on: ubuntu-latest
@@ -58,18 +60,18 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup Node Environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
           
       - name: Restore build cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ env.KEY_CACHE }}
@@ -82,7 +84,7 @@ jobs:
         run: npm run build
         
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
