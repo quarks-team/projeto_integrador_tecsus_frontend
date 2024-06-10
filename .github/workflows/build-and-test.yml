@@ -167,8 +167,10 @@ jobs:
           SUCCESS=false
           for i in {1..10}; do
             echo "Attempt $i: Checking status..."
-            STATUS=$(curl -s -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
-              "https://api.github.com/repos/$OWNER/$REPO/commits/$REF/status" | jq -r '.state')
+            CHECK_RUNS=$(curl -s -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
+              "https://api.github.com/repos/$OWNER/$REPO/commits/$REF/check-runs")
+            echo "CHECK_RUNS: $CHECK_RUNS"
+            STATUS=$(echo "$CHECK_RUNS" | jq -r '.check_runs[] | select(.name == "build-and-test-with-cache") | .conclusion')
             if [ "$STATUS" = "success" ]; then
               SUCCESS=true
               break
