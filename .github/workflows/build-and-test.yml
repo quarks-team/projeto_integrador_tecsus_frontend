@@ -154,8 +154,34 @@ jobs:
           git config pull.ff only
           git pull origin main
 
+      - name: Wait for status check
+        id: check_status
+        run: |
+          echo "Checking status checks for the last commit..."
+          REF=$(git rev-parse HEAD)
+          OWNER=${{ github.repository_owner }}
+          REPO=${{ github.event.repository.name }}
+          SUCCESS=false
+          for i in {1..10}; do
+            echo "Attempt $i: Checking status..."
+            STATUS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/$OWNER/$REPO/commits/$REF/status" | jq -r '.state')
+            if [ "$STATUS" = "success" ]; then
+              SUCCESS=true
+              break
+            else
+              echo "Status check not yet successful. Waiting..."
+              sleep 10
+            fi
+          done
+          if [ "$SUCCESS" = false ]; then
+            echo "Required status check 'build-and-test-with-cache' not found or not successful."
+            exit 1
+          fi
+          echo "Status check successful."
+
       - name: Push changes
-        if: env.new_commits == 'true'
+        if: env.new_commits == 'true' && steps.check_status.outputs.SUCCESS == 'true'
         run: |
           echo "Pushing changes to main branch..."
           git push https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main
