@@ -168,9 +168,9 @@ jobs:
           for i in {1..10}; do
             echo "Attempt $i: Checking status..."
             CHECK_RUNS=$(curl -s -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
-              "https://api.github.com/repos/$OWNER/$REPO/commits/$REF/check-runs")
+              "https://api.github.com/repos/$OWNER/$REPO/commits/$REF/status")
             echo "CHECK_RUNS: $CHECK_RUNS"
-            STATUS=$(echo "$CHECK_RUNS" | jq -r '.check_runs[] | select(.name == "build-and-test-with-cache") | .conclusion')
+            STATUS=$(echo "$CHECK_RUNS" | jq -r '.statuses[] | select(.context == "build-and-test-with-cache") | .state')
             if [ "$STATUS" = "success" ]; then
               SUCCESS=true
               break
