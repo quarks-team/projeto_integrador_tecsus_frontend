@@ -185,6 +185,11 @@ jobs:
               throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
             }
 
+      - name: Ensure we are on main branch
+        if: env.new_commits == 'true'
+        run: |
+          git checkout main
+
       - name: Push changes
         if: env.new_commits == 'true'
         run: |
