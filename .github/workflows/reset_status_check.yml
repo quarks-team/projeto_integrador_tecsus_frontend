@@ -11,5 +11,30 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+      - name: Download Status Check File
+        uses: actions/download-artifact@v3
+        with:
+          name: status-check
+          path: ./status
+
+      - name: Check if both pipelines completed
+        id: check_pipelines
+        run: |
+          CI_COMPLETED=$(jq '.jobs["build-and-test-with-cache"].conclusion' $GITHUB_EVENT_PATH)
+          DEPLOY_COMPLETED=$(jq '.jobs["deploy-on-github-pages"].conclusion' $GITHUB_EVENT_PATH)
+          if [ "$CI_COMPLETED" = "success" ] && [ "$DEPLOY_COMPLETED" = "success" ]; then
+            echo "Both pipelines completed successfully."
+            echo "reset_status=true" > status_check.txt
+          else
+            echo "One or both pipelines did not complete successfully."
+            echo "reset_status=false" > status_check.txt
+
+      - name: Upload Status Check File
+        uses: actions/upload-artifact@v3
+        with:
+          name: status-check
+          path: status_check.txt
+
       - name: Reset status check file
+        if: ${{ steps.check_pipelines.outputs.reset_status == 'true' }}
         run: echo "false" > status_check.txt
