@@ -131,7 +131,7 @@ jobs:
         run: |
           echo "Pushing changes to main branch..."
           git checkout -B main
-          git push https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main --force
+          git push https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main
 
       - name: Store Status Check
         id: store_status_check
