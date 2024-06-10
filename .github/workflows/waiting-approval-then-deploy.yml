@@ -9,8 +9,11 @@ on:
     inputs:
       approve:
         description: 'Do you approve the deployment?'
+        options:
+          - 'yes'
+          - 'no'
         required: true
-        default: 'yes'
+        default: 'no'
 
 jobs:
   wait-for-status-check:
@@ -31,12 +34,15 @@ jobs:
           SUCCESS=false
           for i in {1..10}; do
             echo "Attempt $i: Checking status..."
-            STATUS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              "https://api.github.com/repos/$OWNER/$REPO/commits/$REF/status" | jq -r '.state')
+            CHECK_RUNS=$(curl -s -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
+              "https://api.github.com/repos/$OWNER/$REPO/commits/$REF/status")
+            echo "CHECK_RUNS: $CHECK_RUNS"
+            STATUS=$(echo "$CHECK_RUNS" | jq -r '.statuses[] | select(.context == "build-and-test-with-cache") | .state')
             if [ "$STATUS" = "success" ]; then
               SUCCESS=true
               break
             else
+              echo "Current status: $STATUS"
               echo "Status check not yet successful. Waiting..."
               sleep 10
             fi
@@ -62,7 +68,7 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          
+
       - name: Restore build cache
         uses: actions/cache@v3
         with:
@@ -75,7 +81,7 @@ jobs:
 
       - name: Build
         run: npm run build
-        
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
