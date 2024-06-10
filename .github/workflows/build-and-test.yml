@@ -2,8 +2,8 @@ name: CI Pipeline - Build and Test
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 on:
   pull_request:
@@ -158,19 +158,16 @@ jobs:
       - name: Wait for status check
         id: check_status
         run: |
-          echo "Checking status checks for the last commit..."
-          REF=$(git rev-parse HEAD)
+          echo "Checking status checks for the main branch..."
           OWNER=${{ github.repository_owner }}
           REPO=${{ github.event.repository.name }}
-          echo "Commit ref: $REF"
-          echo "Repository: $OWNER/$REPO"
           SUCCESS=false
           for i in {1..10}; do
             echo "Attempt $i: Checking status..."
             CHECK_RUNS=$(curl -s -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
-              "https://api.github.com/repos/$OWNER/$REPO/commits/$REF/status")
+              "https://api.github.com/repos/$OWNER/$REPO/branches/main/protection/required_status_checks")
             echo "CHECK_RUNS: $CHECK_RUNS"
-            STATUS=$(echo "$CHECK_RUNS" | jq -r '.statuses[] | select(.context == "build-and-test-with-cache") | .state')
+            STATUS=$(echo "$CHECK_RUNS" | jq -r '.checks[] | select(.context == "build-and-test-with-cache") | .state')
             if [ "$STATUS" = "success" ]; then
               SUCCESS=true
               break
