@@ -120,6 +120,7 @@ jobs:
       - name: Commit updated version files
         if: env.new_commits == 'true'
         run: |
+          echo "Committing updated version files..."
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add package.json package-lock.json
@@ -128,8 +129,8 @@ jobs:
       - name: Push changes
         if: env.new_commits == 'true'
         run: |
-          git branch
-          git checkout main
+          echo "Pushing changes to main branch..."
+          git checkout -B main
           git push https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main --force
 
       - name: Store Status Check
