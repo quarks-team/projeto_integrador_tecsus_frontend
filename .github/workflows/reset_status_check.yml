@@ -20,22 +20,21 @@ jobs:
       - name: Check if both pipelines completed
         id: check_pipelines
         run: |
-          echo "Checking if both pipelines completed successfully..."
-          CI_COMPLETED=$(jq -r '.workflow_runs[] | select(.name == "CI Pipeline - Build and Test") | .conclusion' $GITHUB_EVENT_PATH)
-          DEPLOY_COMPLETED=$(jq -r '.workflow_runs[] | select(.name == "Deploy - Waiting Approval then Deploy") | .conclusion' $GITHUB_EVENT_PATH)
+          CI_COMPLETED=$(jq '.jobs["build-and-test-with-cache"].conclusion' $GITHUB_EVENT_PATH)
+          DEPLOY_COMPLETED=$(jq '.jobs["deploy-on-github-pages"].conclusion' $GITHUB_EVENT_PATH)
           if [ "$CI_COMPLETED" = "success" ] && [ "$DEPLOY_COMPLETED" = "success" ]; then
             echo "Both pipelines completed successfully."
-            echo "reset_status=true" >> $GITHUB_ENV
+            echo "reset_status=true" > status_check.txt
           else
             echo "One or both pipelines did not complete successfully."
-            echo "reset_status=false" >> $GITHUB_ENV
-
-      - name: Reset status check file
-        if: env.reset_status == 'true'
-        run: echo "false" > status/status_check.txt
+            echo "reset_status=false" > status_check.txt
 
       - name: Upload Status Check File
         uses: actions/upload-artifact@v3
         with:
           name: status-check
-          path: status/status_check.txt
+          path: status_check.txt
+
+      - name: Reset status check file
+        if: steps.check_pipelines.outputs.reset_status == 'true'
+        run: echo "false" > status_check.txt
