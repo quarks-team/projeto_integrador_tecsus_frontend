@@ -78,7 +78,7 @@ jobs:
       - name: Check for new commits
         id: check_commits
         run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+         LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
           if [ "$LAST_TAG" = "0.0.0" ]; then
             echo "No previous tags found."
             echo "new_commits=true" >> $GITHUB_ENV
@@ -91,7 +91,6 @@ jobs:
               echo "New commits found."
               echo "new_commits=true" >> $GITHUB_ENV
             fi
-          fi
 
       - name: Bump version and push tag
         id: tag_version
@@ -110,8 +109,7 @@ jobs:
             PATCH=$((PATCH + 1))
             NEW_TAG="$MAJOR.$MINOR.$PATCH"
           fi
-          echo "new_tag=$NEW_TAG" >> $GITHUB_ENV
-          echo "::set-output name=new_tag::$NEW_TAG"
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
 
       - name: Commit updated version files
         if: env.new_commits == 'true'
@@ -119,7 +117,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add package.json package-lock.json
-          git commit -m "Update version to ${{ steps.tag_version.outputs.new_tag }}"
+          git commit -m "Update version to $NEW_TAG"
 
       - name: Push changes
         if: env.new_commits == 'true'
