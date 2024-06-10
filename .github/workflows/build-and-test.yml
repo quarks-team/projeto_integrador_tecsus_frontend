@@ -78,6 +78,7 @@ jobs:
       - name: Check for new commits
         id: check_commits
         run: |
+          echo "Checking for new commits since the last tag..."
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
           if [ "$LAST_TAG" = "0.0.0" ]; then
             echo "No previous tags found."
@@ -97,6 +98,7 @@ jobs:
         id: tag_version
         if: env.new_commits == 'true'
         run: |
+          echo "Bumping version..."
           git config --global --add safe.directory /github/workspace
           DEFAULT_BUMP="patch"
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
@@ -120,19 +122,24 @@ jobs:
       - name: Commit updated version files
         if: env.new_commits == 'true'
         run: |
+          echo "Committing updated version files..."
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add package.json package-lock.json
           git commit -m "Update version to $NEW_TAG"
 
+      - name: Pull changes from main branch
+        if: env.new_commits == 'true'
+        run: |
+          echo "Pulling changes from main branch..."
+          git config pull.ff only
+          git pull origin main
+
       - name: Push changes
         if: env.new_commits == 'true'
         run: |
-          git branch
-          git checkout main
-          git push https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main --force
-
-      - name: Store Status Check
+          echo "Pushing changes to main branch..."
+          git push https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/quarks-team/projeto_integrador_tecsus_frontend.git main
 
       - name: Store Status Check
         id: store_status_check
