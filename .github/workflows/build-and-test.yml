@@ -91,6 +91,7 @@ jobs:
               echo "New commits found."
               echo "new_commits=true" >> $GITHUB_ENV
             fi
+          fi
 
       - name: Bump version and set env
         id: tag_version
