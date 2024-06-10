@@ -158,7 +158,7 @@ jobs:
       - name: Wait for status check
         id: check_status
         run: |
-          echo "Checking status checks for the main branch..."
+          echo "Checking status checks for the tree/main branch..."
           OWNER=${{ github.repository_owner }}
           REPO=${{ github.event.repository.name }}
           SUCCESS=false
@@ -167,7 +167,7 @@ jobs:
             CHECK_RUNS=$(curl -s -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
               "https://api.github.com/repos/$OWNER/$REPO/branches/main/protection/required_status_checks")
             echo "CHECK_RUNS: $CHECK_RUNS"
-            STATUS=$(echo "$CHECK_RUNS" | jq -r '.checks[] | select(.context == "build-and-test-with-cache") | .state')
+            STATUS=$(echo "$CHECK_RUNS" | jq -r '.statuses[] | select(.context == "build-and-test-with-cache") | .state')
             if [ "$STATUS" = "success" ]; then
               SUCCESS=true
               break
