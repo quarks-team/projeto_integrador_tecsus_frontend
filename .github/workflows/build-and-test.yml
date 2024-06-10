@@ -132,6 +132,7 @@ jobs:
         if: env.new_commits == 'true'
         run: |
           echo "Pulling changes from main branch..."
+          git config pull.ff only
           git pull origin main
 
       - name: Push changes
