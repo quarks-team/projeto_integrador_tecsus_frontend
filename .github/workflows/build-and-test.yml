@@ -92,7 +92,7 @@ jobs:
               echo "new_commits=true" >> $GITHUB_ENV
             fi
 
-      - name: Bump version and push tag
+      - name: Bump version and set env
         id: tag_version
         if: env.new_commits == 'true'
         run: |
@@ -130,7 +130,7 @@ jobs:
         if: ${{ always() }}
 
       - name: Upload Status Check File
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: status-check
           path: status_check.txt
