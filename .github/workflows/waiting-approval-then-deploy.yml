@@ -63,18 +63,19 @@ jobs:
           cache: 'npm'
 
       - name: Restore build cache
+        if: ${{ steps.check_status.outputs.status == 'true' }}
         uses: actions/cache@v3
         with:
           path: dist
           key: build-cache
 
       - name: Build
+        if: ${{ steps.check_status.outputs.status == 'true' }}
         run: npm run build
 
       - name: Deploy to GitHub Pages
+        if: ${{ steps.check_status.outputs.status == 'true' }}
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-
-          path: ./status
