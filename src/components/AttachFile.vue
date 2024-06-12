@@ -1,6 +1,15 @@
 <template>
   <transition name="fade" mode="out-in">
-    <div v-if="isVisible" class="main">
+    <div
+      v-if="
+        isVisible &&
+        !mostrarPrompt &&
+        !mostrarAlertaSucesso &&
+        !mostrarAlertaOutrosErros &&
+        !progress
+      "
+      class="main"
+    >
       <form @submit.prevent="sendData" ref="form">
         <div class="dropzone-container" @dragover="dragover" @dragleave="dragleave" @drop="drop">
           <input
@@ -50,29 +59,49 @@
     </div>
   </transition>
 
-  <div v-if="mostrarAlertaOutrosErros" class="request-result">
-    <p class="title-popup">Erro ao processar o(s) CSV(s): {{ outrosErros }}</p>
-    <button class="btn-popup" @click.prevent="mostrarAlertaOutrosErros = false">OK</button>
+  <div
+    v-if="mostrarAlertaOutrosErros"
+    :class="outrosErros.length > 1 ? 'know-container' : 'request-result'"
+  >
+    <p class="title-popup" v-for="(outroErro, index) in outrosErros" :key="index">
+      Erro ao processar o(s) CSV(s): {{ outroErro }}
+    </p>
+    <button
+      class="btn-popup"
+      @click.prevent="
+        sendDataFinished
+          ? (mostrarAlertaOutrosErros = false && resetParams)
+          : (mostrarAlertaOutrosErros = false)
+      "
+    >
+      OK
+    </button>
   </div>
 
-  <div v-if="mostrarAlertaSucesso" class="request-result">
-    <p class="title-popup">{{ respostaSucesso }}</p>
-    <button class="btn-popup" @click.prevent="mostrarAlertaSucesso = false">OK</button>
+  <div
+    v-if="mostrarAlertaSucesso"
+    :class="respostaSucesso.length > 1 ? 'know-container' : 'request-result'"
+  >
+    <h1>Processando o ETL...</h1>
+    <p class="title-popup" v-for="(resposta, index) in respostaSucesso" :key="index">
+      {{ resposta }}
+    </p>
+    <div class="card" v-if="progress">
+      <ProgressBar mode="indeterminate" style="height: 5vmin; margin-top: 5vh; margin-bottom: 1vh;"></ProgressBar>
+    </div>
+    <button v-if="sendDataFinished" class="btn-popup" @click.prevent="resetParams">OK</button>
   </div>
 
-  <div v-if="mostrarPrompt" class="request-result">
-    <p class="title-popup">{{ promptMessage }}</p>
-    <button class="btn-popup" @click.prevent="mostrarPrompt = false">OK</button>
-  </div>
-
-  <div v-if="progresso > 0">
-    <p>Progresso: {{ progresso }}%</p>
-    <progress :value="progresso" max="100" class="progress-bar"></progress>
+  <div v-if="mostrarRespostaFinal" class="request-result">
+    <p class="title-popup">{{ respostaFinal }}</p>
+    <button v-if="sendDataFinished" class="btn-popup" @click.prevent="resetParams">OK</button>
   </div>
 </template>
 
 <script lang="ts">
 import axios from 'axios'
+import ProgressBar from 'primevue/progressbar'
+import { mapMutations } from 'vuex';
 
 export default {
   data() {
@@ -84,11 +113,12 @@ export default {
       isVisible: false,
       mostrarAlertaSucesso: false,
       mostrarAlertaOutrosErros: false,
-      outrosErros: '',
-      respostaSucesso: '',
-      mostrarPrompt: false,
-      promptMessage: '',
-      progresso: 0
+      outrosErros: [],
+      respostaSucesso: [],
+      progress: false,
+      sendDataFinished: false,
+      respostaFinal: '',
+      mostrarRespostaFinal: false
     }
   },
 
@@ -99,6 +129,9 @@ export default {
   },
 
   methods: {
+
+    ...mapMutations(['setProcessing']),
+
     onChange() {
       this.files = Array.from(this.$refs.file.files)
 
@@ -157,71 +190,86 @@ export default {
     },
 
     async sendData() {
+
+      this.progress = true;
+
       try {
-     
         if (this.files.length > 0) {
-          const formData = new FormData();
+
+          this.setProcessing(true);
+
+          const formData = new FormData()
           for (const file of this.files) {
-            formData.append('files', file);
+            formData.append('files', file)
           }
 
           // Conectar ao SSE para receber mensagens do servidor
-          const eventSource = new EventSource('http://localhost:3000/billing/upload/sse');
+          const eventSource = new EventSource('http://localhost:3000/billing/upload/sse')
 
           eventSource.addEventListener('user-log', (event) => {
-            const data = JSON.parse(event.data);
-            this.mostrarAlertaOutrosErros = false;
-            this.mostrarAlertaSucesso = true;
-            this.respostaSucesso = data.message;
-          });
-
-          eventSource.addEventListener('technical-log', (event) => {
-            const data = JSON.parse(event.data);
-            console.log('Technical log:', data.message);
-            this.mostrarAlertaOutrosErros = false;
-            this.mostrarPrompt = true;
-            this.promptMessage = data.message;
-          });
-
-          eventSource.addEventListener('progress', (event) => {
-            const data = JSON.parse(event.data);
-            this.progresso = data.percent;
-          });
+            const data = JSON.parse(event.data)
+            this.mostrarAlertaOutrosErros = false
+            this.mostrarAlertaSucesso = true
+            this.respostaSucesso.push('Log: ' + data.message)
+          })
 
           eventSource.onerror = (error: any) => {
-            console.error('Erro no SSE:', error);
-            this.outrosErros = error.message;
-            this.mostrarAlertaSucesso = false;
-            this.mostrarAlertaOutrosErros = true;
-            eventSource.close();
-          };
+            console.error('Erro no SSE:', error)
+            this.outrosErros.push('Erro no SSE: ' + error.message)
+            this.mostrarAlertaSucesso = false
+            this.mostrarAlertaOutrosErros = true
+            eventSource.close()
+          }
 
           // Enviar arquivos para o servidor
           const response = await axios.post('http://localhost:3000/billing/upload', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
-          });
-
-          this.mostrarAlertaOutrosErros = false;
-          this.mostrarAlertaSucesso = true;
-          this.respostaSucesso = response.data.message;
+          })
 
           // Fechar a conexão SSE quando o upload for concluído
-          eventSource.close();
+          eventSource.close()
 
-          // Resetar o valor do input
-          this.$refs.file.value = null;
-          this.files = [];
-          this.filesJSON = [];
+          this.mostrarAlertaOutrosErros = false;
+          this.mostrarAlertaSucesso = false;
+          this.mostrarRespostaFinal = true;
+          this.respostaFinal = response.data.message;
+          this.sendDataFinished = true;
+          this.progress = false;
+          this.setProcessing(false);
         }
       } catch (error) {
-        console.error('Erro ao fazer upload: ', error);
-        this.outrosErros = error.message;
+        console.error('Erro ao fazer upload: ', error)
+        this.mostrarAlertaOutrosErros = false;
         this.mostrarAlertaSucesso = false;
-        this.mostrarAlertaOutrosErros = true;
+        this.mostrarRespostaFinal = true;
+        this.respostaFinal = error.message;
+        this.sendDataFinished = true;
+        this.progress = false;
+        this.setProcessing(false);
       }
+    },
+
+    resetParams() {
+      this.progress = false;
+      this.respostaSucesso = []
+      if (this.$refs.file) {
+        this.$refs.file.value = null
+      }
+      this.files = []
+      this.filesJSON = []
+      this.mostrarAlertaSucesso = false
+      this.mostrarAlertaOutrosErros = false
+      this.outrosErros = []
+      this.mostrarRespostaFinal = false
+      this.respostaFinal = ''
+      this.sendDataFinished = false
     }
+  },
+
+  components: {
+    ProgressBar
   }
 }
 </script>
@@ -415,30 +463,33 @@ export default {
   opacity: 1;
 }
 
-.btn-popup {
-  opacity: 0.8;
+.know-container {
+  padding: 3rem;
+  background-color: var(--branco-auxiliar-0-5);
+  border: 1px solid var(--verde-contraste-0-5);
+  border-radius: 10px;
+  box-shadow: 5px 5px 40px 20px var(--cinza-auxiliar);
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
 }
 
-.progress-bar {
-  width: 100%;
-  height: 20px;
-  appearance: none;
+.know-container:hover {
+  background-color: var(--branco-auxiliar);
+  border: 1px solid var(--verde-contraste);
 }
 
-.progress-bar::-webkit-progress-bar {
-  background-color: #f3f3f3;
-  border-radius: 5px;
-  box-shadow: inset 0px 0px 5px #ccc;
+.know-container p {
+  color: var(--azul-contraste-0-6);
+  font-weight: 400;
+  font-size: 3vmin;
 }
 
-.progress-bar::-webkit-progress-value {
-  background-color: #4caf50;
-  border-radius: 5px;
-}
-
-.progress-bar::-moz-progress-bar {
-  background-color: #4caf50;
-  border-radius: 5px;
+.know-container h1,
+.request-result h1 {
+  color: var(--roxo-principal);
+  font-size: 5vmin;
+  font-weight: 400;
 }
 
 /* --------------- Media Queries -------------------- */
@@ -484,9 +535,6 @@ export default {
     padding: 5px;
     margin-left: 5px;
     box-shadow: 2px 2px var(--silver);
-  }
-
-  .preview-card p {
   }
 
   .preview-img {
@@ -549,9 +597,6 @@ export default {
     padding: 5px;
     margin-left: 5px;
     box-shadow: 2px 2px var(--silver);
-  }
-
-  .preview-card p {
   }
 
   .preview-img {
