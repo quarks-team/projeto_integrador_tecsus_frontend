@@ -1,39 +1,35 @@
 <script lang="ts">
 import { RouterView } from 'vue-router'
 import Sidebar from './components/Sidebar.vue'
-import Notifications from './components/Notifications.vue';
+import Notifications from './components/Notifications.vue'
 // import NumberNotifications from './components/NumberNotifications.vue';
-import { eventBus } from './main';
-import clickOutside from '../src/utils/click-outside.ts';
-
+import { eventBus } from './main'
+import clickOutside from '../src/utils/click-outside.ts'
 
 export default {
   data() {
     return {
       showNotifications: false,
-      numberNotifications: null,
+      numberNotifications: null
     }
   },
 
   directives: {
-    clickOutside,
+    clickOutside
   },
 
   created() {
-
     // eventBus.$on('close-notifications', (closeNotifications: boolean) => {
     //         this.showNotifications = closeNotifications
     //   });
-
     // eventBus.$on('number-notifications', (number: any) => {
     //     this.numberNotifications = number
-    //   });   
-
+    //   });
   },
 
   components: {
     Sidebar,
-    Notifications,
+    Notifications
     // NumberNotifications
   }
 }
@@ -83,7 +79,7 @@ export default {
 }
 
 .number-notifications {
-  background-color: #AE2A32;
+  background-color: #ae2a32;
   border-radius: 50%;
   padding-top: 5px;
   padding-bottom: 5px;
@@ -91,6 +87,6 @@ export default {
   padding-right: 10px;
   font-size: 14px;
   color: white;
-  display:inline;
+  display: inline;
 }
 </style>

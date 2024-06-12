@@ -92,7 +92,7 @@ describe('AttachFile.vue', () => {
 
   it('should display success alert when files are successfully sent', async () => {
     const wrapper: VueWrapper<any> = mount(AttachFile);
-    wrapper.setData({ mostrarAlertaSucesso: true });
+    wrapper.setData({ mostrarRespostaFinal: true });
     await wrapper.vm.$nextTick();
     console.log('Success alert visibility:', wrapper.find('.request-result').isVisible());
     expect(wrapper.find('.request-result').exists()).toBe(true);
@@ -105,8 +105,8 @@ describe('AttachFile.vue', () => {
       outrosErros: 'Erro de processamento',
     });
     await wrapper.vm.$nextTick();
-    console.log('Error alert text:', wrapper.find('.request-result').text());
-    expect(wrapper.find('.request-result').exists()).toBe(true);
+    console.log('Error alert text:', wrapper.find('.know-container').text());
+    expect(wrapper.find('.know-container').exists()).toBe(true);
   }); 
 
   it('should update isDragging state on dragover and dragleave', async () => {

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import store from '../store'; 
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,5 +43,15 @@ const router = createRouter({
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if (store.state.isProcessing) { 
+    alert('Algum processamento ainda está em progresso nessa página. Por favor, aguarde o seu término.');
+    next(false);
+  } else {
+    next();
+  }
+});
+
 
 export default router
