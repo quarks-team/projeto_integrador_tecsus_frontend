@@ -45,3 +45,4 @@ tests/__snapshots__/AlertsView.test.ts.snap
 # Environment Variable
 .env
 /.scannerwork
+*.snap
