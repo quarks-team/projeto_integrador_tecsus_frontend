@@ -40,50 +40,6 @@ export default {
 <style>
 @import '../assets/css/base.css';
 
-/* Definindo a animação para mover a imagem para a direita e reiniciar à esquerda */
-/* @keyframes slide-and-loop-img {
-  0% {
-    transform: translateX(0);
-    opacity: 0;
-  }
-  7% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  30% {
-    transform: translateX(0);
-  }
-  45% {
-    transform: translateX(150%);
-  }
-  46% {
-    visibility: hidden;
-  }
-  100% {
-    transform: translateX(270%);
-    opacity: 1;
-  }
-} */
-
-/* @keyframes slide-and-loop-text {
-  0% {
-    visibility: hidden;
-  }
-  45% {
-    visibility: hidden;
-  }
-  50% {
-    visibility: visible;
-    opacity: 1;
-  }
-  95% {
-    opacity: 0;
-  }
-  100% {
-    visibility: hidden;
-  }
-} */
-
 .sidebar {
   position: fixed;
   display: flex;

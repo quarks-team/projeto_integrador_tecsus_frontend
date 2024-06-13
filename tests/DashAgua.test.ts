@@ -12,7 +12,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/agua',
     name: 'agua',
-    component: { template: '<div>Water Dashboard</div>' }
+    component: { template: '<div>Watter Dashboard</div>' }
   },
 ];
 
@@ -55,7 +55,7 @@ describe('DashAgua.vue', () => {
     vi.useRealTimers();
   });
 
-  it('should redirect to water dashboard when clicked', async () => {
+  it('should redirect to watter dashboard when clicked', async () => {
     const card = wrapper.find('.container-card-agua');
     expect(card.exists()).toBe(true);
     await card.trigger('click');
@@ -71,7 +71,7 @@ describe('DashAgua.vue', () => {
     console.log('Emitted Events:', emittedEvents);
     expect(emittedEvents).toBeTruthy();
     if (emittedEvents) {
-      expect(emittedEvents[0]).toEqual(['water-dashboard']);
+      expect(emittedEvents[0]).toEqual(['watter-dashboard']);
     }
   });
 
