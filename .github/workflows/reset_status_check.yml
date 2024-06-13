@@ -11,11 +11,6 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Download Status Check File
-        uses: actions/download-artifact@v4
-        with:
-          name: status-check
-          path: ./status
 
       - name: Check if both pipelines completed
         id: check_pipelines
@@ -28,6 +23,12 @@ jobs:
           else
             echo "One or both pipelines did not complete successfully."
             echo "reset_status=false" > status_check.txt
+
+      - name: Download Status Check File
+        uses: actions/download-artifact@v4
+        with:
+          name: status-check
+          path: ./status      
 
       - name: Upload Status Check File
         uses: actions/upload-artifact@v4
