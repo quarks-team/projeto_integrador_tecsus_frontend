@@ -7,9 +7,9 @@
       Notifications
       <div class="notification-filter">
         <b
-          @click.prevent="water = !water"
+          @click.prevent="watterAlert = !watterAlert"
           :style="
-            water === true
+            watter === true
               ? {
                   'background-color': '#004AEB',
                   color: 'white',
@@ -24,13 +24,11 @@
                   overflow: 'hidden',
                   'text-overflow': 'ellipsis'
                 }
-          "
-          >water</b
-        >
+          ">Watter</b>
         <b
-          @click.prevent="energy = !energy"
+          @click.prevent="wastePipeAlert = !wastePipeAlert"
           :style="
-            energy === true
+            wastePipeAlert === true
               ? {
                   'background-color': '#004AEB',
                   color: 'white',
@@ -45,11 +43,47 @@
                   overflow: 'hidden',
                   'text-overflow': 'ellipsis'
                 }
-          "
-          >energy</b
-        >
+          ">Waste Pipe</b>
         <b
-          @click.prevent="sink = !sink"
+          @click.prevent="energy_A_Alert = !energy_A_Alert"
+          :style="
+            energy_A_Alert === true
+              ? {
+                  'background-color': '#004AEB',
+                  color: 'white',
+                  'white-space': 'nowrap',
+                  overflow: 'hidden',
+                  'text-overflow': 'ellipsis'
+                }
+              : {
+                  'background-color': 'transparent',
+                  color: '#004AEB',
+                  'white-space': 'nowrap',
+                  overflow: 'hidden',
+                  'text-overflow': 'ellipsis'
+                }
+          ">Energy A</b>
+        <b
+          @click.prevent="energy_B_Alert = !energy_B_Alert"
+          :style="
+            energy_B_Alert === true
+              ? {
+                  'background-color': '#004AEB',
+                  color: 'white',
+                  'white-space': 'nowrap',
+                  overflow: 'hidden',
+                  'text-overflow': 'ellipsis'
+                }
+              : {
+                  'background-color': 'transparent',
+                  color: '#004AEB',
+                  'white-space': 'nowrap',
+                  overflow: 'hidden',
+                  'text-overflow': 'ellipsis'
+                }
+          ">Energy B</b>
+        <!-- <b
+          @click.prevent="sinkAlert = !sinkAlert"
           :style="
             sink === true
               ? {
@@ -67,102 +101,99 @@
                   'text-overflow': 'ellipsis'
                 }
           "
-          >New Sb</b
-        >
+          >Sink</b
+        > -->
       </div>
     </h2>
 
-    <div class="card-notification" v-for="n in notifications" :key="n.id">
-      <h4
-        v-if="
-          (n.operation === 'Changed Sb status' ||
-            n.operation === 'Unlocking items by the new Sb') &&
-          n.item_status === 'INCORPORATED'
-        "
-        @click.prevent="divClickToWater(n.chassis_associate)"
-      >
-        water "{{ n.item }}" in chassis {{ n.chassis_associate }}
-        <b
-          :style="
-            n.item_status === 'INCORPORATED'
-              ? { 'background-color': '#548644', color: 'white' }
-              : { 'background-color': '#7CF0BD', color: 'white' }
-          "
-          >{{ n.item_status }}</b
-        >
-        <button class="button-delete" @click.prevent="deleteNotification(n.id)">
-          <i class="fa-solid fa-trash"></i>
-        </button>
-      </h4>
-      <h5
-        v-if="
-          (n.operation === 'Changed Sb status' ||
-            n.operation === 'Unlocking items by the new Sb') &&
-          n.item_status === 'APPLICABLE'
-        "
-        @click.prevent="divClickToWater(n.chassis_associate)"
-      >
-        energy of "{{ n.item }}" unlocking in chassis {{ n.chassis_associate }}
-      </h5>
+    <div class="card-notification" v-for="n in watter" :key="n.id">  
+      <b style="background-color: #548644;">!</b>
+      <h5>Client Unity ID: {{ n.clientUnityId }}</h5>
+      <h5>{{ `Watter Contract ID: ${n.watterContractId}` }}</h5>
+      <h4>Consumo de água: {{ n.watterConsume }}</h4> 
+      <h4>Média Trimestral: {{ n.quarterlyAverage }}</h4>
+      <h4>Excesso Percentual: {{ n.percentageExcess }}</h4>
+      <h6>Data do alerta: {{ n.alertDate }}</h6>
+      <button class="button-delete" @click.prevent="deleteNotification(n.id)">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </div>
 
-      <h4
-        v-if="n.operation === 'Changed Sb status'"
-        @click.prevent="divClickToEnergy(n.sb_name, n.sb_part)"
-      >
-        By change in {{ n.sb_name }} {{ n.sb_part }} for <b>{{ n.sb_status_change }}</b>
-        <b
-          :style="
-            n.item_status === 'INCORPORATED'
-              ? { 'background-color': '#548644', color: 'white' }
-              : { 'background-color': '#7CF0BD', color: 'white' }
-          "
-          >{{ n.item_status }}</b
-        >
-        <button class="button-delete" @click.prevent="deleteNotification(n.id)">
-          <i class="fa-solid fa-trash"></i>
-        </button>
-      </h4>
-      <h5
-        v-if="n.operation === 'Unlocking items by the new Sb'"
-        @click.prevent="divClickToEnergy(n.sb_name, n.sb_part)"
-      >
-        By creation of {{ n.sb_name }} {{ n.sb_part }} with status
-        <p>{{ n.sb_status_change }}</p>
-      </h5>
+    <div class="card-notification" v-for="n in wastepipe" :key="n.id">  
+      <b style="background-color: #548644;">!</b>
+      <h5>Client Unity ID: {{ n.clientUnityId }}</h5>
+      <h5>{{ `Watter Contract ID: ${n.watterContractId}` }}</h5>
+      <h4>Consumo de água: {{ n.watterConsume }}</h4> 
+      <h4>Média Trimestral: {{ n.quarterlyAverage }}</h4>
+      <h4>Excesso Percentual: {{ n.percentageExcess }}</h4>
+      <h6>Data do alerta: {{ n.alertDate }}</h6>
+      <button class="button-delete" @click.prevent="deleteNotification(n.id)">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </div>
 
-      <h4
-        v-if="n.operation === 'Creation of new Sb'"
-        @click.prevent="divClickToSink(n.chassis_associate)"
-      >
-        Creation of new Service Bulletin in chassis {{ n.chassis_associate }}
-        <button class="button-delete" @click.prevent="deleteNotification(n.id)">
-          <i class="fa-solid fa-trash"></i>
-        </button>
-      </h4>
-      <h5
-        v-if="n.operation === 'Creation of new Sb'"
-        @click.prevent="divClickToSink(n.sb_name, n.sb_part)"
-      >
-        {{ n.sb_name }} {{ n.sb_part }} with status {{ n.sb_status_change }}
-      </h5>
+    <div class="card-notification" v-for="n in energyA" :key="n.id">  
+      <b style="background-color: #548644;">!</b>
+      <h5>Client Unity ID: {{ n.clientUnityId }}</h5>
+      <h5>{{ `Energy Contract ID: ${n.energyContractId}` }}</h5>
+      <h4>Consumo de água: {{ n.watterConsume }}</h4> 
+      <h4>Média Trimestral: {{ n.quarterlyAverage }}</h4>
+      <h4>Excesso Percentual: {{ n.percentageExcess }}</h4>
+      <h6>Data do alerta: {{ n.alertDate }}</h6>
+      <button class="button-delete" @click.prevent="deleteNotification(n.id)">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </div>
+
+    <div class="card-notification" v-for="n in energyB" :key="n.id">  
+      <b style="background-color: #548644;">!</b>
+      <h5>Client Unity ID: {{ n.clientUnityId }}</h5>
+      <h5>{{ `Energy Contract ID: ${n.energyContractId}` }}</h5>
+      <h4>Consumo de água: {{ n.watterConsume }}</h4> 
+      <h4>Média Trimestral: {{ n.quarterlyAverage }}</h4>
+      <h4>Excesso Percentual: {{ n.percentageExcess }}</h4>
+      <h6>Data do alerta: {{ n.alertDate }}</h6>
+      <button class="button-delete" @click.prevent="deleteNotification(n.id)">
+        <i class="fa-solid fa-trash"></i>
+      </button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import axios from 'axios'
-import { eventBus } from '../main'
+import { defineComponent, onMounted } from 'vue';
+import eventBus from '../eventBus';
 
-export default {
+export default defineComponent({
+  name: 'EventListenerComponent',
+  
+  setup() {
+    onMounted(() => {
+      eventBus.on('app-created', (message: string) => {
+        console.log(message);
+      });
+    });
+  },
+
   data() {
     return {
       notifications: [],
-      water: true,
-      energy: true,
-      sink: true,
-      filteredWater: [],
-      filteredEnergy: [],
-      filteredSink: []
+      watterAlert: true,
+      wastePipeAlert: true,
+      energy_A_Alert: true,
+      energy_B_Alert: true,
+      // sinkAlert: true,
+      watter: {},
+      wastepipe: {},
+      energyA: {},
+      energyB: {},
+      // filteredWatter: {},
+      // filteredWastePipe: {},
+      // filteredEnergyA: {},
+      // filteredEnergyB: {},
+      // filteredSink: {},
+      notifications: []
     }
   },
 
@@ -171,144 +202,241 @@ export default {
   },
 
   created() {
-    this.filterWater()
-    this.filterEnergy()
-    this.filterSink()
+    // this.filterWatterConsume()
+    // this.filterQuarterlyAverage()
+    // this.filterPercentageExcess()
 
-    eventBus.$on('update-notifications', (update: boolean) => {
+    eventBus.on('update-notifications', (update: boolean) => {
       this.getNotifications()
     })
   },
 
   watch: {
-    water: function () {
-      this.filterWater()
-    },
+    // watterConsume: function () {
+    //   this.filterWatterConsume()
+    // },
 
-    energy: function () {
-      this.filterEnergy()
-    },
+    // quarterlyAverage: function () {
+    //   this.filterQuarterlyAverage()
+    // },
 
-    sink: function () {
-      this.filterSink()
-    }
+    // percentageExcess: function () {
+    //   this.filterPercentageExcess()
+    // }
   },
 
   methods: {
+
     closeNotifications() {
-      eventBus.$emit('close-notifications', false)
+      eventBus.emit('close-notifications', false)
     },
 
     async getNotifications() {
-      const response = await axios.get('http://localhost:8080/list-all-notifications-admin')
 
-      this.notifications = response.data.map((item: String) => ({
-        id: item.id,
-        user_modified: item.user_modified,
-        user_owner: item.user_owner,
-        chassis_associate: item.chassis_associate,
-        sb_name: item.sb_name,
-        sb_part: item.sb_part,
-        operation: item.operation,
-        sb_status_change: item.sb_status_change,
-        item: item.item,
-        item_status: item.item_status,
-        date_register: item.date_register
-      }))
+      const response = await axios.get('http://localhost:3000/alerts')
 
-      eventBus.$emit('number-notifications', this.notifications.length)
+      this.watter = response.data.watter.map((item: String) => ({ 
+                    id: item.id,
+                    watterContractId: item.watterContractId,
+                    clientUnityId: item.clientUnityId,
+                    plantId: item.plantId,
+                    alertDate: item.alertDate,
+                    watterConsume: item.watterConsume,
+                    quarterlyAverage: item.quarterlyAverage,
+                    percentageExcess: item.percentageExcess
+                }));
+
+      this.wastepipe = response.data.wastepipe.map((item: String) => ({ 
+                    id: item.id,
+                    watterContractId: item.watterContractId,
+                    clientUnityId: item.clientUnityId,
+                    plantId: item.plantId,
+                    alertDate: item.alertDate,
+                    watterConsume: item.watterConsume,
+                    quarterlyAverage: item.quarterlyAverage,
+                    percentageExcess: item.percentageExcess,
+                }));
+
+      this.energyA = response.data.energyA.map((item: String) => ({ 
+                    id: item.id,
+                    energyContractId: item.energyContractId,
+                    clientUnityId: item.clientUnityId,
+                    plantId: item.plantId,
+                    alertDate: item.alertDate,
+                    watterConsume: item.watterConsume,
+                    quarterlyAverage: item.quarterlyAverage,
+                    percentageExcess: item.percentageExcess,
+                }));
+
+      this.energyB = response.data.energyB.map((item: String) => ({ 
+                    id: item.id,
+                    energyContractId: item.energyContractId,
+                    clientUnityId: item.clientUnityId,
+                    plantId: item.plantId,
+                    alertDate: item.alertDate,
+                    watterConsume: item.watterConsume,
+                    quarterlyAverage: item.quarterlyAverage,
+                    percentageExcess: item.percentageExcess,
+                }));
+
+      this.notifications = [...this.watter, ...this.wastepipe, ...this.energyA, ...this.energyB]
+
+      eventBus.emit('number-notifications', this.notifications.length)
     },
 
-    async deleteNotification(id: Number) {
-      await axios.get('http://localhost:8080/delete-notification/' + id)
+    // filterWatterConsume() {
+    //   if (!this.watterAlert) {
+    //     this.filteredWatter = this.watter.sort((a, b) => {
+    //       return a.watterConsume.length - b.watterConsume.length;
+    //   });
+    //     this.notifications = this.notifications.watter.sort((a, b) => {
+    //       return a.watterConsume.length - b.watterConsume.length; 
+    //   });
+    //   } else if (!this.energy_A_Alert) {
+    //     this.filteredEnergyA = this.energyA.sort((a, b) => {
+    //       return a.watterConsume.length - b.watterConsume.length; 
+    //   });
+    //     this.notifications = this.notifications.energyA.sort((a, b) => {
+    //       return a.watterConsume.length - b.watterConsume.length; 
+    //   });
+    //   } else if (!this.energy_B_Alert) {
+    //     this.filteredEnergyB = this.energyB.sort((a, b) => {
+    //       return a.watterConsume.length - b.watterConsume.length; 
+    //   });
+    //     this.notifications = this.notifications.energyB.sort((a, b) => {
+    //       return a.watterConsume.length - b.watterConsume.length; 
+    //   });
+    //   } else if (!this.wastePipeAlert) {
+    //     this.filteredWastePipe = this.wastepipe.sort((a, b) => {
+    //       return a.watterConsume.length - b.watterConsume.length; 
+    //   });
+    //     this.notifications = this.notifications.wastepipe.sort((a, b) => {
+    //       return a.watterConsume.length - b.watterConsume.length; 
+    //   });
+    //   } else {
+    //     this.notifications.push(
+    //       ...this.filteredWatter, ...this.filteredEnergyA, 
+    //       ...this.filteredEnergyB, ...this.filteredWastePipe
+    //     )
+    //   }
+    // },
 
-      this.getNotifications()
-    },
+    // filterQuarterlyAverage() {
+    //   if (!this.watterAlert) {
+    //     this.filteredWatter = this.watter.sort((a, b) => {
+    //       return a.quarterlyAverage.length - b.quarterlyAverage.length;
+    //   });
+    //     this.notifications = this.notifications.watter.sort((a, b) => {
+    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
+    //   });
+    //   } else if (!this.energy_A_Alert) {
+    //     this.filteredEnergyA = this.energyA.sort((a, b) => {
+    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
+    //   });
+    //     this.notifications = this.notifications.energyA.sort((a, b) => {
+    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
+    //   });
+    //   } else if (!this.energy_B_Alert) {
+    //     this.filteredEnergyB = this.energyB.sort((a, b) => {
+    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
+    //   });
+    //     this.notifications = this.notifications.energyB.sort((a, b) => {
+    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
+    //   });
+    //   } else if (!this.wastePipeAlert) {
+    //     this.filteredWastePipe = this.wastepipe.sort((a, b) => {
+    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
+    //   });
+    //     this.notifications = this.notifications.wastepipe.sort((a, b) => {
+    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
+    //   });
+    //   } else {
+    //     this.notifications.push(
+    //       ...this.filteredWatter, ...this.filteredEnergyA, 
+    //       ...this.filteredEnergyB, ...this.filteredWastePipe
+    //     )
+    //   }
+    // },
 
-    filterWater() {
-      if (!this.water) {
-        this.filteredWater = this.notifications.filter(
-          (item) => String(item.item_status) === 'INCORPORATED'
-        )
-        this.notifications = this.notifications.filter(
-          (item) => String(item.item_status) !== 'INCORPORATED'
-        )
-      } else {
-        this.notifications.push(...this.filteredWater)
-      }
-    },
+    // filterPercentageExcess() {
+    //   if (!this.watterAlert) {
+    //     this.filteredWatter = this.watter.sort((a, b) => {
+    //       return a.percentageExcess.length - b.percentageExcess.length;
+    //   });
+    //     this.notifications = this.notifications.watter.sort((a, b) => {
+    //       return a.percentageExcess.length - b.percentageExcess.length; 
+    //   });
+    //   } else if (!this.energy_A_Alert) {
+    //     this.filteredEnergyA = this.energyA.sort((a, b) => {
+    //       return a.percentageExcess.length - b.percentageExcess.length; 
+    //   });
+    //     this.notifications = this.notifications.energyA.sort((a, b) => {
+    //       return a.percentageExcess.length - b.percentageExcess.length; 
+    //   });
+    //   } else if (!this.energy_B_Alert) {
+    //     this.filteredEnergyB = this.energyB.sort((a, b) => {
+    //       return a.percentageExcess.length - b.percentageExcess.length; 
+    //   });
+    //     this.notifications = this.notifications.energyB.sort((a, b) => {
+    //       return a.percentageExcess.length - b.percentageExcess.length; 
+    //   });
+    //   } else if (!this.wastePipeAlert) {
+    //     this.filteredWastePipe = this.wastepipe.sort((a, b) => {
+    //       return a.percentageExcess.length - b.percentageExcess.length; 
+    //   });
+    //     this.notifications = this.notifications.wastepipe.sort((a, b) => {
+    //       return a.percentageExcess.length - b.percentageExcess.length; 
+    //   });
+    //   } else {
+    //     this.notifications.push(
+    //       ...this.filteredWatter, ...this.filteredEnergyA, 
+    //       ...this.filteredEnergyB, ...this.filteredWastePipe
+    //     )
+    //   }
+    // },
 
-    filterEnergy() {
-      if (!this.energy) {
-        this.filteredEnergy = this.notifications.filter(
-          (item) => String(item.item_status) === 'APPLICABLE'
-        )
-        this.notifications = this.notifications.filter(
-          (item) => String(item.item_status) !== 'APPLICABLE'
-        )
-      } else {
-        this.notifications.push(...this.filteredEnergy)
-      }
-    },
-
-    filterSink() {
-      if (!this.sink) {
-        this.filteredSink = this.notifications.filter(
-          (item) =>
-            String(item.item_status) !== 'INCORPORATED' && String(item.item_status) !== 'APPLICABLE'
-        )
-        this.notifications = this.notifications.filter(
-          (item) =>
-            String(item.item_status) === 'INCORPORATED' || String(item.item_status) === 'APPLICABLE'
-        )
-      } else {
-        this.notifications.push(...this.filteredSink)
-      }
-    },
-
-    divClickToWater() {
-      this.$router.push({
-        name: ''
-      })
-
-      this.closeNotifications()
-    },
-
-    divClickToEnergy() {
-      this.$router.push({
-        name: ''
-      })
-
-      this.closeNotifications()
-    },
-
-    divClickToSink() {
-      this.$router.push({
-        name: ''
-      })
-
-      this.closeNotifications()
-    }
+    // filterSink() {
+    //   if (!this.sink) {
+    //     this.filteredSink = this.notifications.filter(
+    //       (item) =>
+    //         String(item.item_status) !== 'INCORPORATED' && String(item.item_status) !== 'APPLICABLE'
+    //     )
+    //     this.notifications = this.notifications.filter(
+    //       (item) =>
+    //         String(item.item_status) === 'INCORPORATED' || String(item.item_status) === 'APPLICABLE'
+    //     )
+    //   } else {
+    //     this.notifications.push(...this.filteredSink)
+    //   }
+    // },
   },
 
   computed: {
-    filteredWater() {
+    filteredWatter() {
       return this.notifications
     },
 
-    filteredEnergy() {
+    filteredWastePipe() {
       return this.notifications
     },
 
-    filteredSink() {
+    filteredEnergyA() {
       return this.notifications
     },
+
+    filteredEnergyB() {
+      return this.notifications
+    },
+
+    // filteredSink() {
+    //   return this.notifications
+    // },
 
     numberOfNotifications() {
-      return eventBus.$emit('number-notifications', this.notifications.length)
+      return eventBus.emit('number-notifications', this.notifications.length)
     }
   }
-}
+})
 </script>
 
 <style>

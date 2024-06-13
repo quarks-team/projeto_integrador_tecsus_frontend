@@ -102,8 +102,20 @@
 import axios from 'axios'
 import ProgressBar from 'primevue/progressbar'
 import { mapMutations } from 'vuex';
+import { defineComponent, onMounted } from 'vue';
+import eventBus from '../eventBus';
 
-export default {
+export default defineComponent ({
+  name: 'EventEmitterComponent',
+  
+  setup() {
+    onMounted(() => {
+      eventBus.on('app-created', (message: string) => {
+        console.log(message);
+      });
+    });
+  },
+  
   data() {
     return {
       isDragging: false,
@@ -211,6 +223,7 @@ export default {
             this.mostrarAlertaOutrosErros = false
             this.mostrarAlertaSucesso = true
             this.respostaSucesso.push('Log: ' + data.message)
+            eventBus.emit('update-notifications', true);
           })
 
           eventSource.onerror = (error: any) => {
@@ -238,6 +251,7 @@ export default {
           this.sendDataFinished = true;
           this.progress = false;
           this.setProcessing(false);
+          eventBus.emit('update-notifications', true);
         }
       } catch (error) {
         console.error('Erro ao fazer upload: ', error)
@@ -271,7 +285,7 @@ export default {
   components: {
     ProgressBar
   }
-}
+})
 </script>
 
 <style scoped>

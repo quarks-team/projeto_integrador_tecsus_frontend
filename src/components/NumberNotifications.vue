@@ -4,18 +4,30 @@
 
 <script lang="ts">
 import axios from 'axios'
-import { eventBus } from '../main'
+import { defineComponent, onMounted } from 'vue';
+import eventBus from '../eventBus';
 
-export default {
+export default defineComponent({
+  name: 'EventListenerComponent',
+  
+  setup() {
+    onMounted(() => {
+      eventBus.on('app-created', (message: string) => {
+        console.log(message);
+      });
+    });
+  },
+
   data() {
     return {
       notifications: [],
-      water: true,
+      watter: true,
       energy: true,
       sink: true,
-      filteredWater: [],
-      filteredEnergy: [],
-      filteredSink: []
+      watter: [],
+      wastepipe: [],
+      energyA: [],
+      energyB: [],
     }
   },
 
@@ -24,33 +36,36 @@ export default {
   },
 
   created() {
-    eventBus.$on('update-notifications', (update: boolean) => {
+    eventBus.on('update-notifications', (update: boolean) => {
       this.getNotifications()
     })
   },
 
   methods: {
     closeNotifications() {
-      eventBus.$emit('close-notifications', false)
+      eventBus.emit('close-notifications', false)
     },
 
     async getNotifications() {
-      const response = await axios.get('http://localhost:8080/list-all-notifications-admin')
+      
+      const response = await axios.get('http://localhost:3000/alerts')
 
-      this.notifications = response.data.map((item: String) => ({
-        id: item.id
-      }))
+      this.watter = response.data.watter;
+      this.wastepipe = response.data.wastepipe;
+      this.energyA = response.data.energyA;
+      this.energyB = response.data.energyB;
+      this.notifications = [...this.watter, ...this.wastepipe, ...this.energyA, ...this.energyB]
 
-      eventBus.$emit('number-notifications', this.notifications.length)
-    }
+      eventBus.emit('number-notifications', this.notifications.length)
+    },
   },
 
   computed: {
     numberOfNotifications() {
-      return eventBus.$emit('number-notifications', this.notifications.length)
+      return eventBus.emit('number-notifications', this.notifications.length)
     }
   }
-}
+})
 </script>
 
 <style scoped>
