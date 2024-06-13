@@ -1,9 +1,9 @@
 import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { config } from '@vue/test-utils';
+import { defineComponent } from 'vue';
 
-
-// Stub for fetch
+// Stub para fetch
 global.fetch = vi.fn().mockResolvedValue({
   json: () => Promise.resolve({}),
   headers: new Headers(),
@@ -17,12 +17,12 @@ global.fetch = vi.fn().mockResolvedValue({
   bodyUsed: false,
   arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
   blob: () => Promise.resolve(new Blob()),
-  clone: () => Promise.resolve({} as Response),
+  clone: () => ({ ...new Response() }),
   formData: () => Promise.resolve(new FormData()),
   text: () => Promise.resolve('')
 });
 
-// Stub for others globals APIs, if necessary
+// Stub para outras APIs globais, se necessário
 global.window = Object.create(window);
 global.window.alert = vi.fn();
 global.window.matchMedia = vi.fn().mockImplementation(query => ({
@@ -38,7 +38,7 @@ global.window.matchMedia = vi.fn().mockImplementation(query => ({
   data: vi.fn()
 }));
 
-// Stub for localStorage
+// Stub para localStorage
 global.localStorage = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -51,7 +51,7 @@ global.localStorage = {
   })
 };
 
-// Stub for sessionStorage
+// Stub para sessionStorage
 global.sessionStorage = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -64,15 +64,22 @@ global.sessionStorage = {
   })
 };
 
-// Stub for resizeObserver
+// Stub para ResizeObserver
 global.ResizeObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  };
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
 
-// Stubs for global components
+// Stubs para componentes globais
 config.global.stubs = {
   'router-view': true,
   'router-link': true
+};
+
+// Mocking RouterLink para evitar erros de resolução
+config.global.components = {
+  RouterLink: {
+    template: '<a><slot /></a>',
+  },
 };

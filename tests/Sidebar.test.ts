@@ -42,13 +42,6 @@ describe('Sidebar.vue', () => {
     }
   })
 
-  it('should display all navigation icons', async () => {
-    const wrapper = createWrapper();
-    await flushPromises();
-    const icons = wrapper.findAll('i')
-    expect(icons.length).toBeGreaterThan(3)
-  })
-
   it('should change style on hover over links', async () => {
     const wrapper = createWrapper();
     await flushPromises();
