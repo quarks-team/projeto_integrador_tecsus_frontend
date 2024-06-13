@@ -55,10 +55,7 @@ jobs:
       - name: Run build
         run: npm run build
 
-      - name: Run unit tests
-        run: npm run test
-
-      - name: Run coverage
+      - name: Run unit tests and coverage
         run: npm run coverage
 
       - name: Setup Java 17
