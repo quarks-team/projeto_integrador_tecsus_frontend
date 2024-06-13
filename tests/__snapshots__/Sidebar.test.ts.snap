@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Sidebar.vue > should render without errors with default props 1`] = `
+"<!-- Menu lateral -->
+<div class="sidebar">
+  <div class="logo"><img src="/src/assets/logo/tecsus.png" class="logo_img" style=""></div>
+  <nav class="links">
+    <routerlink to="/"><i class="fa-solid fa-house"></i>INÍCIO</routerlink>
+    <routerlink to="/reports"><i class="fa-solid fa-file-contract"></i>RELATÓRIOS</routerlink>
+    <routerlink to="/alerts"><i class="fa-solid fa-bell"></i>ALERTAS</routerlink>
+    <routerlink to="/importar-dados"><i class="fa-solid fa-file-csv"></i>IMPORTAR</routerlink>
+  </nav>
+</div>"
+`;
