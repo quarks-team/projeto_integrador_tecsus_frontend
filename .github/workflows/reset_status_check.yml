@@ -20,7 +20,7 @@ jobs:
       - name: Check if both pipelines completed
         id: check_pipelines
         run: |
-          CI_COMPLETED=$(jq '.jobs["build-and-test-with-cache"].conclusion' $GITHUB_EVENT_PATH)
+          CI_COMPLETED=$(jq '.jobs["update-code-version"].conclusion' $GITHUB_EVENT_PATH)
           DEPLOY_COMPLETED=$(jq '.jobs["deploy-on-github-pages"].conclusion' $GITHUB_EVENT_PATH)
           if [ "$CI_COMPLETED" = "success" ] && [ "$DEPLOY_COMPLETED" = "success" ]; then
             echo "Both pipelines completed successfully."
