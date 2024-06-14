@@ -5,7 +5,6 @@ import vue from '@vitejs/plugin-vue'
 
 
 export default defineConfig({
-  base: '/projeto_integrador_tecsus_frontend/',
   build: {
     outDir: 'dist',
     rollupOptions: {
