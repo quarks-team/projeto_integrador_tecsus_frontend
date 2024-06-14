@@ -217,22 +217,14 @@ jobs:
         run: |
           git checkout main
 
-      - name: Pull latest changes
+      - name: Push changes using GitHub Script
         if: env.new_commits == 'true'
-        run: |
-          echo "Pulling latest changes to avoid conflicts..."
-          git pull origin main
-
-      - name: Merge changes into main
-        if: env.new_commits == 'true'
-        run: |
-          echo "Merging changes into main..."
-          git merge main
-
-      - name: Push changes
-        if: env.new_commits == 'true'
-        run: |
-          git push origin main
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          script: |
+            const { execSync } = require('child_process');
+            execSync('git push origin main', { stdio: 'inherit' });
 
       - name: Store Status Check
         id: store_status_check
