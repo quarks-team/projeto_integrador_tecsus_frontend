@@ -99,7 +99,7 @@
 </template>
 
 <script lang="ts">
-import axios from 'axios'
+import { tecsusAPI, getBaseUrl } from '../base_urls/baseUrlDynamic';
 import ProgressBar from 'primevue/progressbar'
 import { mapMutations } from 'vuex';
 import { defineComponent, onMounted } from 'vue';
@@ -216,7 +216,7 @@ export default defineComponent ({
           }
 
           // Conectar ao SSE para receber mensagens do servidor
-          const eventSource = new EventSource('http://localhost:3000/billing/upload/sse')
+          const eventSource = new EventSource(getBaseUrl() + '/billing/upload/sse')
 
           eventSource.addEventListener('user-log', (event) => {
             const data = JSON.parse(event.data)
@@ -235,7 +235,7 @@ export default defineComponent ({
           }
 
           // Enviar arquivos para o servidor
-          const response = await axios.post('http://localhost:3000/billing/upload', formData, {
+          const response = await tecsusAPI.post('/billing/upload', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }

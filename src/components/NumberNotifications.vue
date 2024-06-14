@@ -21,9 +21,6 @@ export default defineComponent({
   data() {
     return {
       notifications: [],
-      watter: true,
-      energy: true,
-      sink: true,
       watter: [],
       wastepipe: [],
       energyA: [],

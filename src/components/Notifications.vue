@@ -193,7 +193,6 @@ export default defineComponent({
       // filteredEnergyA: {},
       // filteredEnergyB: {},
       // filteredSink: {},
-      notifications: []
     }
   },
 
