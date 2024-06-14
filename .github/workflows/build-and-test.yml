@@ -158,30 +158,40 @@ jobs:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
             const { execSync } = require('child_process');
+            const { context } = require('@actions/github');
 
-            // Set git user config
-            execSync('git config --global user.email "action@github.com"');
-            execSync('git config --global user.name "GitHub Action"');
+            try {
+              // Set git user config
+              execSync('git config --global user.email "action@github.com"');
+              execSync('git config --global user.name "GitHub Action"');
 
-            // Check for changes before committing
-            const status = execSync('git status --porcelain');
-            if (status) {
-              // Commit changes
-              execSync(`git commit -m "Update version to ${process.env.NEW_TAG}"`);
+              // Check for changes before committing
+              const status = execSync('git status --porcelain').toString().trim();
+              console.log('Git status output:', status);
+              if (status) {
+                // Add files to staging
+                execSync('git add package.json package-lock.json');
 
-              // Push changes using GitHub API
-              const pushResult = execSync('git push origin main', { stdio: 'inherit' });
-              console.log(pushResult);
-            } else {
-              console.log('No changes to commit.');
+                // Commit changes
+                execSync(`git commit -m "Update version to ${process.env.NEW_TAG}"`);
+
+                // Push changes using GitHub API
+                const pushResult = execSync('git push origin main', { stdio: 'inherit' });
+                console.log(pushResult);
+              } else {
+                console.log('No changes to commit.');
+              }
+
+              // Reevaluate branch protection rules
+              await github.rest.repos.getBranchProtection({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                branch: 'main'
+              });
+            } catch (error) {
+              console.error('Error during commit and push:', error);
+              throw error;
             }
-
-            // Reevaluate branch protection rules
-            await github.rest.repos.getBranchProtection({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              branch: 'main'
-            });
 
       - name: Ensure we are on main branch
         if: env.new_commits == 'true'
