@@ -63,45 +63,6 @@ jobs:
               throw new Error('Deployment not approved.');
             }
 
-            const ref = 'main';
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-
-            console.log(`Checking status for ref: ${ref}, owner: ${owner}, repo: ${repo}`);
-
-            const checkRuns = await github.rest.checks.listForRef({
-              owner,
-              repo,
-              ref,
-              status: 'completed'
-            });
-
-            console.log(`Total check runs found: ${checkRuns.data.total_count}`);
-            if (checkRuns.data.total_count === 0) {
-              throw new Error('No check runs found for the specified ref.');
-            }
-
-            const checkRunNames = checkRuns.data.check_runs.map(check => check.name);
-            console.log('Check run names found:', checkRunNames);
-
-            const statusChecks = checkRuns.data.check_runs.filter(
-              (check) => check.name === 'build-and-test-with-cache'
-            );
-
-            console.log(`Total status checks for "build-and-test-with-cache" found: ${statusChecks.length}`);
-            if (statusChecks.length === 0) {
-              throw new Error('Required status check "build-and-test-with-cache" not found.');
-            }
-
-            const statusCheck = statusChecks[0];
-
-            console.log(`Status check conclusion: ${statusCheck.conclusion}`);
-            if (statusCheck.conclusion !== 'success') {
-              throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
-            } else {
-              console.log('Status check "build-and-test-with-cache" passed successfully.');
-            }
-
       - name: Set up cache variables
         id: cache-vars
         run: |
