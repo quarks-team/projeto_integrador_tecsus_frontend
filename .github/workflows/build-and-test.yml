@@ -158,26 +158,18 @@ jobs:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
             const { execSync } = require('child_process');
-            const fs = require('fs');
-            const path = require('path');
-            
-            const ref = 'main';
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            
-            // Add and commit changes
-            execSync('git add package.json package-lock.json');
-            execSync('git commit -m "Update version to ${process.env.NEW_TAG}"');
-            
+
+            // Commit changes
+            execSync(`git commit -m "Update version to ${process.env.NEW_TAG}"`);
+
             // Push changes using GitHub API
             const pushResult = execSync('git push origin main', { stdio: 'inherit' });
-            
             console.log(pushResult);
-            
+
             // Reevaluate branch protection rules
             await github.rest.repos.getBranchProtection({
-              owner,
-              repo,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
               branch: 'main'
             });
 
