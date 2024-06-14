@@ -23,8 +23,14 @@ jobs:
       - name: Check Deployment Approval
         id: check_approval
         run: |
-          approval=$(cat .github/workflows/deploy_approval.txt)
-          echo "approval=$approval" >> $GITHUB_ENV
+          if [ -f .github/workflows/deploy_approval.txt ]; then
+            approval=$(cat .github/workflows/deploy_approval.txt)
+            echo "approval=$approval" >> $GITHUB_ENV
+            echo "Approval status read from file: $approval"
+          else
+            echo "approval=no" >> $GITHUB_ENV
+            echo "Approval file not found. Defaulting to no."
+          fi
 
       - name: Wait for status check of build-and-test-with-cache (branch rule)
         if: env.approval == 'yes'
