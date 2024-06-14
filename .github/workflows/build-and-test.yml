@@ -176,23 +176,28 @@ jobs:
             const ref = 'heads/main';
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-
+      
             const checkRuns = await github.rest.checks.listForRef({
               owner,
               repo,
               ref,
+              status: 'completed'
             });
-
+      
+            if (checkRuns.data.total_count === 0) {
+              throw new Error('No check runs found for the specified ref.');
+            }
+      
             const statusChecks = checkRuns.data.check_runs.filter(
               (check) => check.name === 'build-and-test-with-cache'
             );
-
+      
             if (statusChecks.length === 0) {
               throw new Error('Required status check "build-and-test-with-cache" not found.');
             }
-
+      
             const statusCheck = statusChecks[0];
-
+      
             if (statusCheck.conclusion !== 'success') {
               throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
             }
