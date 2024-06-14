@@ -23,20 +23,20 @@ jobs:
     steps:
       - name: Set approval status
         if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: echo "::set-output name=approved::${{ github.event.inputs.approve_deploy }}"
+        run: echo "approved=${{ github.event.inputs.approve_deploy }}" >> $GITHUB_ENV
 
       - name: Check Approval
-        if: ${{ steps.approval.outputs.approved == 'yes' }}
+        if: ${{ env.approved == 'yes' }}
         run: echo "Deployment Approved"
     
       - name: Checkout Repository
-        if: ${{ steps.approval.outputs.approved == 'yes' }}
+        if: ${{ env.approved == 'yes' }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Wait for status check of build-and-test-with-cache (branch rule)
-        if: ${{ steps.approval.outputs.approved == 'yes' }}
+        if: ${{ env.approved == 'yes' }}
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
@@ -81,7 +81,7 @@ jobs:
             }
 
     outputs:
-      approved: ${{ steps.approval.outputs.approved }}
+      approved: ${{ env.approved }}
 
   deploy-on-github-pages:
     needs: wait-for-status-check
