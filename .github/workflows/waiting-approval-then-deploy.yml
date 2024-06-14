@@ -137,5 +137,5 @@ jobs:
         if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
           publish_dir: ./dist
