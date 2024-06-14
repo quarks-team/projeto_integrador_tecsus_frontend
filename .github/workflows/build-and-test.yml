@@ -159,6 +159,10 @@ jobs:
           script: |
             const { execSync } = require('child_process');
 
+            // Set git user config
+            execSync('git config --global user.email "action@github.com"');
+            execSync('git config --global user.name "GitHub Action"');
+
             // Commit changes
             execSync(`git commit -m "Update version to ${process.env.NEW_TAG}"`);
 
