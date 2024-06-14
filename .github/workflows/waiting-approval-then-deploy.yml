@@ -14,82 +14,55 @@ jobs:
   wait-for-status-check:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    outputs:
+      approved: ${{ steps.set_approval.outputs.approved }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prompt for Deployment Approval
-        id: approval
+      - name: Check Deployment Approval
+        id: set_approval
         run: |
-          while true; do
-            read -p "Do you approve the deployment? (yes/no): " approval
-            if [[ "$approval" == "yes" || "$approval" == "no" ]]; then
-              echo "::set-output name=approved::$approval"
-              break
-            else
-              echo "Invalid input. Please enter 'yes' or 'no'."
-            fi
-          done
+          if [ -f .github/workflows/deploy_approval.txt ]; then
+            approval=$(cat .github/workflows/deploy_approval.txt)
+            echo "approval=$approval" >> $GITHUB_ENV
+            echo "Approval status read from file: $approval"
+            echo "approved=$approval" >> $GITHUB_OUTPUT
+          else
+            echo "approval=no" >> $GITHUB_ENV
+            echo "Approval file not found. Defaulting to no."
+            echo "approved=no" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Check Approval
-        if: ${{ steps.approval.outputs.approved == 'yes' }}
-        run: echo "Deployment Approved"
-      
-      - name: Wait for status check of build-and-test-with-cache (branch rule)
-        if: ${{ steps.approval.outputs.approved == 'yes' }}
+  deploy-on-github-pages:
+    runs-on: ubuntu-latest
+    needs: wait-for-status-check
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify Approval and Status Check
         uses: actions/github-script@v6
+        id: verify_approval_and_status
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
-            const ref = 'heads/main';
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
+            const fs = require('fs');
+            const path = '.github/workflows/deploy_approval.txt';
 
-            console.log(`Checking status for ref: ${ref}, owner: ${owner}, repo: ${repo}`);
-
-            const checkRuns = await github.rest.checks.listForRef({
-              owner,
-              repo,
-              ref,
-              status: 'completed'
-            });
-
-            console.log(`Total check runs found: ${checkRuns.data.total_count}`);
-            if (checkRuns.data.total_count === 0) {
-              throw new Error('No check runs found for the specified ref.');
+            if (!fs.existsSync(path)) {
+              throw new Error('Approval file not found. Defaulting to no.');
             }
 
-            const checkRunNames = checkRuns.data.check_runs.map(check => check.name);
-            console.log('Check run names found:', checkRunNames);
-
-            const statusChecks = checkRuns.data.check_runs.filter(
-              (check) => check.name === 'build-and-test-with-cache'
-            );
-
-            console.log(`Total status checks for "build-and-test-with-cache" found: ${statusChecks.length}`);
-            if (statusChecks.length === 0) {
-              throw new Error('Required status check "build-and-test-with-cache" not found.');
+            const approval = fs.readFileSync(path, 'utf8').trim();
+            if (approval !== 'yes') {
+              throw new Error('Deployment not approved.');
             }
 
-            const statusCheck = statusChecks[0];
-
-            console.log(`Status check conclusion: ${statusCheck.conclusion}`);
-            if (statusCheck.conclusion !== 'success') {
-              throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
-            } else {
-              console.log('Status check "build-and-test-with-cache" passed successfully.');
-            }
-
-    outputs:
-      approved: ${{ steps.approval.outputs.approved }}
-
-  deploy-on-github-pages:
-    needs: wait-for-status-check
-    runs-on: ubuntu-latest
-    if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
-    steps:
       - name: Set up cache variables
         id: cache-vars
         run: |
@@ -132,5 +105,5 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
           publish_dir: ./dist
