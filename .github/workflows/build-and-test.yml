@@ -158,7 +158,6 @@ jobs:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
             const { execSync } = require('child_process');
-            const { context } = require('@actions/github');
 
             try {
               // Set git user config
