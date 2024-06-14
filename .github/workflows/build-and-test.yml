@@ -151,14 +151,16 @@ jobs:
         if: env.new_commits == 'true'
         run: node update-version.cjs ${{ env.NEW_TAG }}
 
-      - name: Commit and push updated version files using GitHub API
+      - name: Commit and create pull request for version bump
         if: env.new_commits == 'true'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
             const { execSync } = require('child_process');
-            
+            const { context } = require('@actions/github');
+            const fs = require('fs');
+
             try {
               // Set git user config
               execSync('git config --global user.email "action@github.com"');
@@ -172,34 +174,41 @@ jobs:
               const status = execSync('git status --porcelain').toString().trim();
               console.log('Git status output:', status);
               if (status) {
+                // Create a new branch for the version bump
+                const branchName = `bump-version-${process.env.NEW_TAG}`;
+                execSync(`git checkout -b ${branchName}`);
+
                 // Add files to staging
                 execSync('git add package.json package-lock.json');
 
                 // Commit changes
                 execSync(`git commit -m "Update version to ${process.env.NEW_TAG}"`);
 
-                // Push changes using GitHub API
-                const pushResult = execSync('git push origin main', { stdio: 'inherit' });
-                console.log(pushResult);
+                // Push changes to the new branch
+                execSync(`git push origin ${branchName}`);
+
+                // Create a pull request
+                const { data: pullRequest } = await github.rest.pulls.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: `Bump version to ${process.env.NEW_TAG}`,
+                  head: branchName,
+                  base: 'main',
+                  body: 'Automated version bump',
+                  maintainer_can_modify: true
+                });
+
+                console.log(`Pull request created: ${pullRequest.html_url}`);
               } else {
                 console.log('No changes to commit.');
               }
-
-              // Reevaluate branch protection rules
-              await github.rest.repos.getBranchProtection({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                branch: 'main'
-              });
             } catch (error) {
-              console.error('Error during commit and push:', error);
+              console.error('Error during commit and pull request creation:', error);
               throw error;
             }
-          debug: true
-          user-agent: actions/github-script
-          result-encoding: json
-          retries: 0
-          retry-exempt-status-codes: 400,401,403,404,422
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+          NEW_TAG: ${{ env.NEW_TAG }}
 
       - name: Ensure we are on main branch
         if: env.new_commits == 'true'
