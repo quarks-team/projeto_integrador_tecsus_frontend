@@ -193,6 +193,10 @@ jobs:
               throw new Error('No check runs found for the specified ref.');
             }
       
+            // Listando todos os nomes de check runs para depuração
+            const checkRunNames = checkRuns.data.check_runs.map(check => check.name);
+            console.log('Check run names found:', checkRunNames);
+      
             const statusChecks = checkRuns.data.check_runs.filter(
               (check) => check.name === 'build-and-test-with-cache'
             );
