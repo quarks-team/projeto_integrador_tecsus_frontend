@@ -223,6 +223,12 @@ jobs:
           echo "Pulling latest changes to avoid conflicts..."
           git pull origin main
 
+      - name: Merge changes into main
+        if: env.new_commits == 'true'
+        run: |
+          echo "Merging changes into main..."
+          git merge main
+
       - name: Push changes
         if: env.new_commits == 'true'
         run: |
