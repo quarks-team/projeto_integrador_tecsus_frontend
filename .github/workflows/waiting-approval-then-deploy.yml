@@ -34,7 +34,6 @@ jobs:
             echo "approval=no" >> $GITHUB_ENV
             echo "Approval file not found. Defaulting to no."
             echo "approved=no" >> $GITHUB_OUTPUT
-          fi
 
   deploy-on-github-pages:
     runs-on: ubuntu-latest
@@ -45,16 +44,24 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set approval status from previous job
-        id: set_approval_status
-        run: echo "approved=${{ needs.wait-for-status-check.outputs.approved }}" >> $GITHUB_ENV
-
-      - name: Wait for status check of build-and-test-with-cache (branch rule)
-        if: ${{ env.approved == 'yes' }}
+      - name: Verify Approval and Status Check
         uses: actions/github-script@v6
+        id: verify_approval_and_status
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
+            const fs = require('fs');
+            const path = '.github/workflows/deploy_approval.txt';
+
+            if (!fs.existsSync(path)) {
+              throw new Error('Approval file not found. Defaulting to no.');
+            }
+
+            const approval = fs.readFileSync(path, 'utf8').trim();
+            if (approval !== 'yes') {
+              throw new Error('Deployment not approved.');
+            }
+
             const ref = 'main';
             const owner = context.repo.owner;
             const repo = context.repo.repo;
@@ -92,9 +99,9 @@ jobs:
               throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
             } else {
               console.log('Status check "build-and-test-with-cache" passed successfully.');
+            }
 
       - name: Set up cache variables
-        if: ${{ env.approved == 'yes' }}
         id: cache-vars
         run: |
           echo "Setting up cache variables..."
@@ -104,20 +111,17 @@ jobs:
           echo "Cache variables set."
 
       - name: Checkout Repository
-        if: ${{ env.approved == 'yes' }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup Node Environment
-        if: ${{ env.approved == 'yes' }}
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
 
       - name: Cache node modules
-        if: ${{ env.approved == 'yes' }}
         uses: actions/cache@v4
         with:
           path: node_modules
@@ -128,19 +132,15 @@ jobs:
           upload-chunk-size: 262144
 
       - name: Install dependencies
-        if: ${{ env.approved == 'yes' }}
         run: npm install
 
       - name: Audit and fix vulnerabilities
-        if: ${{ env.approved == 'yes' }}
         run: npm audit fix
 
       - name: Run build
-        if: ${{ env.approved == 'yes' }}
         run: npm run build
         
       - name: Deploy to GitHub Pages
-        if: ${{ env.approved == 'yes' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
