@@ -9,34 +9,25 @@ on:
     workflows: ["CI Pipeline - Build and Test"]
     types:
       - completed
-  workflow_dispatch:
-    inputs:
-      approve_deploy:
-        description: 'Do you approve the deployment?'
-        required: true
-        default: 'yes'
 
 jobs:
   wait-for-status-check:
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Set approval status
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: echo "approved=${{ github.event.inputs.approve_deploy }}" >> $GITHUB_ENV
-
-      - name: Check Approval
-        if: ${{ env.approved == 'yes' }}
-        run: echo "Deployment Approved"
-    
       - name: Checkout Repository
-        if: ${{ env.approved == 'yes' }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Check Deployment Approval
+        id: check_approval
+        run: |
+          approval=$(cat .github/workflows/deploy_approval.txt)
+          echo "approval=$approval" >> $GITHUB_ENV
+
       - name: Wait for status check of build-and-test-with-cache (branch rule)
-        if: ${{ env.approved == 'yes' }}
+        if: env.approval == 'yes'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
@@ -81,14 +72,14 @@ jobs:
             }
 
     outputs:
-      approved: ${{ env.approved }}
+      approved: ${{ env.approval }}
 
   deploy-on-github-pages:
     needs: wait-for-status-check
+    if: needs.wait-for-status-check.outputs.approved == 'yes'
     runs-on: ubuntu-latest
     steps:
       - name: Set up cache variables
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         id: cache-vars
         run: |
           echo "Setting up cache variables..."
@@ -98,20 +89,17 @@ jobs:
           echo "Cache variables set."
 
       - name: Checkout Repository
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup Node Environment
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
 
       - name: Cache node modules
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         uses: actions/cache@v4
         with:
           path: node_modules
@@ -122,19 +110,15 @@ jobs:
           upload-chunk-size: 262144
 
       - name: Install dependencies
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         run: npm install
 
       - name: Audit and fix vulnerabilities
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         run: npm audit fix
 
       - name: Run build
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         run: npm run build
         
       - name: Deploy to GitHub Pages
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
