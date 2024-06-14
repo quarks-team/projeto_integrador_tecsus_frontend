@@ -158,11 +158,15 @@ jobs:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
             const { execSync } = require('child_process');
-
+            
             try {
               // Set git user config
               execSync('git config --global user.email "action@github.com"');
               execSync('git config --global user.name "GitHub Action"');
+
+              // Ensure the main branch is checked out and up to date
+              execSync('git checkout main');
+              execSync('git pull origin main');
 
               // Check for changes before committing
               const status = execSync('git status --porcelain').toString().trim();
@@ -191,6 +195,11 @@ jobs:
               console.error('Error during commit and push:', error);
               throw error;
             }
+          debug: true
+          user-agent: actions/github-script
+          result-encoding: json
+          retries: 0
+          retry-exempt-status-codes: 400,401,403,404,422
 
       - name: Ensure we are on main branch
         if: env.new_commits == 'true'
