@@ -53,7 +53,7 @@ jobs:
         run: npm audit fix
 
       - name: Remove existing snapshots
-        run: find . -type f -name "*.snap" -exec rm -f {} +
+        run: npm run pretest
 
       - name: Run unit tests and coverage
         run: npm run coverage
