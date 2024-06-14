@@ -184,7 +184,6 @@ jobs:
               owner,
               repo,
               ref,
-              status: 'completed'
             });
       
             // Adicionando logs para depuração
