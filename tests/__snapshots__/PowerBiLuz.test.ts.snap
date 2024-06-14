@@ -1,3 +1,3 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`PowerBiLuz.vue > should render without errors with default props 1`] = `"<div class="entre-paginas"><img src="/projeto_integrador_tecsus_frontend/src/assets/icons/luz.png"></div>"`;
+exports[`PowerBiLuz.vue > should render without errors with default props 1`] = `"<div class="entre-paginas"><img src="/src/assets/icons/luz.png"></div>"`;
