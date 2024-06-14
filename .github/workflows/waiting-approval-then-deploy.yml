@@ -41,7 +41,6 @@ jobs:
           approval: ${{ env.approval }}
 
       - name: Wait for status check of build-and-test-with-cache (branch rule)
-        if: env.approval == 'yes'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
