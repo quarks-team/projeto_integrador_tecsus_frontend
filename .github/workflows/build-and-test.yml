@@ -217,14 +217,32 @@ jobs:
         run: |
           git checkout main
 
-      - name: Push changes using GitHub Script
+      - name: Push changes using GitHub API
         if: env.new_commits == 'true'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
             const { execSync } = require('child_process');
-            execSync('git push origin main', { stdio: 'inherit' });
+            const ref = 'main';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Add and commit changes
+            execSync('git add package.json package-lock.json');
+            execSync('git commit -m "Update version to ${{ env.NEW_TAG }}"');
+
+            // Push changes using GitHub API
+            const pushResult = execSync('git push origin main', { stdio: 'inherit' });
+
+            console.log(pushResult);
+
+            // Reevaluate branch protection rules
+            await github.rest.repos.getBranchProtection({
+              owner,
+              repo,
+              branch: 'main'
+            });
 
       - name: Store Status Check
         id: store_status_check
