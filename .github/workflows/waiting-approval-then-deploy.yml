@@ -15,24 +15,28 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Prompt for Deployment Approval
-        id: approval
-        run: |
-          read -p "Do you approve the deployment? (yes/no): " approval
-          echo "::set-output name=approved::${approval}"
-        env:
-          APPROVE: ${{ github.event.inputs.approve }}
-        
-      - name: Check Approval
-        if: ${{ steps.approval.outputs.approved == 'yes' }}
-        run: echo "Deployment Approved"
-    
       - name: Checkout Repository
-        if: ${{ steps.approval.outputs.approved == 'yes' }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Prompt for Deployment Approval
+        id: approval
+        run: |
+          while true; do
+            read -p "Do you approve the deployment? (yes/no): " approval
+            if [[ "$approval" == "yes" || "$approval" == "no" ]]; then
+              echo "::set-output name=approved::$approval"
+              break
+            else
+              echo "Invalid input. Please enter 'yes' or 'no'."
+            fi
+          done
+
+      - name: Check Approval
+        if: ${{ steps.approval.outputs.approved == 'yes' }}
+        run: echo "Deployment Approved"
+      
       - name: Wait for status check of build-and-test-with-cache (branch rule)
         if: ${{ steps.approval.outputs.approved == 'yes' }}
         uses: actions/github-script@v6
@@ -43,24 +47,39 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
+            console.log(`Checking status for ref: ${ref}, owner: ${owner}, repo: ${repo}`);
+
             const checkRuns = await github.rest.checks.listForRef({
               owner,
               repo,
               ref,
+              status: 'completed'
             });
+
+            console.log(`Total check runs found: ${checkRuns.data.total_count}`);
+            if (checkRuns.data.total_count === 0) {
+              throw new Error('No check runs found for the specified ref.');
+            }
+
+            const checkRunNames = checkRuns.data.check_runs.map(check => check.name);
+            console.log('Check run names found:', checkRunNames);
 
             const statusChecks = checkRuns.data.check_runs.filter(
               (check) => check.name === 'build-and-test-with-cache'
             );
 
+            console.log(`Total status checks for "build-and-test-with-cache" found: ${statusChecks.length}`);
             if (statusChecks.length === 0) {
               throw new Error('Required status check "build-and-test-with-cache" not found.');
             }
 
             const statusCheck = statusChecks[0];
 
+            console.log(`Status check conclusion: ${statusCheck.conclusion}`);
             if (statusCheck.conclusion !== 'success') {
               throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
+            } else {
+              console.log('Status check "build-and-test-with-cache" passed successfully.');
             }
 
     outputs:
@@ -69,9 +88,9 @@ jobs:
   deploy-on-github-pages:
     needs: wait-for-status-check
     runs-on: ubuntu-latest
+    if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
     steps:
       - name: Set up cache variables
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         id: cache-vars
         run: |
           echo "Setting up cache variables..."
@@ -81,20 +100,17 @@ jobs:
           echo "Cache variables set."
 
       - name: Checkout Repository
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup Node Environment
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
 
       - name: Cache node modules
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         uses: actions/cache@v4
         with:
           path: node_modules
@@ -105,19 +121,15 @@ jobs:
           upload-chunk-size: 262144
 
       - name: Install dependencies
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         run: npm install
 
       - name: Audit and fix vulnerabilities
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         run: npm audit fix
 
       - name: Run build
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         run: npm run build
         
       - name: Deploy to GitHub Pages
-        if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
