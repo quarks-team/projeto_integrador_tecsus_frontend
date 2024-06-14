@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AlertsView.vue > should render without errors with default props 1`] = `
+"<main>
+  <!--v-if-->
+</main>"
+`;
