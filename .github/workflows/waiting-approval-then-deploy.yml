@@ -14,6 +14,8 @@ jobs:
   wait-for-status-check:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    outputs:
+      approved: ${{ steps.set_approval.outputs.approved }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -21,26 +23,24 @@ jobs:
           fetch-depth: 0
 
       - name: Check Deployment Approval
-        id: check_approval
+        id: set_approval
         run: |
           if [ -f .github/workflows/deploy_approval.txt ]; then
             approval=$(cat .github/workflows/deploy_approval.txt)
             echo "approval=$approval" >> $GITHUB_ENV
             echo "Approval status read from file: $approval"
+            echo "approved=$approval" >> $GITHUB_OUTPUT
           else
             echo "approval=no" >> $GITHUB_ENV
             echo "Approval file not found. Defaulting to no."
+            echo "approved=no" >> $GITHUB_OUTPUT
           fi
-        env:
-          GITHUB_ENV: $GITHUB_ENV
 
       - name: Verify Approval
-        id: verify_approval
-        run: echo "Approval status is ${{ env.approval }}"
-        env:
-          approval: ${{ env.approval }}
+        run: echo "Approval status is ${{ steps.set_approval.outputs.approved }}"
 
       - name: Wait for status check of build-and-test-with-cache (branch rule)
+        if: steps.set_approval.outputs.approved == 'yes'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
@@ -83,11 +83,6 @@ jobs:
             } else {
               console.log('Status check "build-and-test-with-cache" passed successfully.');
             }
-        env:
-         approval: ${{ env.approval }}  
-
-    outputs:
-      approved: ${{ env.approval }}
 
   deploy-on-github-pages:
     needs: wait-for-status-check
