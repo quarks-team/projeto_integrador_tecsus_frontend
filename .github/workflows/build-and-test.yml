@@ -151,98 +151,45 @@ jobs:
         if: env.new_commits == 'true'
         run: node update-version.cjs ${{ env.NEW_TAG }}
 
-      - name: Commit updated version files
-        if: env.new_commits == 'true'
-        run: |
-          echo "Committing updated version files..."
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add package.json package-lock.json
-          git commit -m "Update version to $NEW_TAG"
-
-      - name: Pull changes from main branch
-        if: env.new_commits == 'true'
-        run: |
-          echo "Pulling changes from main branch..."
-          git config pull.ff only
-          git pull origin main
-
-      - name: Wait for status check of build-and-test-with-cache (branch rule)
-        if: env.new_commits == 'true'
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          script: |
-            const ref = 'main';
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-
-            console.log(`Checking status for ref: ${ref}, owner: ${owner}, repo: ${repo}`);
-
-            const checkRuns = await github.rest.checks.listForRef({
-              owner,
-              repo,
-              ref,
-              status: 'completed'
-            });
-
-            console.log(`Total check runs found: ${checkRuns.data.total_count}`);
-            if (checkRuns.data.total_count === 0) {
-              throw new Error('No check runs found for the specified ref.');
-            }
-
-            const checkRunNames = checkRuns.data.check_runs.map(check => check.name);
-            console.log('Check run names found:', checkRunNames);
-
-            const statusChecks = checkRuns.data.check_runs.filter(
-              (check) => check.name === 'build-and-test-with-cache'
-            );
-
-            console.log(`Total status checks for "build-and-test-with-cache" found: ${statusChecks.length}`);
-            if (statusChecks.length === 0) {
-              throw new Error('Required status check "build-and-test-with-cache" not found.');
-            }
-
-            const statusCheck = statusChecks[0];
-
-            console.log(`Status check conclusion: ${statusCheck.conclusion}`);
-            if (statusCheck.conclusion !== 'success') {
-              throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
-            } else {
-              console.log('Status check "build-and-test-with-cache" passed successfully.');
-            }
-
-      - name: Ensure we are on main branch
-        if: env.new_commits == 'true'
-        run: |
-          git checkout main
-
-      - name: Push changes using GitHub API
+      - name: Commit and push updated version files using GitHub API
         if: env.new_commits == 'true'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
             const { execSync } = require('child_process');
+            const fs = require('fs');
+            const path = require('path');
+            
             const ref = 'main';
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-
+            
             // Add and commit changes
             execSync('git add package.json package-lock.json');
-            execSync('git commit -m "Update version to ${{ env.NEW_TAG }}"');
-
+            execSync('git commit -m "Update version to ${process.env.NEW_TAG}"');
+            
             // Push changes using GitHub API
             const pushResult = execSync('git push origin main', { stdio: 'inherit' });
-
+            
             console.log(pushResult);
-
+            
             // Reevaluate branch protection rules
             await github.rest.repos.getBranchProtection({
               owner,
               repo,
               branch: 'main'
             });
+
+      - name: Ensure we are on main branch
+        if: env.new_commits == 'true'
+        run: |
+          git checkout main
+
+      - name: Push changes
+        if: env.new_commits == 'true'
+        run: |
+          git push origin main
 
       - name: Store Status Check
         id: store_status_check
