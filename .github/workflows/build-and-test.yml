@@ -217,6 +217,12 @@ jobs:
         run: |
           git checkout main
 
+      - name: Pull latest changes
+        if: env.new_commits == 'true'
+        run: |
+          echo "Pulling latest changes to avoid conflicts..."
+          git pull origin main
+
       - name: Push changes
         if: env.new_commits == 'true'
         run: |
