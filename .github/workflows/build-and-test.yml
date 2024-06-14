@@ -159,7 +159,7 @@ jobs:
           script: |
             const { execSync } = require('child_process');
             const fs = require('fs');
-
+            
             try {
               // Set git user config
               execSync('git config --global user.email "action@github.com"');
@@ -174,7 +174,8 @@ jobs:
               console.log('Git status output:', status);
               if (status) {
                 // Create a new branch for the version bump
-                const branchName = `bump-version-${process.env.NEW_TAG}`;
+                const sanitizedTag = process.env.NEW_TAG.replace(/[^a-zA-Z0-9-_]/g, '-');
+                const branchName = `bump-version-${sanitizedTag}`;
                 execSync(`git checkout -b ${branchName}`);
 
                 // Add files to staging
@@ -208,6 +209,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
           NEW_TAG: ${{ env.NEW_TAG }}
+
 
       - name: Ensure we are on main branch
         if: env.new_commits == 'true'
