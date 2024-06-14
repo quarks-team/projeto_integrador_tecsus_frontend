@@ -31,6 +31,14 @@ jobs:
             echo "approval=no" >> $GITHUB_ENV
             echo "Approval file not found. Defaulting to no."
           fi
+        env:
+          GITHUB_ENV: $GITHUB_ENV
+
+      - name: Verify Approval
+        if: env.approval == 'yes'
+        run: echo "Deployment Approved"
+        env:
+          approval: ${{ env.approval }}
 
       - name: Wait for status check of build-and-test-with-cache (branch rule)
         if: env.approval == 'yes'
