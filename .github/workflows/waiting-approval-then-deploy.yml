@@ -84,6 +84,8 @@ jobs:
             } else {
               console.log('Status check "build-and-test-with-cache" passed successfully.');
             }
+        env:
+         approval: ${{ env.approval }}  
 
     outputs:
       approved: ${{ env.approval }}
