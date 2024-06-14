@@ -33,7 +33,7 @@ export default {
   methods: {
     dashRedirect() {
       this.$router.push('/agua')
-      this.$emit('navigate', 'water-dashboard')
+      this.$emit('navigate', 'watter-dashboard')
     }
   }
 }

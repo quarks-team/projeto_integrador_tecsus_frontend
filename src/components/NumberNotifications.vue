@@ -1,69 +1,75 @@
 <template>
-    <span></span>
+  <span></span>
 </template>
 
 <script lang="ts">
-import axios from 'axios';
-import { eventBus } from '../main';
+import axios from 'axios'
+import { defineComponent, onMounted } from 'vue';
+import eventBus from '../eventBus';
 
-export default {
+export default defineComponent({
+  name: 'EventListenerComponent',
+  
+  setup() {
+    onMounted(() => {
+      eventBus.on('app-created', (message: string) => {
+        console.log(message);
+      });
+    });
+  },
 
-    data() {
-        return {
-            notifications: [],
-            water: true,
-            energy: true,
-            sink: true,
-            filteredWater: [],
-            filteredEnergy: [],
-            filteredSink: [],
-        }
+  data() {
+    return {
+      notifications: [],
+      watter: true,
+      energy: true,
+      sink: true,
+      watter: [],
+      wastepipe: [],
+      energyA: [],
+      energyB: [],
+    }
+  },
+
+  mounted() {
+    this.getNotifications()
+  },
+
+  created() {
+    eventBus.on('update-notifications', (update: boolean) => {
+      this.getNotifications()
+    })
+  },
+
+  methods: {
+    closeNotifications() {
+      eventBus.emit('close-notifications', false)
     },
 
-    mounted() {
-        this.getNotifications();
+    async getNotifications() {
+      
+      const response = await axios.get('http://localhost:3000/alerts')
+
+      this.watter = response.data.watter;
+      this.wastepipe = response.data.wastepipe;
+      this.energyA = response.data.energyA;
+      this.energyB = response.data.energyB;
+      this.notifications = [...this.watter, ...this.wastepipe, ...this.energyA, ...this.energyB]
+
+      eventBus.emit('number-notifications', this.notifications.length)
     },
+  },
 
-    created() {  
-
-        eventBus.$on('update-notifications', (update: boolean) => {
-            this.getNotifications();
-        });
-    },
-
-    methods: {
-
-        closeNotifications() {
-            eventBus.$emit('close-notifications', false)
-        },
-
-        async getNotifications() {
-
-            const response = await axios.get('http://localhost:8080/list-all-notifications-admin');
-
-            this.notifications = response.data.map((item: String) => ({ 
-                id: item.id
-            }));
-
-            eventBus.$emit('number-notifications', this.notifications.length)
-
-        },
-
-    },
-
-    computed: {
-
-        numberOfNotifications() {
-            return eventBus.$emit('number-notifications', this.notifications.length)
-        },
-
-    },
-
-}
+  computed: {
+    numberOfNotifications() {
+      return eventBus.emit('number-notifications', this.notifications.length)
+    }
+  }
+})
 </script>
 
 <style scoped>
 span {
-    display: none;
+  display: none;
 }
 </style>

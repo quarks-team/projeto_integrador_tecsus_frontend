@@ -49,13 +49,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Audit and fix vulnerabilities
+        run: npm audit fix
+
       - name: Run build
         run: npm run build
 
-      - name: Run unit tests
-        run: npm run test
-
-      - name: Run coverage
+      - name: Run unit tests and coverage
         run: npm run coverage
 
       - name: Setup Java 17
@@ -77,6 +77,18 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+
+      - name: Publish test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results.xml
+
+      - name: Publish code coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
 
   update-code-version:
     runs-on: ubuntu-latest
@@ -161,28 +173,48 @@ jobs:
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
-            const ref = 'heads/main';
+            const ref = 'heads/main'; // Certifique-se de que este é o ref correto para seu repositório
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-
+      
+            // Adicionando logs para depuração
+            console.log(`Checking status for ref: ${ref}, owner: ${owner}, repo: ${repo}`);
+      
             const checkRuns = await github.rest.checks.listForRef({
               owner,
               repo,
               ref,
             });
-
+      
+            // Adicionando logs para depuração
+            console.log(`Total check runs found: ${checkRuns.data.total_count}`);
+            if (checkRuns.data.total_count === 0) {
+              throw new Error('No check runs found for the specified ref.');
+            }
+      
+            // Listando todos os nomes de check runs para depuração
+            const checkRunNames = checkRuns.data.check_runs.map(check => check.name);
+            console.log('Check run names found:', checkRunNames);
+      
+            // Filtrando para encontrar o check run específico
             const statusChecks = checkRuns.data.check_runs.filter(
               (check) => check.name === 'build-and-test-with-cache'
             );
-
+      
+            // Adicionando logs para depuração
+            console.log(`Total status checks for "build-and-test-with-cache" found: ${statusChecks.length}`);
             if (statusChecks.length === 0) {
               throw new Error('Required status check "build-and-test-with-cache" not found.');
             }
-
+      
             const statusCheck = statusChecks[0];
-
+      
+            // Adicionando logs para depuração
+            console.log(`Status check conclusion: ${statusCheck.conclusion}`);
             if (statusCheck.conclusion !== 'success') {
               throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
+            } else {
+              console.log('Status check "build-and-test-with-cache" passed successfully.');
             }
 
       - name: Ensure we are on main branch

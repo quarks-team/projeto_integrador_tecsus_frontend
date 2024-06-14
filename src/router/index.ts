@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import store from '../store'; 
+import eventBus from '../eventBus';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,5 +44,26 @@ const router = createRouter({
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if (store.state.isProcessing) { 
+    alert('Algum processamento ainda está em progresso nessa página. Por favor, aguarde o seu término.');
+    next(false);
+  } else {
+    next();
+  }
+});
+
+function updateNotifications() {
+  eventBus.emit('update-notifications', true);
+}
+
+setInterval(updateNotifications, 180000);  // Atualiza a cada 3 minutos
+updateNotifications();
+
+window.addEventListener('beforeunload', () => {
+  updateNotifications();
+});
+
 
 export default router

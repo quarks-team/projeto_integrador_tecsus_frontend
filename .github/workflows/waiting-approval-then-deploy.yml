@@ -5,27 +5,40 @@ env:
   REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
 
 on:
-  workflow_dispatch:
-    inputs:
-      approve:
-        options:
-          - 'yes'
-          - 'no'
-        description: 'Do you approve the deployment?'
-        required: true
-        default: 'no'
+  workflow_run:
+    workflows: ["CI Pipeline - Build and Test"]
+    types:
+      - completed
 
 jobs:
   wait-for-status-check:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Prompt for Deployment Approval
+        id: approval
+        run: |
+          while true; do
+            read -p "Do you approve the deployment? (yes/no): " approval
+            if [[ "$approval" == "yes" || "$approval" == "no" ]]; then
+              echo "::set-output name=approved::$approval"
+              break
+            else
+              echo "Invalid input. Please enter 'yes' or 'no'."
+            fi
+          done
+
+      - name: Check Approval
+        if: ${{ steps.approval.outputs.approved == 'yes' }}
+        run: echo "Deployment Approved"
+      
       - name: Wait for status check of build-and-test-with-cache (branch rule)
+        if: ${{ steps.approval.outputs.approved == 'yes' }}
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
@@ -34,31 +47,58 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
+            console.log(`Checking status for ref: ${ref}, owner: ${owner}, repo: ${repo}`);
+
             const checkRuns = await github.rest.checks.listForRef({
               owner,
               repo,
               ref,
+              status: 'completed'
             });
+
+            console.log(`Total check runs found: ${checkRuns.data.total_count}`);
+            if (checkRuns.data.total_count === 0) {
+              throw new Error('No check runs found for the specified ref.');
+            }
+
+            const checkRunNames = checkRuns.data.check_runs.map(check => check.name);
+            console.log('Check run names found:', checkRunNames);
 
             const statusChecks = checkRuns.data.check_runs.filter(
               (check) => check.name === 'build-and-test-with-cache'
             );
 
+            console.log(`Total status checks for "build-and-test-with-cache" found: ${statusChecks.length}`);
             if (statusChecks.length === 0) {
               throw new Error('Required status check "build-and-test-with-cache" not found.');
             }
 
             const statusCheck = statusChecks[0];
 
+            console.log(`Status check conclusion: ${statusCheck.conclusion}`);
             if (statusCheck.conclusion !== 'success') {
               throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
+            } else {
+              console.log('Status check "build-and-test-with-cache" passed successfully.');
             }
 
-  deploy-on-github-pages:
-    runs-on: ubuntu-latest
-    needs: [wait-for-status-check]
+    outputs:
+      approved: ${{ steps.approval.outputs.approved }}
 
+  deploy-on-github-pages:
+    needs: wait-for-status-check
+    runs-on: ubuntu-latest
+    if: ${{ needs.wait-for-status-check.outputs.approved == 'yes' }}
     steps:
+      - name: Set up cache variables
+        id: cache-vars
+        run: |
+          echo "Setting up cache variables..."
+          echo "OS_VM=${{ runner.os }}-node-" >> $GITHUB_ENV
+          echo "KEY_CACHE=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json', '**/vitest.config.ts', '**/vite.config.ts', '**/tsconfig.vitest.json', '**/tsconfig.node.json', '**/tsconfig.json', '**/tsconfig.app.json', '**/env.d.ts', '**/src/main.ts', '**/src/router/index.ts', '**/update-version.cjs') }}" >> $GITHUB_ENV
+          echo "RESTORE_KEYS=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}" >> $GITHUB_ENV
+          echo "Cache variables set."
+
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
@@ -69,8 +109,8 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          
-      - name: Restore build cache
+
+      - name: Cache node modules
         uses: actions/cache@v4
         with:
           path: node_modules
@@ -80,7 +120,13 @@ jobs:
             ${{ env.OS_VM }}
           upload-chunk-size: 262144
 
-      - name: Build
+      - name: Install dependencies
+        run: npm install
+
+      - name: Audit and fix vulnerabilities
+        run: npm audit fix
+
+      - name: Run build
         run: npm run build
         
       - name: Deploy to GitHub Pages

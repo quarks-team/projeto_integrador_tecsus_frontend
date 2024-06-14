@@ -9,14 +9,15 @@ export default mergeConfig(
     test: {
       globals: true,
       environment: 'jsdom',
-      setupFiles: 'setupTests.ts', 
+      setupFiles: './setupTests.ts', 
       exclude: [...configDefaults.exclude, 'e2e/**'],
       root: fileURLToPath(new URL('./', import.meta.url)),
       include: ['./**/*.{test,spec}.{js,ts,jsx,tsx}'],
-    coverage: {
-      provider: 'istanbul',
-      reporter: ['text', 'lcov'],
-      reportsDirectory: './coverage',
+      coverage: {
+        provider: 'istanbul',
+        reporter: ['text', 'lcov', 'json', 'html'],
+        reportsDirectory: './coverage',
+        exclude: ['node_modules/', 'tests/'], 
     }
   }
 
