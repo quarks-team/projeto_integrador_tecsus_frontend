@@ -86,7 +86,7 @@ jobs:
 
   deploy-on-github-pages:
     needs: wait-for-status-check
-    if: needs.wait-for-status-check.outputs.approved == 'yes'
+    if: ${ needs.wait-for-status-check.outputs.approved } == 'yes'
     runs-on: ubuntu-latest
     steps:
       - name: Set up cache variables
