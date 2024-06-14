@@ -34,6 +34,7 @@ jobs:
             echo "approval=no" >> $GITHUB_ENV
             echo "Approval file not found. Defaulting to no."
             echo "approved=no" >> $GITHUB_OUTPUT
+          fi
 
   deploy-on-github-pages:
     runs-on: ubuntu-latest
