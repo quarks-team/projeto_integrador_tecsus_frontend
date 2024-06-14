@@ -3,7 +3,7 @@
 exports[`Sidebar.vue > should render without errors with default props 1`] = `
 "<!-- Menu lateral -->
 <div class="sidebar">
-  <div class="logo"><img src="/src/assets/logo/tecsus.png" class="logo_img" style=""></div>
+  <div class="logo"><img src="/projeto_integrador_tecsus_frontend/src/assets/logo/tecsus.png" class="logo_img" style=""></div>
   <nav class="links">
     <router-link-stub to="/"></router-link-stub>
     <router-link-stub to="/reports"></router-link-stub>
