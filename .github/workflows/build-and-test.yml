@@ -163,12 +163,18 @@ jobs:
             execSync('git config --global user.email "action@github.com"');
             execSync('git config --global user.name "GitHub Action"');
 
-            // Commit changes
-            execSync(`git commit -m "Update version to ${process.env.NEW_TAG}"`);
+            // Check for changes before committing
+            const status = execSync('git status --porcelain');
+            if (status) {
+              // Commit changes
+              execSync(`git commit -m "Update version to ${process.env.NEW_TAG}"`);
 
-            // Push changes using GitHub API
-            const pushResult = execSync('git push origin main', { stdio: 'inherit' });
-            console.log(pushResult);
+              // Push changes using GitHub API
+              const pushResult = execSync('git push origin main', { stdio: 'inherit' });
+              console.log(pushResult);
+            } else {
+              console.log('No changes to commit.');
+            }
 
             // Reevaluate branch protection rules
             await github.rest.repos.getBranchProtection({
