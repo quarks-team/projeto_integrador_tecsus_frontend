@@ -35,8 +35,8 @@ jobs:
           GITHUB_ENV: $GITHUB_ENV
 
       - name: Verify Approval
-        if: env.approval == 'yes'
-        run: echo "Deployment Approved"
+        id: verify_approval
+        run: echo "Approval status is ${{ env.approval }}"
         env:
           approval: ${{ env.approval }}
 
