@@ -197,6 +197,7 @@ jobs:
             const checkRunNames = checkRuns.data.check_runs.map(check => check.name);
             console.log('Check run names found:', checkRunNames);
       
+            // Filtrando para encontrar o check run específico
             const statusChecks = checkRuns.data.check_runs.filter(
               (check) => check.name === 'build-and-test-with-cache'
             );
@@ -213,6 +214,8 @@ jobs:
             console.log(`Status check conclusion: ${statusCheck.conclusion}`);
             if (statusCheck.conclusion !== 'success') {
               throw new Error(`Status check "build-and-test-with-cache" has not passed. Conclusion: ${statusCheck.conclusion}`);
+            } else {
+              console.log('Status check "build-and-test-with-cache" passed successfully.');
             }
 
       - name: Ensure we are on main branch
