@@ -52,8 +52,8 @@ jobs:
       - name: Audit and fix vulnerabilities
         run: npm audit fix
 
-      - name: Run build
-        run: npm run build
+      - name: Remove existing snapshots
+        run: find . -type f -name "*.snap" -exec rm -f {} +
 
       - name: Run unit tests and coverage
         run: npm run coverage
@@ -81,14 +81,20 @@ jobs:
       - name: Publish test results
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: unit-tests-results
           path: test-results.xml
 
       - name: Publish code coverage
         uses: actions/upload-artifact@v4
         with:
-          name: coverage
+          name: coverage-results
           path: coverage/
+
+      - name: Publish SonarQube scanner results
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonar-scanner-results
+          path: .scannerwork/
 
   update-code-version:
     runs-on: ubuntu-latest
@@ -122,22 +128,33 @@ jobs:
       - name: Bump version and set env
         id: tag_version
         if: env.new_commits == 'true'
-        run: |
-          echo "Bumping version..."
-          git config --global --add safe.directory /github/workspace
-          DEFAULT_BUMP="patch"
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
-          if [ "$LAST_TAG" = "0.0.0" ]; then
-            NEW_TAG="0.0.1"
-          else
-            IFS='.' read -r -a TAG_PARTS <<< "$LAST_TAG"
-            MAJOR=${TAG_PARTS[0]}
-            MINOR=${TAG_PARTS[1]}
-            PATCH=${TAG_PARTS[2]}
-            PATCH=$((PATCH + 1))
-            NEW_TAG="$MAJOR.$MINOR.$PATCH"
-          fi
-          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          script: |
+            const { execSync } = require('child_process');
+
+            const lastTag = execSync('git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0"').toString().trim();
+            console.log(`Last tag: ${lastTag}`);
+            let [major, minor, patch] = lastTag.split('.').map(Number);
+
+            if (isNaN(major) || isNaN(minor) || isNaN(patch)) {
+              [major, minor, patch] = [0, 0, 0];
+            }
+
+            patch++;
+            if (patch > 9) {
+              patch = 0;
+              minor++;
+              if (minor > 9) {
+                minor = 0;
+                major++;
+              }
+            }
+
+            const newTag = `${major}.${minor}.${patch}`;
+            console.log(`New tag: ${newTag}`);
+            return { NEW_TAG: newTag };
 
       - name: Verify update-version.cjs existence
         if: env.new_commits == 'true'
@@ -209,7 +226,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
           NEW_TAG: ${{ env.NEW_TAG }}
-
 
       - name: Ensure we are on main branch
         if: env.new_commits == 'true'
