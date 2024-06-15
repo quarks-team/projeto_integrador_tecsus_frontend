@@ -154,10 +154,15 @@ jobs:
 
             const newTag = `${major}.${minor}.${patch}`;
             console.log(`New tag: ${newTag}`);
-            return { NEW_TAG: newTag };
+
+             // Set the environment variable
+            core.setOutput('NEW_TAG', newTag);
 
       - name: Set new tag environment variable
         run: echo "NEW_TAG=${{ steps.generate_tag.outputs.NEW_TAG }}" >> $GITHUB_ENV
+
+      - name: Use new tag
+        run: echo "Using new tag ${{ env.NEW_TAG }}"
 
       - name: Verify update-version.cjs existence
         if: env.new_commits == 'true'
@@ -169,7 +174,9 @@ jobs:
 
       - name: Update package.json and package-lock.json
         if: env.new_commits == 'true'
-        run: node update-version.cjs ${{ env.NEW_TAG }}
+        run: node update-version.cjs
+        env:
+          NEW_TAG: ${{ env.NEW_TAG }}
 
       - name: Commit and create pull request for version bump
         if: env.new_commits == 'true'
