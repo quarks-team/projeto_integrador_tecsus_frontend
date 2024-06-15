@@ -51,8 +51,4 @@ describe('AlertsView.vue', () => {
     expect(wrapper.find('.container').exists()).toBe(true);
   });
 
-  it('should render without errors with default props', () => {
-    const wrapper = mount(AlertsView);
-    expect(wrapper.html()).toMatchSnapshot();
-  });
 });

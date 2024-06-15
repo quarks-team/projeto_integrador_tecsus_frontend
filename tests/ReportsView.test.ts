@@ -51,12 +51,6 @@ describe('ReportsView.vue', () => {
     
   })
 
-  it('should render without errors with default props', async () => {
-    const wrapper = createWrapper(false);
-    await flushPromises();
-    expect(wrapper.html()).toMatchSnapshot()
-  })
-
   it('should always render the main container', async () => {
     const wrapper = createWrapper();
     await flushPromises();

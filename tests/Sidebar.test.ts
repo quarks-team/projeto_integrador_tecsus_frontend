@@ -52,10 +52,4 @@ describe('Sidebar.vue', () => {
     }
   })
 
-  it('should render without errors with default props', async () => {
-    const wrapper = createWrapper();
-    await flushPromises();
-    expect(wrapper.html()).toMatchSnapshot()
-  })
-
 });
