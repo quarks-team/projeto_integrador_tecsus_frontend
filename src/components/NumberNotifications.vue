@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import axios from 'axios'
+import tecsusAPI from '../base_urls/baseUrlDynamic';
 import { defineComponent, onMounted } from 'vue';
 import eventBus from '../eventBus';
 
@@ -45,7 +45,7 @@ export default defineComponent({
 
     async getNotifications() {
       
-      const response = await axios.get('http://localhost:3000/alerts')
+      const response = await tecsusAPI.get('/alerts')
 
       this.watter = response.data.watter;
       this.wastepipe = response.data.wastepipe;

@@ -2,7 +2,8 @@ import axios from 'axios'
 
 // Determinando o baseURL dinamicamente
 const getBaseUrl = () => {
-  if (window.location.hostname === 'billing-ingestion-production.up.railway.app') {
+  if (window.location.hostname === 'billing-ingestion-production.up.railway.app' || 
+      window.location.hostname === 'quarks-team.github.io') {
     return 'https://billing-ingestion-production.up.railway.app';
   } else {
     return 'http://localhost:3000';
