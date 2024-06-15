@@ -36,3 +36,5 @@ node_modules/.bin/acorn.cmd
 .env
 /.scannerwork
 test-results.xml
+__snapshots__
+tests/__snapshots__
