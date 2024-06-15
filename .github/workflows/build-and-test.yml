@@ -126,7 +126,7 @@ jobs:
           fi
 
       - name: Bump version and set env
-        id: tag_version
+        id: generate_tag
         if: env.new_commits == 'true'
         uses: actions/github-script@v6
         with:
@@ -155,6 +155,9 @@ jobs:
             const newTag = `${major}.${minor}.${patch}`;
             console.log(`New tag: ${newTag}`);
             return { NEW_TAG: newTag };
+
+      - name: Set new tag environment variable
+        run: echo "NEW_TAG=${{ steps.generate_tag.outputs.NEW_TAG }}" >> $GITHUB_ENV
 
       - name: Verify update-version.cjs existence
         if: env.new_commits == 'true'
