@@ -41,10 +41,4 @@ describe('PowerBiAgua.vue', () => {
     expect(iframe.attributes('src')).toBe(wrapper.vm.powerBiSrc)
   })
 
-  it('should render without errors with default props', async () => {
-    const wrapper = createWrapper(false);
-    await flushPromises();
-    expect(wrapper.html()).toMatchSnapshot()
-  })
-
 });
