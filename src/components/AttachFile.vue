@@ -99,7 +99,8 @@
 </template>
 
 <script lang="ts">
-import { tecsusAPI, getBaseUrl } from '../base_urls/baseUrlDynamic';
+import { getBaseUrl } from '../base_urls/baseUrlDynamic';
+import tecsusAPI from '../base_urls/baseUrlDynamic';
 import ProgressBar from 'primevue/progressbar'
 import { mapMutations } from 'vuex';
 import { defineComponent, onMounted } from 'vue';
