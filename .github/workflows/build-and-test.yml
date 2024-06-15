@@ -174,7 +174,7 @@ jobs:
 
       - name: Update package.json and package-lock.json
         if: env.new_commits == 'true'
-        run: node update-version.cjs
+        run: node update-version.cjs ${{ env.NEW_TAG }}
         env:
           NEW_TAG: ${{ env.NEW_TAG }}
 
