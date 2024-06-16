@@ -16,7 +16,7 @@
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "test:integration": "start-server-and-test dev http://localhost:5173 cy:open",
-    "test:integration:run": "cypress run"
+    "test:integration:run": "start-server-and-test dev http://localhost:5173 cy:run"
   },
   "dependencies": {
     "@cypress/vite-dev-server": "^5.1.1",

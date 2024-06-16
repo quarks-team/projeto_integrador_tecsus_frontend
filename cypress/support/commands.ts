@@ -1,5 +1,11 @@
 import 'cypress-file-upload';
 import { mount } from 'cypress/vue2';
-import { VueTestUtils } from '@vue/test-utils';
 
-Cypress.Commands.add('mount', mount);
+// Cypress.Commands.add('mount', mount);
+import './commands'
+
+// Alternatively you can use CommonJS syntax:
+// require('./commands')
+
+
+// Cypress.Commands.add('mount', mount)

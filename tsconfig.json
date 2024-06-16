@@ -16,5 +16,5 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist"
   },
-  "include": ["./*.ts", "cypress/**/*.ts","src/**/*.ts", "src/**/*.d.ts"] 
+  "include": ["./*.ts", "cypress/**/*.ts","src/**/*.ts", "src/**/*.d.ts", "cypress/support/index.ts"] 
 }

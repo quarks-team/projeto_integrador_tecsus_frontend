@@ -1,10 +1,7 @@
-const wp = require('@cypress/webpack-preprocessor')
+const { startDevServer } = require('@cypress/webpack-dev-server');
 
-module.exports = (on) => {
-  const options = {
-    webpackOptions: require('../../webpack.config'),
-    watchOptions: {}
-  }
+module.exports = (on, config) => {
+  on('dev-server:start', (options) => startDevServer({ options }));
 
-  on('file:preprocessor', wp(options))
-}
+  return config;
+};
