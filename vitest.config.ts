@@ -7,6 +7,8 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
+      reporters: ['default', 'junit'],
+      outputFile: './test-results.xml',
       globals: true,
       environment: 'jsdom',
       setupFiles: './setupTests.ts', 

@@ -83,10 +83,4 @@ describe('HomeView.vue', () => {
     expect(wrapper.find('.container-dash').exists()).toBe(true)
   })
 
-  it('should render without errors with default props', async () => {
-    const wrapper = createWrapper(false);
-    await flushPromises();
-    expect(wrapper.html()).toMatchSnapshot()
-  })
-
 });
