@@ -1,13 +1,18 @@
-/// <reference types="cypress" />
+describe('Upload and Process CSV File with SSE', () => {
+  beforeEach(() => {
+    cy.visit('/importar-dados'); // A rota pode variar conforme a configuração do seu Vue Router
+  });
 
-describe('Teste para o componente AttachFileContainer', () => {
-  it('deve verificar a visibilidade do componente AttachFile', () => {
-    // Montar o componente Vue
-   
-    cy.visit('/importar-dados',)
+  it('should upload a CSV file successfully and listen for SSE', () => {
+    const fileName = 'con_agua.csv';
+    
 
-  
-    // Espera 1 segundo para a transição ocorrer
+    cy.get('input[type="file"]').attachFile(fileName);
+    cy.intercept('POST', 'http://localhost:3000/billing/upload/sse').as('fileUpload');
+    cy.intercept('GET', '/events').as('sse');
+    cy.get('.submit').click();
+
+
     
   });
-  });
+});
