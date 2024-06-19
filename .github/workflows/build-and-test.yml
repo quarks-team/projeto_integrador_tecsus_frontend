@@ -7,9 +7,9 @@ env:
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, gh-pages]
   push:
-    branches: [main]
+    branches: [main, gh-pages]
 
 jobs:
   build-and-test-with-cache:
