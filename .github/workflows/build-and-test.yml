@@ -7,9 +7,9 @@ env:
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, previous]
   push:
-    branches: [main]
+    branches: [main, previous]
 
 jobs:
   build-and-test-with-cache:

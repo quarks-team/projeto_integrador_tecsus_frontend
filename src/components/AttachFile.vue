@@ -203,47 +203,46 @@ export default defineComponent ({
     },
 
     async sendData() {
-
       this.progress = true;
 
       try {
         if (this.files.length > 0) {
-
           this.setProcessing(true);
 
-          const formData = new FormData()
+          const formData = new FormData();
           for (const file of this.files) {
-            formData.append('files', file)
+            formData.append('files', file);
           }
 
           // Conectar ao SSE para receber mensagens do servidor
-          const eventSource = new EventSource(getBaseUrl() + '/billing/upload/sse')
+          const baseUrl = await getBaseUrl();
+          const eventSource = new EventSource(`${baseUrl}/billing/upload/sse`);
 
           eventSource.addEventListener('user-log', (event) => {
-            const data = JSON.parse(event.data)
-            this.mostrarAlertaOutrosErros = false
-            this.mostrarAlertaSucesso = true
-            this.respostaSucesso.push('Log: ' + data.message)
+            const data = JSON.parse(event.data);
+            this.mostrarAlertaOutrosErros = false;
+            this.mostrarAlertaSucesso = true;
+            this.respostaSucesso.push('Log: ' + data.message);
             eventBus.emit('update-notifications', true);
-          })
+          });
 
-          eventSource.onerror = (error: any) => {
-            console.error('Erro no SSE:', error)
-            this.outrosErros.push('Erro no SSE: ' + error.message)
-            this.mostrarAlertaSucesso = false
-            this.mostrarAlertaOutrosErros = true
-            eventSource.close()
-          }
+          eventSource.onerror = (error) => {
+            console.error('Erro no SSE:', error);
+            this.outrosErros.push('Erro no SSE: ' + error.message);
+            this.mostrarAlertaSucesso = false;
+            this.mostrarAlertaOutrosErros = true;
+            eventSource.close();
+          };
 
           // Enviar arquivos para o servidor
           const response = await tecsusAPI.post('/billing/upload', formData, {
             headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          })
+              'Content-Type': 'multipart/form-data',
+            },
+          });
 
           // Fechar a conexão SSE quando o upload for concluído
-          eventSource.close()
+          eventSource.close();
 
           this.mostrarAlertaOutrosErros = false;
           this.mostrarAlertaSucesso = false;
@@ -255,7 +254,7 @@ export default defineComponent ({
           eventBus.emit('update-notifications', true);
         }
       } catch (error) {
-        console.error('Erro ao fazer upload: ', error)
+        console.error('Erro ao fazer upload: ', error);
         this.mostrarAlertaOutrosErros = false;
         this.mostrarAlertaSucesso = false;
         this.mostrarRespostaFinal = true;

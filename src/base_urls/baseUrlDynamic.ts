@@ -35,7 +35,7 @@ const tecsusAPI = axios.create({
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
-    'Access-Control-Allow-Origin': '*'
+    'Access-Control-Allow-Origin': ['https://billing-ingestion-production.up.railway.app', 'http://localhost:3000']
   }
 })
 
