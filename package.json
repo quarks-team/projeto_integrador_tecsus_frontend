@@ -16,8 +16,8 @@
     "install-sonar-scanner": "npm install -g sonar-scanner@latest",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "test:integration": "start-server-and-test dev http://localhost:5173 cy:open",
-    "test:integration:run": "start-server-and-test dev http://localhost:5173 cy:run"
+    "test:integration": "start-server-and-test dev http://localhost:5173/projeto_integrador_tecsus_frontend/ cy:open",
+    "test:integration:run": "start-server-and-test dev http://localhost:5173/projeto_integrador_tecsus_frontend/ cy:run"
   },
   "dependencies": {
     "@cypress/vite-dev-server": "^5.1.1",
@@ -50,6 +50,9 @@
     "cypress-file-upload": "^5.0.8",
     "globals": "^15.3.0",
     "jsdom": "^24.1.0",
+    "mochawesome": "^7.1.3",
+    "mochawesome-merge": "^4.3.0",
+    "mochawesome-report-generator": "^6.2.0",
     "npm-run-all2": "^6.2.0",
     "prettier": "^3.2.5",
     "start-server-and-test": "^2.0.4",
