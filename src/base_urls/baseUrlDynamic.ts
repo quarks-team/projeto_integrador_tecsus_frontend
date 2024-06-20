@@ -1,14 +1,10 @@
-import axios from 'axios'
+import axios from 'axios';
 
-// Determinando o baseURL dinamicamente
+// Função para determinar a baseURL dinamicamente
 const checkLocalBackend = async () => {
   try {
     const response = await fetch('http://localhost:3000/alerts');
-    if (response.ok) {
-      return true;
-    } else {
-      return false;
-    }
+    return response.ok;
   } catch (error) {
     return false;
   }
@@ -16,28 +12,26 @@ const checkLocalBackend = async () => {
 
 const getBaseUrl = async () => {
   const isLocalBackendAvailable = await checkLocalBackend();
-  if (isLocalBackendAvailable) {
-    return 'http://localhost:3000';
-  } else {
-    return 'https://billing-ingestion-production.up.railway.app'; 
-  }
+  return isLocalBackendAvailable ? 'http://localhost:3000' : 'https://billing-ingestion-production.up.railway.app';
 };
 
-getBaseUrl().then(baseUrl => {
-  console.log('Base URL:', baseUrl);
-});
-
-
-// Definindo a URL base para as requisições
+// Criar instância do axios com uma baseURL padrão
 const tecsusAPI = axios.create({
-  baseURL: await getBaseUrl(),
+  baseURL: 'https://billing-ingestion-production.up.railway.app', 
+  timeout: 1000,
   withCredentials: false, 
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
     'Access-Control-Allow-Origin': ['https://billing-ingestion-production.up.railway.app', 'http://localhost:3000']
   }
-})
+});
 
-export default tecsusAPI
-export { getBaseUrl }
+// Atualizar a baseURL de forma assíncrona
+getBaseUrl().then(baseUrl => {
+  tecsusAPI.defaults.baseURL = baseUrl;
+});
+
+
+export default tecsusAPI;
+export { getBaseUrl };

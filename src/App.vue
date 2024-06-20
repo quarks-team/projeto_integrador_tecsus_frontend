@@ -3,7 +3,6 @@ import { RouterView } from 'vue-router'
 import Sidebar from './components/Sidebar.vue'
 import Notifications from './components/Notifications.vue'
 import NumberNotifications from './components/NumberNotifications.vue';
-import clickOutside from '../src/utils/click-outside.ts'
 import { defineComponent } from 'vue';
 import eventBus from './eventBus';
 
@@ -14,10 +13,6 @@ export default defineComponent({
       showNotifications: false,
       numberNotifications: null
     }
-  },
-
-  directives: {
-    clickOutside
   },
 
   created() {
