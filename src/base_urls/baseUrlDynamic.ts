@@ -18,7 +18,7 @@ const getBaseUrl = async () => {
 // Criar instância do axios com uma baseURL padrão
 const tecsusAPI = axios.create({
   baseURL: 'https://billing-ingestion-production.up.railway.app', 
-  timeout: 1000,
+  timeout: 50000,
   withCredentials: false, 
   headers: {
     'Content-Type': 'application/json',
