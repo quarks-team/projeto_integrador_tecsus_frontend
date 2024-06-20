@@ -33,7 +33,7 @@
           <div class="preview-container mt-4" v-if="files.length">
             <div v-for="(file, index) in files" :key="file.name" class="preview-card">
               <div>
-                <img class="preview-img" :src="excel" />
+                <img class="preview-img" src="../assets/icons/csv2.gif" />
                 <p>
                   {{ file.name }}
                   ({{ Math.round(file.size / 1000) + 'kb' }})
@@ -122,7 +122,6 @@ export default defineComponent ({
       isDragging: false,
       files: [],
       filesJSON: [],
-      excel: 'src/assets/icons/csv2.gif',
       isVisible: false,
       mostrarAlertaSucesso: false,
       mostrarAlertaOutrosErros: false,
