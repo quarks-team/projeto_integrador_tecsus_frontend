@@ -2,14 +2,14 @@
   "stats": {
     "suites": 1,
     "tests": 1,
-    "passes": 0,
+    "passes": 1,
     "pending": 0,
-    "failures": 1,
-    "start": "2024-06-19T23:44:55.173Z",
-    "end": "2024-06-19T23:44:58.212Z",
-    "duration": 3039,
+    "failures": 0,
+    "start": "2024-06-20T08:32:20.175Z",
+    "end": "2024-06-20T08:32:22.367Z",
+    "duration": 2192,
     "testsRegistered": 1,
-    "passPercent": 0,
+    "passPercent": 100,
     "pendingPercent": 0,
     "other": 0,
     "hasOther": false,
@@ -18,7 +18,7 @@
   },
   "results": [
     {
-      "uuid": "a5e250e4-aae7-4e43-b04c-6ea4a331fa46",
+      "uuid": "43323f54-43f5-440d-8d81-d388c6d1d12e",
       "title": "",
       "fullFile": "cypress\\e2e\\integration\\AttachFIle.cy.ts",
       "file": "cypress\\e2e\\integration\\AttachFIle.cy.ts",
@@ -27,7 +27,7 @@
       "tests": [],
       "suites": [
         {
-          "uuid": "adbe3156-969e-494b-af14-a6d40876e355",
+          "uuid": "4129bc52-2a73-41e2-b29b-3b3594fc4ee6",
           "title": "Upload and Process CSV File with SSE",
           "fullFile": "",
           "file": "",
@@ -38,33 +38,29 @@
               "title": "should upload a CSV file successfully and listen for SSE",
               "fullTitle": "Upload and Process CSV File with SSE should upload a CSV file successfully and listen for SSE",
               "timedOut": null,
-              "duration": 3014,
-              "state": "failed",
-              "speed": null,
-              "pass": false,
-              "fail": true,
+              "duration": 2153,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
               "pending": false,
               "context": null,
-              "code": "const fileName = 'con_agua.csv';\ncy.get('input[type=\"file\"]').attachFile(fileName);\ncy.intercept('POST', 'http://localhost:3000/billing/upload/sse').as('fileUpload');\ncy.intercept('GET', '/events').as('sse');\ncy.get('.submit').click();",
-              "err": {
-                "message": "AxiosError: The following error originated from your application code, not from Cypress. It was caused by an unhandled promise rejection.\n\n  > Network Error\n\nWhen Cypress detects uncaught errors originating from your application it will automatically fail the current test.\n\nThis behavior is configurable, and you can choose to turn this off by listening to the `uncaught:exception` event.\n\nhttps://on.cypress.io/uncaught-exception-from-application",
-                "estack": "AxiosError: The following error originated from your application code, not from Cypress. It was caused by an unhandled promise rejection.\n\n  > Network Error\n\nWhen Cypress detects uncaught errors originating from your application it will automatically fail the current test.\n\nThis behavior is configurable, and you can choose to turn this off by listening to the `uncaught:exception` event.\n\nhttps://on.cypress.io/uncaught-exception-from-application\n    at XMLHttpRequest.handleError (http://localhost:5173/projeto_integrador_tecsus_frontend/node_modules/.vite/deps/axios.js?v=61fdb17c:1581:14)\n    at Axios.request (http://localhost:5173/projeto_integrador_tecsus_frontend/node_modules/.vite/deps/axios.js?v=61fdb17c:2067:41)\n    at async Proxy.getNotifications (http://localhost:5173/projeto_integrador_tecsus_frontend/src/components/NumberNotifications.vue:35:24)",
-                "diff": null
-              },
-              "uuid": "56429ef8-754e-4b70-8253-016b0e96e6a1",
-              "parentUUID": "adbe3156-969e-494b-af14-a6d40876e355",
+              "code": "const fileName = 'con_agua.csv';\nconst baseUrl = await (0,_src_base_urls_baseUrlDynamic__WEBPACK_IMPORTED_MODULE_0__.getBaseUrl)();\ncy.get('.fa-solid fa-file-csv').click();\ncy.get('input[type=\"file\"]').attachFile(fileName);\ncy.intercept('POST', `${baseUrl}/billing/upload/sse`).as('fileUpload');\ncy.intercept('GET', '/events').as('sse');\ncy.get('.submit').click();\ncy.wait('@fileUpload').its('response.statusCode').should('be.oneOf', [200, 304]);\ncy.wait('@sse').its('response.statusCode').should('be.oneOf', [200, 304]);",
+              "err": {},
+              "uuid": "38387c4b-0344-4bc4-8699-6d93bd3af2b9",
+              "parentUUID": "4129bc52-2a73-41e2-b29b-3b3594fc4ee6",
               "isHook": false,
               "skipped": false
             }
           ],
           "suites": [],
-          "passes": [],
-          "failures": [
-            "56429ef8-754e-4b70-8253-016b0e96e6a1"
+          "passes": [
+            "38387c4b-0344-4bc4-8699-6d93bd3af2b9"
           ],
+          "failures": [],
           "pending": [],
           "skipped": [],
-          "duration": 3014,
+          "duration": 2153,
           "root": false,
           "rootEmpty": false,
           "_timeout": 2000

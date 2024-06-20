@@ -115,8 +115,8 @@ jobs:
       - name: Cypress run integration tests
         uses: cypress-io/github-action@v6
         with:
-          start: npm run dev
-          wait-on: 'http://localhost:5173/projeto_integrador_tecsus_frontend/'
+          start: npm run cy:run
+          wait-on: 'https://quarks-team.github.io/projeto_integrador_tecsus_frontend/'
           record: true
           parallel: true 
         env:

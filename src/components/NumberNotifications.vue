@@ -4,6 +4,7 @@
 
 <script lang="ts">
 import tecsusAPI from '../base_urls/baseUrlDynamic';
+import { getBaseUrl } from '../base_urls/baseUrlDynamic';
 import { defineComponent, onMounted } from 'vue';
 import eventBus from '../eventBus';
 
@@ -39,22 +40,31 @@ export default defineComponent({
   },
 
   methods: {
+
     closeNotifications() {
       eventBus.emit('close-notifications', false)
     },
 
     async getNotifications() {
-      
-      const response = await tecsusAPI.get('/alerts')
 
-      this.watter = response.data.watter;
-      this.wastepipe = response.data.wastepipe;
-      this.energyA = response.data.energyA;
-      this.energyB = response.data.energyB;
-      this.notifications = [...this.watter, ...this.wastepipe, ...this.energyA, ...this.energyB]
+      const baseUrl = await getBaseUrl();
+      tecsusAPI.defaults.baseURL = baseUrl;
 
-      eventBus.emit('number-notifications', this.notifications.length)
+      try {
+
+        const response = await tecsusAPI.get('/alerts');
+        this.watter = response.data.watter;
+        this.wastepipe = response.data.wastepipe;
+        this.energyA = response.data.energyA;
+        this.energyB = response.data.energyB;
+        this.notifications = [...this.watter, ...this.wastepipe, ...this.energyA, ...this.energyB];
+
+        eventBus.emit('number-notifications', this.notifications.length);
+      } catch (error) {
+        console.error('Failed to fetch notifications:', error);
+      }
     },
+
   },
 
   computed: {

@@ -217,17 +217,17 @@ export default defineComponent ({
           const baseUrl = await getBaseUrl();
           const eventSource = new EventSource(`${baseUrl}/billing/upload/sse`);
 
-          eventSource.addEventListener('user-log', (event) => {
+          eventSource.addEventListener('user-log', (event: any) => {
             const data = JSON.parse(event.data);
             this.mostrarAlertaOutrosErros = false;
             this.mostrarAlertaSucesso = true;
-            this.respostaSucesso.push('Log: ' + data.message);
+            this.respostaSucesso.push(`Log: ${data.message}`);
             eventBus.emit('update-notifications', true);
           });
 
-          eventSource.onerror = (error) => {
+          eventSource.onerror = (error: Event) => {
             console.error('Erro no SSE:', error);
-            this.outrosErros.push('Erro no SSE: ' + error.message);
+            this.outrosErros.push(`Erro no SSE: ${error.message}`);
             this.mostrarAlertaSucesso = false;
             this.mostrarAlertaOutrosErros = true;
             eventSource.close();
