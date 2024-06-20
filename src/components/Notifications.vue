@@ -82,81 +82,61 @@
                   'text-overflow': 'ellipsis'
                 }
           ">Energy B</b>
-        <!-- <b
-          @click.prevent="sinkAlert = !sinkAlert"
-          :style="
-            sink === true
-              ? {
-                  'background-color': '#004AEB',
-                  color: 'white',
-                  'white-space': 'nowrap',
-                  overflow: 'hidden',
-                  'text-overflow': 'ellipsis'
-                }
-              : {
-                  'background-color': 'transparent',
-                  color: '#004AEB',
-                  'white-space': 'nowrap',
-                  overflow: 'hidden',
-                  'text-overflow': 'ellipsis'
-                }
-          "
-          >Sink</b
-        > -->
       </div>
     </h2>
+    <main>
+      <div class="card-notification" v-for="n in watter" :key="n.id">  
+        <b style="background-color: #548644;">!</b>
+        <h5>Client Unity ID: {{ n.clientUnityId }}</h5>
+        <h5>{{ `Watter Contract ID: ${n.watterContractId}` }}</h5>
+        <h4>Consumo de água: {{ n.watterConsume }}</h4> 
+        <h4>Média Trimestral: {{ n.quarterlyAverage }}</h4>
+        <h4>Excesso Percentual: {{ n.percentageExcess }}</h4>
+        <h6>Data do alerta: {{ n.alertDate }}</h6>
+        <button class="button-delete" @click.prevent="deleteNotification(n.id)">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
 
-    <div class="card-notification" v-for="n in watter" :key="n.id">  
-      <b style="background-color: #548644;">!</b>
-      <h5>Client Unity ID: {{ n.clientUnityId }}</h5>
-      <h5>{{ `Watter Contract ID: ${n.watterContractId}` }}</h5>
-      <h4>Consumo de água: {{ n.watterConsume }}</h4> 
-      <h4>Média Trimestral: {{ n.quarterlyAverage }}</h4>
-      <h4>Excesso Percentual: {{ n.percentageExcess }}</h4>
-      <h6>Data do alerta: {{ n.alertDate }}</h6>
-      <button class="button-delete" @click.prevent="deleteNotification(n.id)">
-        <i class="fa-solid fa-trash"></i>
-      </button>
-    </div>
+      <div class="card-notification" v-for="n in wastepipe" :key="n.id">  
+        <b style="background-color: #548644;">!</b>
+        <h5>Client Unity ID: {{ n.clientUnityId }}</h5>
+        <h5>{{ `Watter Contract ID: ${n.watterContractId}` }}</h5>
+        <h4>Consumo de água: {{ n.watterConsume }}</h4> 
+        <h4>Média Trimestral: {{ n.quarterlyAverage }}</h4>
+        <h4>Excesso Percentual: {{ n.percentageExcess }}</h4>
+        <h6>Data do alerta: {{ n.alertDate }}</h6>
+        <button class="button-delete" @click.prevent="deleteNotification(n.id)">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
 
-    <div class="card-notification" v-for="n in wastepipe" :key="n.id">  
-      <b style="background-color: #548644;">!</b>
-      <h5>Client Unity ID: {{ n.clientUnityId }}</h5>
-      <h5>{{ `Watter Contract ID: ${n.watterContractId}` }}</h5>
-      <h4>Consumo de água: {{ n.watterConsume }}</h4> 
-      <h4>Média Trimestral: {{ n.quarterlyAverage }}</h4>
-      <h4>Excesso Percentual: {{ n.percentageExcess }}</h4>
-      <h6>Data do alerta: {{ n.alertDate }}</h6>
-      <button class="button-delete" @click.prevent="deleteNotification(n.id)">
-        <i class="fa-solid fa-trash"></i>
-      </button>
-    </div>
+      <div class="card-notification" v-for="n in energyA" :key="n.id">  
+        <b style="background-color: #548644;">!</b>
+        <h5>Client Unity ID: {{ n.clientUnityId }}</h5>
+        <h5>{{ `Energy Contract ID: ${n.energyContractId}` }}</h5>
+        <h4>Consumo de água: {{ n.watterConsume }}</h4> 
+        <h4>Média Trimestral: {{ n.quarterlyAverage }}</h4>
+        <h4>Excesso Percentual: {{ n.percentageExcess }}</h4>
+        <h6>Data do alerta: {{ n.alertDate }}</h6>
+        <button class="button-delete" @click.prevent="deleteNotification(n.id)">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
 
-    <div class="card-notification" v-for="n in energyA" :key="n.id">  
-      <b style="background-color: #548644;">!</b>
-      <h5>Client Unity ID: {{ n.clientUnityId }}</h5>
-      <h5>{{ `Energy Contract ID: ${n.energyContractId}` }}</h5>
-      <h4>Consumo de água: {{ n.watterConsume }}</h4> 
-      <h4>Média Trimestral: {{ n.quarterlyAverage }}</h4>
-      <h4>Excesso Percentual: {{ n.percentageExcess }}</h4>
-      <h6>Data do alerta: {{ n.alertDate }}</h6>
-      <button class="button-delete" @click.prevent="deleteNotification(n.id)">
-        <i class="fa-solid fa-trash"></i>
-      </button>
-    </div>
-
-    <div class="card-notification" v-for="n in energyB" :key="n.id">  
-      <b style="background-color: #548644;">!</b>
-      <h5>Client Unity ID: {{ n.clientUnityId }}</h5>
-      <h5>{{ `Energy Contract ID: ${n.energyContractId}` }}</h5>
-      <h4>Consumo de água: {{ n.watterConsume }}</h4> 
-      <h4>Média Trimestral: {{ n.quarterlyAverage }}</h4>
-      <h4>Excesso Percentual: {{ n.percentageExcess }}</h4>
-      <h6>Data do alerta: {{ n.alertDate }}</h6>
-      <button class="button-delete" @click.prevent="deleteNotification(n.id)">
-        <i class="fa-solid fa-trash"></i>
-      </button>
-    </div>
+      <div class="card-notification" v-for="n in energyB" :key="n.id">  
+        <b style="background-color: #548644;">!</b>
+        <h5>Client Unity ID: {{ n.clientUnityId }}</h5>
+        <h5>{{ `Energy Contract ID: ${n.energyContractId}` }}</h5>
+        <h4>Consumo de água: {{ n.watterConsume }}</h4> 
+        <h4>Média Trimestral: {{ n.quarterlyAverage }}</h4>
+        <h4>Excesso Percentual: {{ n.percentageExcess }}</h4>
+        <h6>Data do alerta: {{ n.alertDate }}</h6>
+        <button class="button-delete" @click.prevent="deleteNotification(n.id)">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </main>
   </div>
 </template>
 
@@ -183,16 +163,10 @@ export default defineComponent({
       wastePipeAlert: true,
       energy_A_Alert: true,
       energy_B_Alert: true,
-      // sinkAlert: true,
       watter: {},
       wastepipe: {},
       energyA: {},
       energyB: {},
-      // filteredWatter: {},
-      // filteredWastePipe: {},
-      // filteredEnergyA: {},
-      // filteredEnergyB: {},
-      // filteredSink: {},
     }
   },
 
@@ -201,27 +175,9 @@ export default defineComponent({
   },
 
   created() {
-    // this.filterWatterConsume()
-    // this.filterQuarterlyAverage()
-    // this.filterPercentageExcess()
-
     eventBus.on('update-notifications', (update: boolean) => {
       this.getNotifications()
     })
-  },
-
-  watch: {
-    // watterConsume: function () {
-    //   this.filterWatterConsume()
-    // },
-
-    // quarterlyAverage: function () {
-    //   this.filterQuarterlyAverage()
-    // },
-
-    // percentageExcess: function () {
-    //   this.filterPercentageExcess()
-    // }
   },
 
   methods: {
@@ -282,155 +238,9 @@ export default defineComponent({
 
       eventBus.emit('number-notifications', this.notifications.length)
     },
-
-    // filterWatterConsume() {
-    //   if (!this.watterAlert) {
-    //     this.filteredWatter = this.watter.sort((a, b) => {
-    //       return a.watterConsume.length - b.watterConsume.length;
-    //   });
-    //     this.notifications = this.notifications.watter.sort((a, b) => {
-    //       return a.watterConsume.length - b.watterConsume.length; 
-    //   });
-    //   } else if (!this.energy_A_Alert) {
-    //     this.filteredEnergyA = this.energyA.sort((a, b) => {
-    //       return a.watterConsume.length - b.watterConsume.length; 
-    //   });
-    //     this.notifications = this.notifications.energyA.sort((a, b) => {
-    //       return a.watterConsume.length - b.watterConsume.length; 
-    //   });
-    //   } else if (!this.energy_B_Alert) {
-    //     this.filteredEnergyB = this.energyB.sort((a, b) => {
-    //       return a.watterConsume.length - b.watterConsume.length; 
-    //   });
-    //     this.notifications = this.notifications.energyB.sort((a, b) => {
-    //       return a.watterConsume.length - b.watterConsume.length; 
-    //   });
-    //   } else if (!this.wastePipeAlert) {
-    //     this.filteredWastePipe = this.wastepipe.sort((a, b) => {
-    //       return a.watterConsume.length - b.watterConsume.length; 
-    //   });
-    //     this.notifications = this.notifications.wastepipe.sort((a, b) => {
-    //       return a.watterConsume.length - b.watterConsume.length; 
-    //   });
-    //   } else {
-    //     this.notifications.push(
-    //       ...this.filteredWatter, ...this.filteredEnergyA, 
-    //       ...this.filteredEnergyB, ...this.filteredWastePipe
-    //     )
-    //   }
-    // },
-
-    // filterQuarterlyAverage() {
-    //   if (!this.watterAlert) {
-    //     this.filteredWatter = this.watter.sort((a, b) => {
-    //       return a.quarterlyAverage.length - b.quarterlyAverage.length;
-    //   });
-    //     this.notifications = this.notifications.watter.sort((a, b) => {
-    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
-    //   });
-    //   } else if (!this.energy_A_Alert) {
-    //     this.filteredEnergyA = this.energyA.sort((a, b) => {
-    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
-    //   });
-    //     this.notifications = this.notifications.energyA.sort((a, b) => {
-    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
-    //   });
-    //   } else if (!this.energy_B_Alert) {
-    //     this.filteredEnergyB = this.energyB.sort((a, b) => {
-    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
-    //   });
-    //     this.notifications = this.notifications.energyB.sort((a, b) => {
-    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
-    //   });
-    //   } else if (!this.wastePipeAlert) {
-    //     this.filteredWastePipe = this.wastepipe.sort((a, b) => {
-    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
-    //   });
-    //     this.notifications = this.notifications.wastepipe.sort((a, b) => {
-    //       return a.quarterlyAverage.length - b.quarterlyAverage.length; 
-    //   });
-    //   } else {
-    //     this.notifications.push(
-    //       ...this.filteredWatter, ...this.filteredEnergyA, 
-    //       ...this.filteredEnergyB, ...this.filteredWastePipe
-    //     )
-    //   }
-    // },
-
-    // filterPercentageExcess() {
-    //   if (!this.watterAlert) {
-    //     this.filteredWatter = this.watter.sort((a, b) => {
-    //       return a.percentageExcess.length - b.percentageExcess.length;
-    //   });
-    //     this.notifications = this.notifications.watter.sort((a, b) => {
-    //       return a.percentageExcess.length - b.percentageExcess.length; 
-    //   });
-    //   } else if (!this.energy_A_Alert) {
-    //     this.filteredEnergyA = this.energyA.sort((a, b) => {
-    //       return a.percentageExcess.length - b.percentageExcess.length; 
-    //   });
-    //     this.notifications = this.notifications.energyA.sort((a, b) => {
-    //       return a.percentageExcess.length - b.percentageExcess.length; 
-    //   });
-    //   } else if (!this.energy_B_Alert) {
-    //     this.filteredEnergyB = this.energyB.sort((a, b) => {
-    //       return a.percentageExcess.length - b.percentageExcess.length; 
-    //   });
-    //     this.notifications = this.notifications.energyB.sort((a, b) => {
-    //       return a.percentageExcess.length - b.percentageExcess.length; 
-    //   });
-    //   } else if (!this.wastePipeAlert) {
-    //     this.filteredWastePipe = this.wastepipe.sort((a, b) => {
-    //       return a.percentageExcess.length - b.percentageExcess.length; 
-    //   });
-    //     this.notifications = this.notifications.wastepipe.sort((a, b) => {
-    //       return a.percentageExcess.length - b.percentageExcess.length; 
-    //   });
-    //   } else {
-    //     this.notifications.push(
-    //       ...this.filteredWatter, ...this.filteredEnergyA, 
-    //       ...this.filteredEnergyB, ...this.filteredWastePipe
-    //     )
-    //   }
-    // },
-
-    // filterSink() {
-    //   if (!this.sink) {
-    //     this.filteredSink = this.notifications.filter(
-    //       (item) =>
-    //         String(item.item_status) !== 'INCORPORATED' && String(item.item_status) !== 'APPLICABLE'
-    //     )
-    //     this.notifications = this.notifications.filter(
-    //       (item) =>
-    //         String(item.item_status) === 'INCORPORATED' || String(item.item_status) === 'APPLICABLE'
-    //     )
-    //   } else {
-    //     this.notifications.push(...this.filteredSink)
-    //   }
-    // },
   },
 
   computed: {
-    filteredWatter() {
-      return this.notifications
-    },
-
-    filteredWastePipe() {
-      return this.notifications
-    },
-
-    filteredEnergyA() {
-      return this.notifications
-    },
-
-    filteredEnergyB() {
-      return this.notifications
-    },
-
-    // filteredSink() {
-    //   return this.notifications
-    // },
-
     numberOfNotifications() {
       return eventBus.emit('number-notifications', this.notifications.length)
     }
@@ -465,6 +275,17 @@ export default defineComponent({
   margin-bottom: 25px;
   padding-bottom: 25px;
   overflow: auto;
+}
+
+main {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-gap: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
 }
 
 .card-notification {
