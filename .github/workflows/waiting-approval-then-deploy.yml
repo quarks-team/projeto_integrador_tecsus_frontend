@@ -11,12 +11,16 @@ on:
       - completed
 
 jobs:
+
   wait-for-status-check:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    
     outputs:
       approved: ${{ steps.set_approval.outputs.approved }}
+    
     steps:
+
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
@@ -46,6 +50,7 @@ jobs:
         containers: [1, 2] # Uses 2 parallel instances
 
     steps:
+
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
@@ -111,7 +116,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           start: npm run dev
-          wait-on: 'http://localhost:5173'
+          wait-on: 'http://localhost:5173/projeto_integrador_tecsus_frontend/'
           record: true
           parallel: true 
         env:
