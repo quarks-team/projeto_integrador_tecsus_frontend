@@ -14,6 +14,8 @@ vi.mock('../src/components/DashAgua.vue', () => ({
   }
 }));
 
+
+
 vi.mock('../src/components/DashLuz.vue', () => ({
   default: {
     name: 'DashLuz',
