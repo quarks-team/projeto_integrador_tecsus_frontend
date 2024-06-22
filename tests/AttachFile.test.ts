@@ -44,7 +44,7 @@ class MockDataTransfer {
     return '';
   }
 
-  
+
   setData(format: string, data: string): void {}
 
   clearData(): void {}
